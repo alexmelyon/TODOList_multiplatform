@@ -1,0 +1,3 @@
+package com.helloandroid.dagger.appcomponent
+
+interface IDataRepository

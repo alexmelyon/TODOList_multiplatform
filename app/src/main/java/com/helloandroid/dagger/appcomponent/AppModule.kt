@@ -1,4 +1,4 @@
-package com.helloandroid.dagger.modules
+package com.helloandroid.dagger.appcomponent
 
 import android.content.Context
 import dagger.Module
