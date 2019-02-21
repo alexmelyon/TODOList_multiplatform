@@ -1,16 +1,12 @@
 package com.helloandroid.dagger.appcomponent.chatcomponent
 
-import android.content.Context
-import com.helloandroid.dagger.appcomponent.AppComponent
-import dagger.Component
+import com.helloandroid.dagger.appcomponent.chatcomponent.screenChatComponent.ScreenChatModule
+import dagger.Subcomponent
 
-@Component(
-    dependencies = [AppComponent::class],
-    modules = [ChatModule::class]
-)
+@Subcomponent(modules = [ChatModule::class])
 @ChatScope
 interface ChatComponent {
 
-    fun context(): Context
-    fun iChatInteract(): IChatInteract
+    fun plusScreenChatComponent(screenChatModule: ScreenChatModule)
+
 }

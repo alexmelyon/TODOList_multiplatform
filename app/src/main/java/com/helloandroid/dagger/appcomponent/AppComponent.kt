@@ -1,6 +1,7 @@
 package com.helloandroid.dagger.appcomponent
 
-import android.content.Context
+import com.helloandroid.dagger.appcomponent.chatcomponent.ChatComponent
+import com.helloandroid.dagger.appcomponent.chatcomponent.ChatModule
 import dagger.Component
 import javax.inject.Singleton
 
@@ -8,8 +9,5 @@ import javax.inject.Singleton
 @Singleton
 interface AppComponent {
 
-    fun context(): Context
-    fun iDataRepository(): IDataRepository
-    fun rxUtilAbs(): RxUtilsAbs
-
+    fun plusChatComponent(chatModule: ChatModule): ChatComponent
 }
