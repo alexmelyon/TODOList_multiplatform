@@ -14,13 +14,14 @@ class MyApp : Application() {
     companion object {
         lateinit var instance: MyApp
             private set
-        lateinit var appComponent: AppComponent
-            private set
-        var chatComponent: ChatComponent? = null
-            private set
-        var screenChatComponent: ScreenChatComponent? = null
-            private set
     }
+
+    lateinit var appComponent: AppComponent
+        private set
+    var chatComponent: ChatComponent? = null
+        private set
+    var screenChatComponent: ScreenChatComponent? = null
+        private set
 
     override fun onCreate() {
         super.onCreate()
