@@ -2,10 +2,9 @@ package com.helloandroid
 
 import android.app.Application
 import com.helloandroid.appcomponent.AppComponent
-import com.helloandroid.appcomponent.AppModule
 import com.helloandroid.appcomponent.DaggerAppComponent
-import com.helloandroid.coffeeComponent.CofeeComponent
-import com.helloandroid.coffeeComponent.DaggerCofeeComponent
+import com.helloandroid.coffeeComponent.CoffeeComponent
+import com.helloandroid.coffeeComponent.DaggerCoffeeComponent
 import com.helloandroid.sugarComponent.DaggerSugarComponent
 import com.helloandroid.sugarComponent.SugarComponent
 import com.helloandroid.teaComponent.DaggerTeaComponent
@@ -19,7 +18,7 @@ class App : Application() {
     }
 
     lateinit var appComponent: AppComponent
-    lateinit var coffeeComponent: CofeeComponent
+    lateinit var coffeeComponent: CoffeeComponent
     lateinit var teaComponent: TeaComponent
     lateinit var sugarComponent: SugarComponent
 
@@ -27,16 +26,16 @@ class App : Application() {
         super.onCreate()
         instance = this
         appComponent = DaggerAppComponent.builder()
-            .appModule(AppModule(instance))
+//            .appModule(AppModule(instance))
             .build()
-        coffeeComponent = DaggerCofeeComponent.builder()
+        coffeeComponent = DaggerCoffeeComponent.builder()
             .appComponent(appComponent)
             .build()
         teaComponent = DaggerTeaComponent.builder()
             .appComponent(appComponent)
             .build()
         sugarComponent = DaggerSugarComponent.builder()
-            .cofeeComponent(coffeeComponent)
+            .coffeeComponent(coffeeComponent)
             .teaComponent(teaComponent)
             .build()
     }

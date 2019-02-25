@@ -3,13 +3,15 @@ package com.helloandroid.coffeeComponent
 import com.helloandroid.CoffeeFragment
 import com.helloandroid.appcomponent.AppComponent
 import dagger.Component
-import dagger.Provides
 
 @Component(
     dependencies = [AppComponent::class],
     modules = [CoffeeModule::class]
 )
-interface CofeeComponent {
+//@Singleton
+interface CoffeeComponent {
 
-    fun inject(coffeeFragment: CoffeeFragment)
+    fun coffeeService(): CoffeeService
+
+    fun foo(coffeeFragment: CoffeeFragment)
 }

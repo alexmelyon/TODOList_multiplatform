@@ -1,6 +1,5 @@
 package com.helloandroid.appcomponent
 
-import android.content.Context
 import com.helloandroid.MainActivity
 import dagger.Component
 
@@ -9,5 +8,5 @@ interface AppComponent {
 
     fun context(): Context
 
-    fun inject(mainActivity: MainActivity)
+    fun foo(mainActivity: MainActivity)
 }

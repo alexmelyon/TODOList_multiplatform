@@ -7,6 +7,7 @@ import dagger.Provides
 class SugarModule {
 
     @Provides
+    @SugarScope
     fun provideSugar(): SugarService {
         return SugarService()
     }
