@@ -2,11 +2,12 @@ package com.helloandroid.sugarComponent
 
 import kotlin.random.Random
 
-class SugarService {
+class CaneSugarImpl : ISugarService {
 
     val number = Random.nextInt()
 
-    fun addSugar(): String {
-        return "Sugar includes. $number"
+    override fun addSugar(): String {
+        return "Cane sugar $number"
     }
+
 }
