@@ -7,7 +7,8 @@ import dagger.Component
 @Component(modules = [AppModule::class])
 interface AppComponent {
 
+    /** Объявление для нижних модулей */
     fun context(): Context
 
-    fun foo(mainActivity: MainActivity)
+    fun inject(mainActivity: MainActivity)
 }

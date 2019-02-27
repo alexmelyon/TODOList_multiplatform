@@ -6,7 +6,6 @@ import com.helloandroid.appcomponent.AppModule
 import com.helloandroid.appcomponent.DaggerAppComponent
 import com.helloandroid.coffeeComponent.CoffeeComponent
 import com.helloandroid.coffeeComponent.DaggerCoffeeComponent
-import com.helloandroid.sugarComponent.DaggerSugarComponent
 import com.helloandroid.sugarComponent.SugarComponent
 import com.helloandroid.teaComponent.DaggerTeaComponent
 import com.helloandroid.teaComponent.TeaComponent
@@ -33,9 +32,13 @@ class App : Application() {
             .appComponent(appComponent)
             .build()
         teaComponent = DaggerTeaComponent.builder()
-            .appComponent(appComponent)
+//            .appComponent(appComponent)
             .build()
-        sugarComponent = DaggerSugarComponent.builder()
-            .build()
+//        sugarComponent = DaggerSugarComponent.builder()
+//            .coffeeComponent(coffeeComponent)
+//            .teaComponent(teaComponent)
+//            .build()
+
+//        BindingGraphPlugin
     }
 }

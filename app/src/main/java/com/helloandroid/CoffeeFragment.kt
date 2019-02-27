@@ -15,9 +15,10 @@ class CoffeeFragment : Fragment() {
     lateinit var coffeeService: CoffeeService
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val v = inflater.inflate(R.layout.coffee_fragment, container, false)
-        App.instance.coffeeComponent.foo(this)
+//        (activity as MainActivity).coffeeFragment = this
+        App.instance.coffeeComponent.inject(this)
 
+        val v = inflater.inflate(R.layout.coffee_fragment, container, false)
         v.coffeeText.text = coffeeService.makeCoffee()
         return v
     }

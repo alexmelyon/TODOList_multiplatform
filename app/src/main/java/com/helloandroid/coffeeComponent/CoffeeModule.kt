@@ -1,5 +1,8 @@
 package com.helloandroid.coffeeComponent
 
+import android.content.Context
+import com.helloandroid.sugarComponent.ISugarService
+import com.helloandroid.sugarComponent.WhiteSugarImpl
 import dagger.Module
 import dagger.Provides
 
@@ -7,7 +10,12 @@ import dagger.Provides
 class CoffeeModule {
 
     @Provides
-    fun provideCoffeeService(): CoffeeService {
-        return CoffeeService()
+    fun provideCoffeeService(context: Context): ICoffeeService {
+        return CoffeeService(context)
+    }
+
+    @Provides
+    fun provideSugar(): ISugarService {
+        return WhiteSugarImpl()
     }
 }
