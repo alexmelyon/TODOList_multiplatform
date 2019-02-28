@@ -2,6 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/first_item"
           android:title="First item"/>
-    <item android:id="@+id/second_item"
-          android:title="Second item" />
+    <item android:id="@+id/preview_activity_item"
+          android:title="PreviewActivity" />
 </menu>
