@@ -12,7 +12,7 @@
             android:theme="@style/AppTheme">
         <activity android:name=".preview_activity.PreviewActivity">
         </activity>
-        <activity android:name=".main_activity.MainActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
