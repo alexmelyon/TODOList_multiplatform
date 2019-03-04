@@ -2,6 +2,7 @@ package com.helloandroid
 
 import android.app.Activity
 import android.app.Application
+import com.helloandroid.dagger.AppComponent
 import com.helloandroid.dagger.DaggerAppComponent
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
@@ -15,11 +16,14 @@ class App : Application(), HasActivityInjector {
     lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Activity>
 
     override fun activityInjector(): AndroidInjector<Activity> {
+        println("GET ACTIVITY INJECTOR")
         return dispatchingAndroidInjector
     }
 
     companion object {
         lateinit var instance: App
+            private set
+        lateinit var appComponent: AppComponent
             private set
     }
 
@@ -31,9 +35,9 @@ class App : Application(), HasActivityInjector {
         super.onCreate()
         instance = this
 
-        DaggerAppComponent.builder()
+        appComponent = DaggerAppComponent.builder()
             .build()
-            .inject(this)
+        appComponent.inject(this)
 
         initWorld()
     }
