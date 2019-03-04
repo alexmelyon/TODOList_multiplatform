@@ -6,8 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.bluelinelabs.conductor.Controller
+import com.bluelinelabs.conductor.RouterTransaction
+import kotlinx.android.synthetic.main.controller_home.view.*
 
-class HomeController : Controller() {
+class HomeController: Controller() {
 
     init {
         Log.i("JCD", "CONSTRUCTOR")
@@ -17,6 +19,8 @@ class HomeController : Controller() {
         Log.i("JCD", "ON CREATE VIEW")
         val view = inflater.inflate(R.layout.controller_home, container, false)
         view.findViewById<TextView>(R.id.textView).setText("Wakarimashita")
+        activity as MainActivity
+        view.button.setOnClickListener { router.pushController(RouterTransaction.with(SecondController())) }
         return view
     }
 
