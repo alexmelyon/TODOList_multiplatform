@@ -1,4 +1,4 @@
-package com.helloandroid
+package com.helloandroid.tab_page
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import com.bluelinelabs.conductor.Controller
+import com.helloandroid.R
+import com.helloandroid.second.SecondControllerDelegate
 
 class TabPageController : Controller() {
 

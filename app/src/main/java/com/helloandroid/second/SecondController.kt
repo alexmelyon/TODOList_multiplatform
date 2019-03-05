@@ -1,4 +1,4 @@
-package com.helloandroid
+package com.helloandroid.second
 
 import android.view.LayoutInflater
 import android.view.View
@@ -6,6 +6,8 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
+import com.helloandroid.R
+import com.helloandroid.tab_page.TabPageController
 
 interface SecondControllerDelegate {
     fun left()
@@ -18,7 +20,8 @@ class SecondController : Controller(), SecondControllerDelegate {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         val view = inflater.inflate(R.layout.controller_second, container, false)
-        getChildRouter(view.findViewById<FrameLayout>(R.id.tab_wrapper_container)).setRoot(RouterTransaction.with(TabPageController().apply {
+        getChildRouter(view.findViewById<FrameLayout>(R.id.tab_wrapper_container)).setRoot(RouterTransaction.with(
+            TabPageController().apply {
             secondController = this@SecondController
             pageNum = this@SecondController.pageNum
         }))
@@ -29,7 +32,8 @@ class SecondController : Controller(), SecondControllerDelegate {
         if(pageNum > 0) {
             pageNum--
         }
-        getChildRouter(view!!.findViewById<FrameLayout>(R.id.tab_wrapper_container)).setRoot(RouterTransaction.with(TabPageController().apply {
+        getChildRouter(view!!.findViewById<FrameLayout>(R.id.tab_wrapper_container)).setRoot(RouterTransaction.with(
+            TabPageController().apply {
             secondController = this@SecondController
             pageNum = this@SecondController.pageNum
         }))
@@ -37,7 +41,8 @@ class SecondController : Controller(), SecondControllerDelegate {
 
     override fun right() {
         pageNum++
-        getChildRouter(view!!.findViewById<FrameLayout>(R.id.tab_wrapper_container)).setRoot(RouterTransaction.with(TabPageController().apply {
+        getChildRouter(view!!.findViewById<FrameLayout>(R.id.tab_wrapper_container)).setRoot(RouterTransaction.with(
+            TabPageController().apply {
             secondController = this@SecondController
             pageNum = this@SecondController.pageNum
         }))
