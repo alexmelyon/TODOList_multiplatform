@@ -5,16 +5,19 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.helper.ItemTouchHelper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.list_item.view.*
+import kotlinx.android.synthetic.main.todo_add.view.*
+import kotlinx.android.synthetic.main.todo_item.view.*
 
 const val PREFS_SIZE = "PREFS_SIZE"
 
@@ -25,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         get() {
             return _todoList
         }
-    lateinit var adapter: MyRecycleAdapter
+    lateinit var adapter: TodoAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +40,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = MyRecycleAdapter(todoList)
+        adapter = TodoAdapter(todoList)
         recyclerView.adapter = adapter
         adapter.onChecked { pos, isChecked ->
             todoList[pos].first = isChecked
@@ -45,6 +48,16 @@ class MainActivity : AppCompatActivity() {
         adapter.onTextChanged { pos, text ->
             todoList[pos].second = text
         }
+        object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                return false
+            }
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, swipeDir: Int) {
+                adapter.remove(viewHolder.adapterPosition)
+//                todoList.removeAt(viewHolder.adapterPosition)
+//                adapter.notifyItemChanged(viewHolder.adapterPosition)
+            }
+        }.let { ItemTouchHelper(it).attachToRecyclerView(recyclerView) }
     }
 
     override fun onPause() {
@@ -75,7 +88,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    class MyViewHolder : RecyclerView.ViewHolder {
+    class TodoItemViewHolder : RecyclerView.ViewHolder {
         val checkBox: CheckBox
         val text: EditText
 
@@ -85,8 +98,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    class MyRecycleAdapter : RecyclerView.Adapter<MyViewHolder> {
+    class TodoAddViewHolder : RecyclerView.ViewHolder {
+        val button: Button
 
+        constructor(view: View) : super(view) {
+            button = view.button
+        }
+    }
+
+    class TodoAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+        val TODO_ITEM = 0
+        val TODO_ADD = 1
         private val values: MutableList<MutablePair<Boolean, String>>
         private var onCheckedListener: (Int, Boolean) -> Unit = { a, b -> }
         private var onTextChangedListener: (Int, String) -> Unit = { a, b -> }
@@ -103,35 +126,61 @@ class MainActivity : AppCompatActivity() {
             onTextChangedListener = action
         }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+        override fun getItemViewType(position: Int): Int {
+            if (position < values.size) {
+                return 0
+            }
+            return 1
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
             val inflater = LayoutInflater.from(parent.context)
-            val v = inflater.inflate(R.layout.list_item, parent, false)
-            val viewHolder = MyViewHolder(v)
-            return viewHolder
+            when (viewType) {
+                TODO_ITEM -> {
+                    val v = inflater.inflate(R.layout.todo_item, parent, false)
+                    val viewHolder = TodoItemViewHolder(v)
+                    return viewHolder
+                }
+                TODO_ADD -> {
+                    val v = inflater.inflate(R.layout.todo_add, parent, false)
+                    val viewHolder = TodoAddViewHolder(v)
+                    return viewHolder
+                }
+            }
+            throw IllegalStateException("Wrong ViewHolder")
         }
 
         override fun getItemCount(): Int {
-            return values.size
+            return values.size + 1
         }
 
-        override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-            val text = values[position].second
-            holder.text.setText(text, TextView.BufferType.EDITABLE)
-            holder.checkBox.isChecked = values[position].first
+        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+            when(holder.itemViewType) {
+                TODO_ITEM -> {
+                    holder as TodoItemViewHolder
+                    val text = values[position].second
+                    holder.text.setText(text, TextView.BufferType.EDITABLE)
+                    holder.checkBox.isChecked = values[position].first
 
-            holder.checkBox.setOnCheckedChangeListener { view, isChecked -> onCheckedListener(position, isChecked) }
-            holder.text.addTextChangedListener(object : TextWatcher {
-                override fun afterTextChanged(s: Editable?) {}
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    onTextChangedListener(position, s.toString())
+                    holder.checkBox.setOnCheckedChangeListener { view, isChecked -> onCheckedListener(position, isChecked) }
+                    holder.text.addTextChangedListener(object : TextWatcher {
+                        override fun afterTextChanged(s: Editable?) {}
+                        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                            onTextChangedListener(position, s.toString())
+                        }
+                    })
                 }
-            })
+                TODO_ADD -> {
+                    holder as TodoAddViewHolder
+                    holder.button.setOnClickListener { add() }
+                }
+            }
         }
 
-        fun add(position: Int, item: String) {
-            values.add(position, MutablePair(false, item))
-            notifyItemInserted(position)
+        fun add() {
+            values.add(MutablePair(false, ""))
+            notifyItemInserted(values.size - 1)
         }
 
         fun remove(position: Int) {
