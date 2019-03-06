@@ -9,17 +9,25 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.helloandroid.home.HomeController
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity()/*, HasControllerInjector*/ {
 
-    lateinit var activityComponent: ActivityComponent
+//    @Inject
+//    lateinit var dispatchingControllerInjector: DispatchingAndroidInjector<Controller>
+
+    lateinit var mainActivityComponent: MainActivityComponent
     private lateinit var router: Router
+
+//    override fun controllerInjector(): DispatchingAndroidInjector<Controller> {
+//        return dispatchingControllerInjector
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        activityComponent = DaggerActivityComponent.builder()
+        mainActivityComponent = DaggerMainActivityComponent.builder()
             .activityModule(ActivityModule(this))
             .build()
+        mainActivityComponent.inject(this)
 
         setContentView(R.layout.activity_main)
 

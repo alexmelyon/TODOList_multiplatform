@@ -10,12 +10,12 @@ import com.helloandroid.R
 import org.jetbrains.anko._FrameLayout
 import javax.inject.Inject
 
-class HomeView : _FrameLayout, HomeContract.View {
+class HomeView @Inject constructor(
+    private val activity: AppCompatActivity
+) : _FrameLayout(activity), HomeContract.View {
 
-    @Inject
-    constructor(activity: AppCompatActivity) : super(activity) {
-        Log.i("JCD", "HOME VIEW CONSTRUCTOR $activity")
-    }
+//    @Inject
+//    lateinit var controller: HomeContract.Controller
 
     override fun createView(container: ViewGroup): View {
         val inflater = LayoutInflater.from(container.context)
