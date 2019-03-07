@@ -1,4 +1,4 @@
-package com.helloandroid
+package com.alexmelyon.todocore
 
 interface TodoMvp {
     interface View {
@@ -7,7 +7,7 @@ interface TodoMvp {
         fun removedAt(position: Int)
     }
     interface Presenter {
-        fun setView(view: TodoMvp.View)
+        fun setView(view: View)
         fun add()
         fun remove(position: Int)
         fun saveList()

@@ -1,4 +1,4 @@
-package com.helloandroid
+package com.alexmelyon.todocore
 
 class TodoPresenter(val model: TodoMvp.Model) : TodoMvp.Presenter {
 

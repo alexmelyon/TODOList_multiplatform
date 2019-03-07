@@ -1,8 +1,9 @@
 package com.helloandroid
 
 import android.content.Context
+import com.alexmelyon.todocore.TodoItem
 
-class TodoModel(val context: Context) : TodoMvp.Model {
+class TodoModel(val context: Context) : com.alexmelyon.todocore.TodoMvp.Model {
 
     val PREF_NAME = "TODO_LIST"
     val todoList: MutableList<TodoItem> by lazy { loadList() }

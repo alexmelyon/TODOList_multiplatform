@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.TextView
+import com.alexmelyon.todocore.TodoItem
 import kotlinx.android.synthetic.main.todo_add.view.*
 import kotlinx.android.synthetic.main.todo_item.view.*
 
@@ -34,6 +35,7 @@ class TodoAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     fun onTextChanged(action: (Int, String) -> Unit) {
         onTextChangedListener = action
     }
+
     fun onAddItem(action: () -> Unit) {
         onAddItemListener = action
     }
@@ -93,7 +95,6 @@ class TodoAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     fun added() {
-//        values.added(TodoItem(false, ""))
         notifyItemInserted(values.size - 1)
     }
 

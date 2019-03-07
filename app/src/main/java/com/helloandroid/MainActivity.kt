@@ -5,13 +5,14 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.helper.ItemTouchHelper
+import com.alexmelyon.todocore.TodoItem
 import kotlinx.android.synthetic.main.activity_main.*
 
 const val PREFS_SIZE = "PREFS_SIZE"
 
-class MainActivity : AppCompatActivity(), TodoMvp.View {
+class MainActivity : AppCompatActivity(), com.alexmelyon.todocore.TodoMvp.View {
 
-    val presenter: TodoMvp.Presenter = TodoPresenter(TodoModel(this))
+    val presenter: com.alexmelyon.todocore.TodoMvp.Presenter = com.alexmelyon.todocore.TodoPresenter(TodoModel(this))
 
     lateinit var adapter: TodoAdapter
 
@@ -27,7 +28,7 @@ class MainActivity : AppCompatActivity(), TodoMvp.View {
         adapter.onTextChanged { pos, text ->
             presenter.setItemText(pos, text)
         }
-        adapter.onAddItem { pos ->
+        adapter.onAddItem {
             presenter.add()
         }
         recyclerView.adapter = adapter
