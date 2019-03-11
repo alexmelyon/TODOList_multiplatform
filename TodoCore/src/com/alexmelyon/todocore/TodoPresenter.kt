@@ -10,10 +10,10 @@ class TodoPresenter(val model: TodoMvp.Model) : TodoMvp.Presenter {
 
     override fun add() {
         model.getList().add(TodoItem())
-        view.added()
+        view.addedAt(model.getList().size - 1)
     }
 
-    override fun remove(position: Int) {
+    override fun removeAt(position: Int) {
         model.getList().removeAt(position)
         view.removedAt(position)
     }

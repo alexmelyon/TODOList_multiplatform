@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity(), com.alexmelyon.todocore.TodoMvp.View {
         }
         recyclerView.adapter = adapter
         recyclerView.setOnSwipeLeft { pos ->
-            presenter.remove(pos)
+            presenter.removeAt(pos)
         }
     }
 
@@ -53,8 +53,8 @@ class MainActivity : AppCompatActivity(), com.alexmelyon.todocore.TodoMvp.View {
         }.let { ItemTouchHelper(it).attachToRecyclerView(recyclerView) }
     }
 
-    override fun added() {
-        adapter.added()
+    override fun addedAt(position: Int) {
+        adapter.addedAt(position)
     }
 
     override fun removedAt(position: Int) {

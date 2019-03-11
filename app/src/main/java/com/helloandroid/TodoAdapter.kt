@@ -94,8 +94,8 @@ class TodoAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         }
     }
 
-    fun added() {
-        notifyItemInserted(values.size - 1)
+    fun addedAt(position: Int) {
+        notifyItemInserted(position)
     }
 
     fun removedAt(position: Int) {

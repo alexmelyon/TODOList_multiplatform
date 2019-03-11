@@ -15,35 +15,58 @@ apply plugin: 'kotlin2js'
 
 repositories {
     mavenCentral()
+    maven {
+        url  "http://dl.bintray.com/kotlin/kotlinx.html/"
+    }
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation project(':TodoCore')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-js:$kotlin_version"
-//    implementation project(':TodoCore')
+    implementation 'org.jetbrains.kotlinx:kotlinx-html-js:0.6.12'
+}
+
+compileKotlin2Js.kotlinOptions.sourceMap = true
+compileKotlin2Js.kotlinOptions.outputFile = "${projectDir}/web/js/app.js"
+compileKotlin2Js.kotlinOptions.suppressWarnings = true
+compileKotlin2Js.kotlinOptions.verbose = true
+
+sourceSets {
+    main.kotlin.srcDirs += "src/main/kotlin"
+    main.resources.srcDirs += "src/main/resources"
 }
 
 compileKotlin2Js {
-    kotlinOptions.outputFile = "${projectDir}/web/output.js"
-    kotlinOptions.moduleKind = "amd"
-    kotlinOptions.sourceMap = true
+    kotlinOptions.metaInfo = true
 }
 
-task assembleWeb(type: Sync) {
-    configurations.compile.each { File file ->
-        from(zipTree(file.absolutePath), {
+build.doLast {
+//    println("TODOJS ${configurations.compile.size()}")
+    println("TODOJS ${configurations.compileClasspath.size()}")
+    // Copy kotlin.js and kotlin-meta.js from jar into web directory
+//    configurations.compile.each { File file ->
+    configurations.compileClasspath.each { File file ->
+        println("CONFIGURATION ${file.absolutePath}")
+        copy {
             includeEmptyDirs = false
+
+            println("ABSOLUTE ${file.absolutePath}")
+            from zipTree(file.absolutePath)
+            into "${projectDir}/web/js/lib"
             include { fileTreeElement ->
                 def path = fileTreeElement.path
-                path.endsWith(".js") && (path.startsWith("META-INF/resources/") ||
-                        !path.startsWith("META-INF/"))
+                path.endsWith(".js") && (path.startsWith("META-INF/resources/") || !path.startsWith("META-INF/"))
             }
-        })
+        }
     }
-    from compileKotlin2Js.destinationDir
-    into "${projectDir}/web"
 
-    dependsOn classes
+    copy {
+        includeEmptyDirs = false
+        from "${buildDir}/resources/main"
+        into "${projectDir}/web"
+    }
 }
 
-assemble.dependsOn assembleWeb
+clean.doFirst {
+    delete "${projectDir}/web"
+}
