@@ -1,25 +1,34 @@
 package com.helloandroid.world
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
+import com.helloandroid.App
 import com.helloandroid.game.GameController
+import ru.napoleonit.talan.di.ControllerInjector
 import javax.inject.Inject
 
 
 class WorldController : Controller(), WorldContract.Controller {
 
-    private lateinit var view: WorldContract.View
-
     @Inject
-    override fun setView(view: WorldContract.View) {
-        this.view = view
+    lateinit var view: WorldContract.View
+
+    override fun onContextAvailable(context: Context) {
+        super.onContextAvailable(context)
+        ControllerInjector.inject(this)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         return view.createView(container)
+    }
+
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        this.view.setData(App.instance.worlds.map { it.name })
     }
 
     override fun onItemClick(pos: Int) {
