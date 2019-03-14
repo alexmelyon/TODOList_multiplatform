@@ -3,19 +3,24 @@ package com.helloandroid.dagger
 import android.app.Activity
 import com.helloandroid.App
 import com.helloandroid.MainActivity
-import com.helloandroid.game.GameControllerModule
-import com.helloandroid.world.WorldControllerModule
-import com.helloandroid.world.WorldProvider
-import dagger.*
+import com.helloandroid.list_games.ListGamesControllerModule
+import com.helloandroid.list_sessions.ListSessionsControllerModule
+import com.helloandroid.list_worlds.ListWorldsControllerModule
+import dagger.Binds
+import dagger.Component
+import dagger.Module
+import dagger.Subcomponent
 import dagger.android.ActivityKey
 import dagger.android.AndroidInjectionModule
 import dagger.android.AndroidInjector
 import dagger.multibindings.IntoMap
 import javax.inject.Singleton
 
+@Singleton
 @Subcomponent(modules = [
-    WorldControllerModule::class,
-    GameControllerModule::class
+    ListWorldsControllerModule::class,
+    ListGamesControllerModule::class,
+    ListSessionsControllerModule::class
 ])
 interface MainActivitySubcomponent : AndroidInjector<MainActivity> {
     @Subcomponent.Builder
@@ -30,18 +35,9 @@ abstract class MainActivityModule {
     abstract fun bindMainActivityInjectorFactory(builder: MainActivitySubcomponent.Builder): AndroidInjector.Factory<out Activity>
 }
 
-@Singleton
 @Component(modules = [
     MainActivityModule::class,
-    FuckModule::class,
     AndroidInjectionModule::class])
 interface AppComponent {
     fun inject(app: App)
-}
-
-@Module
-class FuckModule {
-    @Provides
-    @Singleton
-    fun provideWorldProvider(): WorldProvider = WorldProvider()
 }

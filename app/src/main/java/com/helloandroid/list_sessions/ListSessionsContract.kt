@@ -1,8 +1,8 @@
-package com.helloandroid.game
+package com.helloandroid.list_sessions
 
 import android.view.ViewGroup
 
-interface GameContract {
+interface ListSessionsContract {
     interface View {
         fun createView(container: ViewGroup): android.view.View
         fun setData(items: List<String>)
@@ -10,5 +10,6 @@ interface GameContract {
 
     interface Controller {
         fun onItemClick(pos: Int)
+        fun getGameName(): String
     }
 }

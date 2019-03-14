@@ -1,8 +1,8 @@
-package com.helloandroid.world
+package com.helloandroid.list_worlds
 
 import android.view.ViewGroup
 
-interface WorldContract {
+interface ListWorldsContract {
 
     interface Controller {
         fun onItemClick(pos: Int)

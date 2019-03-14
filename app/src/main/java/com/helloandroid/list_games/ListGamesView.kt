@@ -1,4 +1,4 @@
-package com.helloandroid.game
+package com.helloandroid.list_games
 
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
@@ -9,15 +9,17 @@ import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.recyclerview.v7.recyclerView
 import javax.inject.Inject
 
-class GameView @Inject constructor(val activity: MainActivity) : _FrameLayout(activity), GameContract.View {
+class ListGamesView @Inject constructor(val activity: MainActivity) : _FrameLayout(activity), ListGamesContract.View {
 
     @Inject
-    lateinit var controller: GameContract.Controller
+    lateinit var controller: ListGamesContract.Controller
 
     lateinit var gamesView: RecyclerView
     lateinit var gamesAdapter: RecyclerStringAdapter
 
     override fun createView(container: ViewGroup) = container.context.linearLayout {
+        activity.supportActionBar!!.title = controller.getWorldName()
+
         gamesAdapter = RecyclerStringAdapter(container.context) { pos ->
             controller.onItemClick(pos)
         }
