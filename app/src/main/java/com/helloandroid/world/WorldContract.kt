@@ -17,6 +17,6 @@ interface WorldContract {
 
         fun createView(container: ViewGroup): android.view.View
 
-        fun setData(complexes: List<String>)
+        fun setData(items: List<String>)
     }
 }
