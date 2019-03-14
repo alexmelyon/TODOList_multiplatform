@@ -1,9 +1,9 @@
 package com.helloandroid.world
 
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.ViewGroup
 import com.helloandroid.MainActivity
+import com.helloandroid.ui.RecyclerStringAdapter
 import org.jetbrains.anko._FrameLayout
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.recyclerview.v7.recyclerView
@@ -15,20 +15,19 @@ class WorldView @Inject constructor(val activity: MainActivity) : _FrameLayout(a
     @Inject
     lateinit var controller: WorldContract.Controller
 
-    lateinit var worldsListView: RecyclerView
+    lateinit var worldsView: RecyclerView
     lateinit var worldsAdapter: RecyclerStringAdapter
 
     override fun createView(container: ViewGroup) = container.context.verticalLayout {
         worldsAdapter = RecyclerStringAdapter(container.context) { pos ->
-//            controller.onItemClick(pos)
-            Log.i("JCD", "ON ITEM CLICK $pos")
+            controller.onItemClick(pos)
         }
-        worldsListView = recyclerView {
+        worldsView = recyclerView {
             adapter = worldsAdapter
         }.lparams(matchParent, matchParent)
     }
 
     override fun setData(items: List<String>) {
-        (worldsListView.adapter as RecyclerStringAdapter).items = items
+        worldsAdapter.items = items
     }
 }

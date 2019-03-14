@@ -1,4 +1,4 @@
-package com.helloandroid.world
+package com.helloandroid.ui
 
 import android.content.Context
 import android.graphics.Color

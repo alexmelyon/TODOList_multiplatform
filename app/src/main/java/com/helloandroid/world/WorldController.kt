@@ -16,14 +16,16 @@ class WorldController : Controller(), WorldContract.Controller {
 
     @Inject
     lateinit var view: WorldContract.View
+    @Inject
+    lateinit var worldProvider: WorldProvider
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
+        return view.createView(container)
+    }
 
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
         ControllerInjector.inject(this)
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
-        return view.createView(container)
     }
 
     override fun onAttach(view: View) {
@@ -32,6 +34,7 @@ class WorldController : Controller(), WorldContract.Controller {
     }
 
     override fun onItemClick(pos: Int) {
+        worldProvider.world = App.instance.worlds[pos]
         router.pushController(RouterTransaction.with(GameController()))
 
 //        val args = mutableMapOf<String, Any?>()

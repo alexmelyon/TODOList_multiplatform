@@ -12,7 +12,6 @@ import dagger.android.AndroidInjection
 import dagger.android.DispatchingAndroidInjector
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.find
-import org.jetbrains.anko.info
 import ru.napoleonit.talan.di.HasControllerInjector
 import javax.inject.Inject
 
@@ -38,21 +37,18 @@ class MainActivity : AppCompatActivity(), HasControllerInjector {
         if (!router.hasRootController()) {
             router.setRoot(RouterTransaction.with(WorldController()))
         }
-
-        log.info { "INTENT LIST ${intent.extras}" }
-        val worldId = intent.extras?.get("world") as Int?
-        val gameId = intent.extras?.get("game") as Int?
-        val sessionId = intent.extras?.get("session") as Int?
-        var list = worlds.map { it.name }
-        if(worldId != null) {
-            list = games.filter { it.worldGroup == worldId }
-                .map { it.name }
-
-            if(gameId != null) {
-                list = sessions.filter { it.worldGroup == worldId && it.gameGroup == gameId }
-                    .map { it.name }
-            }
-        }
+//        val worldId = intent.extras?.get("world") as Int?
+//        val gameId = intent.extras?.get("game") as Int?
+//        val sessionId = intent.extras?.get("session") as Int?
+//        var list = worlds.map { it.name }
+//        if(worldId != null) {
+//            list = games.filter { it.worldGroup == worldId }
+//                .map { it.name }
+//            if(gameId != null) {
+//                list = sessions.filter { it.worldGroup == worldId && it.gameGroup == gameId }
+//                    .map { it.name }
+//            }
+//        }
     }
 
     override fun controllerInjector(): DispatchingAndroidInjector<Controller> {
