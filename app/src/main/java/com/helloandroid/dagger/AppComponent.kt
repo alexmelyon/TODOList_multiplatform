@@ -6,6 +6,7 @@ import com.helloandroid.MainActivity
 import com.helloandroid.list_games.ListGamesControllerModule
 import com.helloandroid.list_sessions.ListSessionsControllerModule
 import com.helloandroid.list_worlds.ListWorldsControllerModule
+import com.helloandroid.session.SessionControllerModule
 import dagger.Binds
 import dagger.Component
 import dagger.Module
@@ -20,7 +21,8 @@ import javax.inject.Singleton
 @Subcomponent(modules = [
     ListWorldsControllerModule::class,
     ListGamesControllerModule::class,
-    ListSessionsControllerModule::class
+    ListSessionsControllerModule::class,
+    SessionControllerModule::class
 ])
 interface MainActivitySubcomponent : AndroidInjector<MainActivity> {
     @Subcomponent.Builder

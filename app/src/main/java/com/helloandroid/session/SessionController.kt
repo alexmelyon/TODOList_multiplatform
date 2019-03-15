@@ -1,4 +1,4 @@
-package com.helloandroid.list_sessions
+package com.helloandroid.session
 
 import android.content.Context
 import android.os.Bundle
@@ -6,26 +6,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bluelinelabs.conductor.Controller
-import com.bluelinelabs.conductor.RouterTransaction
 import com.helloandroid.App
 import com.helloandroid.list_games.WORLD_KEY
-import com.helloandroid.session.SessionController
+import com.helloandroid.list_sessions.GAME_KEY
 import ru.napoleonit.talan.di.ControllerInjector
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
-val GAME_KEY = "GAME_KEY"
+val SESSION_KEY = "SESSION_KEY"
 
-class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContract.Controller {
+class SessionController(args: Bundle) : Controller(args), SessionContract.Controller {
 
     @Inject
-    lateinit var view: ListSessionsContract.View
+    lateinit var view: SessionContract.View
 
     val world = App.instance.worlds.first { it.id == args.getInt(WORLD_KEY) }
     val game = App.instance.games.first { it.id == args.getInt(GAME_KEY) && it.worldGroup == world.id }
+    val session = App.instance.gameSessions.first { it.id == args.getInt(SESSION_KEY) && it.gameGroup == game.id && it.worldGroup == world.id }
 
-    constructor(worldId: Int, gameId: Int) : this(Bundle().apply {
-        putInt(WORLD_KEY, worldId)
+    constructor(sessionId: Int, gameId: Int, worldId: Int) : this(Bundle().apply {
+        putInt(SESSION_KEY, sessionId)
         putInt(GAME_KEY, gameId)
+        putInt(WORLD_KEY, worldId)
     })
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
@@ -39,14 +42,9 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
 
     override fun onAttach(view: View) {
         super.onAttach(view)
-        this.view.setData(App.instance.gameSessions.filter { it.worldGroup == world.id && it.gameGroup == game.id }.map { it.name })
     }
 
-    override fun onItemClick(pos: Int) {
-        router.pushController(RouterTransaction.with(SessionController(App.instance.gameSessions[pos].id, game.id, world.id)))
-    }
-
-    override fun getGameName(): String {
-        return game.name
+    override fun getSessionDatetime(): String {
+        return session.startTime.let { SimpleDateFormat("d MMM HH:mm", Locale.getDefault()).format(it) }
     }
 }

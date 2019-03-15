@@ -7,6 +7,7 @@ import com.helloandroid.dagger.DaggerAppComponent
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
+import java.util.*
 import javax.inject.Inject
 
 
@@ -48,15 +49,29 @@ class App : Application(), HasActivityInjector {
             (1..3).forEach { gameId ->
                 games.add(Game(gameId, "$gameId game", worldId))
                 (1..3).forEach { sessionId ->
-                    gameSessions.add(GameSession(sessionId, "$sessionId session", worldId, gameId))
+                    gameSessions.add(GameSession(sessionId, "$sessionId session", worldId, gameId, Calendar.getInstance().time))
                 }
             }
         }
     }
 }
 
-data class World(val id: Int, val name: String)
+class World(val id: Int, val name: String)
 
-data class Game(val id: Int, val name: String, val worldGroup: Int)
+class Game(val id: Int, val name: String, val worldGroup: Int)
 
-data class GameSession(val id: Int, val name: String, val worldGroup: Int, val gameGroup: Int)
+class GameSession(val id: Int, val name: String, val gameGroup: Int, val worldGroup: Int, val startTime: Date)
+
+class Character(val id: Int, val name: String, val gameGroup: Int, val worldGroup: Int)
+
+class Skill(val id: Int, val name: String, var value: Int, val worldGroup: Int)
+
+class Thing(val id: Int, val name: String, val worldGroup: Int)
+
+class HealthPointDiff(val id: Int, val diff: Int, val characterGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int)
+
+class SkillDiff(val id: Int, val diff: Int, val characterGroup: Int, val skillGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int)
+
+class ThingDiff(val id: Int, val diff: Int, val characterGroup: Int, val thingGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int)
+
+class CommentDiff(val id: Int, var comment: String, val characterGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int)

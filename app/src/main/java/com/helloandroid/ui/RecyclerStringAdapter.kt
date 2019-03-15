@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import org.jetbrains.anko.textColor
 
-class RecyclerStringAdapter(val context: Context, val onItemClickListener: (Int) -> Unit = { pos -> }) : RecyclerView.Adapter<RecyclerStringAdapter.ViewHolder>() {
+class RecyclerStringAdapter(val context: Context, val onItemClickListener: (Int) -> Unit) : RecyclerView.Adapter<RecyclerStringAdapter.ViewHolder>() {
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
