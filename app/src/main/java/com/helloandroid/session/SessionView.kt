@@ -1,12 +1,9 @@
 package com.helloandroid.session
 
-import android.R
 import android.app.AlertDialog
 import android.content.DialogInterface
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import com.helloandroid.MainActivity
 import org.jetbrains.anko._FrameLayout
 import org.jetbrains.anko.recyclerview.v7.recyclerView
@@ -31,7 +28,7 @@ class SessionView @Inject constructor(val activity: MainActivity) : _FrameLayout
                 }
             }
             onItemPlus = { id, type ->
-                when(type) {
+                when (type) {
                     SessionItemType.ITEM_HP -> controller.onHpChanged(id, +1)
                     SessionItemType.ITEM_SKILL -> controller.onSkillChanged(id, +1)
                     SessionItemType.ITEM_THING -> controller.onThingChanged(id, +1)
@@ -63,28 +60,58 @@ class SessionView @Inject constructor(val activity: MainActivity) : _FrameLayout
         listAdapter.notifyItemRemoved(pos)
     }
 
+    override fun showAddItemDialog() {
+        AlertDialog.Builder(activity)
+            .setItems(arrayOf("Add Healthpoints", "Add Skill", "Add Thing", "Add Comment"), DialogInterface.OnClickListener { dialog, which ->
+                controller.onAddItemClicked(which)
+            })
+            .show()
+    }
+
     override fun showAddHpDialog(characterNames: List<String>) {
-        val charactersAdapter = ArrayAdapter<String>(activity, R.layout.select_dialog_singlechoice)
-        charactersAdapter.addAll(characterNames)
-        val dialog = AlertDialog.Builder(activity)
+        AlertDialog.Builder(activity)
             .setTitle("Select character")
             .setItems(characterNames.toTypedArray(), DialogInterface.OnClickListener { dialog, which ->
                 controller.addHpDiff(which)
             })
-            .setCancelable(true)
-        dialog.show()
+            .show()
     }
 
     override fun showAddSkillDialog(characterNames: List<String>) {
-        Log.i("JCD", "showAddSkillDialog".toUpperCase())
+        AlertDialog.Builder(activity)
+            .setTitle("Select character")
+            .setItems(characterNames.toTypedArray(), DialogInterface.OnClickListener { dialog, which ->
+                controller.addSkillDiffForCharacter(which)
+            }).show()
+    }
+
+    override fun showAddCharacterSkillDialog(character: Int, skillNames: List<String>) {
+        AlertDialog.Builder(activity)
+            .setTitle("Select skill")
+            .setItems(skillNames.toTypedArray(), DialogInterface.OnClickListener { dialog, which ->
+                controller.addCharacterSkillDiff(character, which)
+            }).show()
     }
 
     override fun showAddThingDialog(characterNames: List<String>) {
-        Log.i("JCD", "showAddThingDialog".toUpperCase())
+        AlertDialog.Builder(activity)
+            .setTitle("Select character")
+            .setItems(characterNames.toTypedArray(), DialogInterface.OnClickListener { dialog, which ->
+                controller.addThingDiffForCharacter(which)
+            }).show()
     }
 
-    override fun addComment() {
-        Log.i("JCD", "addComment".toUpperCase())
+    override fun showAddCharacterThingDialog(character: Int, thingNames: List<String>) {
+        AlertDialog.Builder(activity)
+            .setTitle("Select thing")
+            .setItems(thingNames.toTypedArray(), DialogInterface.OnClickListener { dialog, which ->
+                controller.addCharacterThingDiff(character, which)
+            })
+            .show()
+    }
+
+    override fun showAddComment() {
+        controller.addCommentDiff()
     }
 
 }

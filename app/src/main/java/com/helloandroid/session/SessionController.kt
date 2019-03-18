@@ -2,11 +2,10 @@ package com.helloandroid.session
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import com.bluelinelabs.conductor.Controller
-import com.helloandroid.App
-import com.helloandroid.HealthPointDiff
-import com.helloandroid.R
+import com.helloandroid.*
 import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.list_sessions.GAME_KEY
 import ru.napoleonit.talan.di.ControllerInjector
@@ -19,6 +18,11 @@ val SESSION_KEY = "SESSION_KEY"
 
 class SessionController(args: Bundle) : Controller(args), SessionContract.Controller {
 
+    val SESSION_ADD_HP = 0
+    val SESSION_ADD_SKILL = 1
+    val SESSION_ADD_THING = 2
+    val SESSION_ADD_COMMENT = 3
+
     @Inject
     lateinit var view: SessionContract.View
 
@@ -26,7 +30,7 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
     val game = App.instance.games.first { it.id == args.getInt(GAME_KEY) && it.worldGroup == world.id }
     val session = App.instance.gameSessions.first { it.id == args.getInt(SESSION_KEY) && it.gameGroup == game.id && it.worldGroup == world.id }
 
-    private lateinit var sessionItems: TreeSet<SessionItem>
+    val itemsWrapper = SessionItemsWrapper()
 
     constructor(sessionId: Int, gameId: Int, worldId: Int) : this(Bundle().apply {
         putInt(SESSION_KEY, sessionId)
@@ -59,24 +63,20 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
 
         // TODO Order date descending
 
-        sessionItems = TreeSet<SessionItem>(Comparator { o1, o2 ->
-            val res = o2.time.compareTo(o1.time)
-            if (res == 0) {
-                return@Comparator o1.type.ordinal.compareTo(o2.type.ordinal)
-            }
-            return@Comparator res
-        })
-        sessionItems.addAll(App.instance.hpDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
+        itemsWrapper.addAll(App.instance.hpDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_HP, "HP", getCharacter(it.characterGroup).name, it.value, it.characterGroup) })
-        sessionItems.addAll(App.instance.skillDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
+        itemsWrapper.addAll(App.instance.skillDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_SKILL, getSkill(it.skillGroup).name, getCharacter(it.characterGroup).name, it.value, it.characterGroup) })
-        sessionItems.addAll(App.instance.thingDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
+        itemsWrapper.addAll(App.instance.thingDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_THING, getThing(it.thingGroup).name, getCharacter(it.characterGroup).name, it.value, it.characterGroup) })
-        sessionItems.addAll(App.instance.commentDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
+        itemsWrapper.addAll(App.instance.commentDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_COMMENT, "", "", 0, -1, it.comment) })
 
-        sessionItems.forEachIndexed { index, item -> item.index = index }
-        this.view.setData(sessionItems.toMutableList())
+        this.view.setData(itemsWrapper.toMutableList())
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -85,12 +85,10 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        val characterNames = App.instance.characters.filter { it.gameGroup == game.id && it.worldGroup == world.id }.map { it.name }.sorted()
         when(item.itemId) {
-            R.id.session_add_hp -> view.showAddHpDialog(characterNames)
-            R.id.session_add_skill -> view.showAddSkillDialog(characterNames)
-            R.id.session_add_thing -> view.showAddThingDialog(characterNames)
-            R.id.session_add_comment -> view.addComment()
+            R.id.session_add -> view.showAddItemDialog()
+            R.id.session_show_archived -> Log.i("JCD", "SHOW ARCHIVED") // TODO Checkbox
+            R.id.session_close -> Log.i("JCD", "SESSION CLOSE")
         }
         return super.onOptionsItemSelected(item)
     }
@@ -99,8 +97,18 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
         return session.startTime.let { SimpleDateFormat("d MMMM HH:mm", Locale.getDefault()).format(it) }
     }
 
+    override fun onAddItemClicked(which: Int) {
+        val characterNames = getCharacters().map { it.name }
+        when(which) {
+            SESSION_ADD_HP -> view.showAddHpDialog(characterNames)
+            SESSION_ADD_SKILL -> view.showAddSkillDialog(characterNames)
+            SESSION_ADD_THING -> view.showAddThingDialog(characterNames)
+            SESSION_ADD_COMMENT -> view.showAddComment()
+        }
+    }
+
     override fun onHpChanged(pos: Int, value: Int) {
-        val item = sessionItems.toList()[pos]
+        val item = itemsWrapper.toList()[pos]
         item.value += value
         val hpId = item.id
         val characterId = item.characterId
@@ -110,7 +118,7 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
     }
 
     override fun onSkillChanged(pos: Int, value: Int) {
-        val item = sessionItems.toList()[pos]
+        val item = itemsWrapper.toList()[pos]
         item.value += value
         val skillId = item.id
         val characterId = item.characterId
@@ -120,7 +128,7 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
     }
 
     override fun onThingChanged(pos: Int, value: Int) {
-        val item = sessionItems.toList()[pos]
+        val item = itemsWrapper.toList()[pos]
         item.value += value
         val thingId = item.id
         val characterId = item.characterId
@@ -130,7 +138,7 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
     }
 
     override fun onCommentChanged(pos: Int, comment: String) {
-        val item = sessionItems.toList()[pos]
+        val item = itemsWrapper.toList()[pos]
         val commentId = item.id
         item.comment = comment
         val commentDiff = App.instance.commentDiffs.single { it.id == commentId && it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
@@ -139,15 +147,95 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
     }
 
     override fun addHpDiff(which: Int) {
-        val characters = App.instance.characters.filter { it.gameGroup == game.id && it.worldGroup == world.id }.sortedBy { it.name }
+        val characters = getCharacters()
         val selectedCharacter = characters[which]
         val maxId = App.instance.hpDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
             .maxBy { it.id }?.id ?: -1
         val hpDiff = HealthPointDiff(maxId + 1, 0, Calendar.getInstance().time, selectedCharacter.id, session.id, game.id, world.id)
         App.instance.hpDiffs.add(hpDiff)
-        val item = SessionItem(hpDiff.id, hpDiff.time, SessionItemType.ITEM_HP, "HP", selectedCharacter.name, 0, selectedCharacter.id, "")
-        sessionItems.add(item)
-        sessionItems.forEachIndexed { index, sessionItem -> sessionItem.index = index }
+
+        val item = SessionItem(hpDiff.id, hpDiff.time, SessionItemType.ITEM_HP, "HP", selectedCharacter.name, hpDiff.value, selectedCharacter.id, "")
+        itemsWrapper.add(item)
         this.view.itemAddedAt(item.index, item)
+    }
+
+    override fun addSkillDiffForCharacter(character: Int) {
+        val skillNames = getSkills().map { it.name }
+        view.showAddCharacterSkillDialog(character, skillNames)
+    }
+
+    override fun addCharacterSkillDiff(character: Int, skill: Int) {
+        val selectedCharacter = getCharacters()[character]
+        val maxId = App.instance.skillDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
+            .maxBy { it.id }?.id ?: -1
+        val selectedSkill = getSkills()[skill]
+        val skillDiff = SkillDiff(maxId + 1, 0, Calendar.getInstance().time, selectedCharacter.id, selectedSkill.id, session.id, game.id, world.id)
+        App.instance.skillDiffs.add(skillDiff)
+
+        val item = SessionItem(skillDiff.id, skillDiff.time, SessionItemType.ITEM_SKILL, selectedSkill.name, selectedCharacter.name, skillDiff.value, selectedCharacter.id)
+        itemsWrapper.add(item)
+        view.itemAddedAt(item.index, item)
+    }
+
+    override fun addThingDiffForCharacter(character: Int) {
+        val thingNames = getThings().map { it.name }
+        view.showAddCharacterThingDialog(character, thingNames)
+    }
+
+    override fun addCharacterThingDiff(character: Int, thing: Int) {
+        val selectedCharacter = getCharacters()[character]
+        val maxId = App.instance.thingDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
+            .maxBy { it.id }?.id ?: -1
+        val selectedThing = getThings()[thing]
+        val thingDiff = ThingDiff(maxId + 1, 0, Calendar.getInstance().time, selectedCharacter.id, selectedThing.id, session.id, game.id, world.id)
+        App.instance.thingDiffs.add(thingDiff)
+
+        val item = SessionItem(thingDiff.id, thingDiff.time, SessionItemType.ITEM_THING, selectedThing.name, selectedCharacter.name, thingDiff.value, selectedCharacter.id)
+        itemsWrapper.add(item)
+        view.itemAddedAt(item.index, item)
+    }
+
+    override fun addCommentDiff() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    private fun getCharacters(): List<Character> {
+        return App.instance.characters.filter { it.gameGroup == game.id && it.worldGroup == world.id }.sortedBy { it.name }
+    }
+
+    private fun getSkills(): List<Skill> {
+        return App.instance.skills.filter { it.worldGroup == world.id }.sortedBy { it.name }
+    }
+
+    private fun getThings(): List<Thing> {
+        return App.instance.things.filter { it.worldGroup == world.id }.sortedBy { it.name }
+    }
+
+    class SessionItemsWrapper {
+
+        private val sessionItems: TreeSet<SessionItem> = TreeSet<SessionItem>(Comparator { o1, o2 ->
+            val res = o2.time.compareTo(o1.time)
+            if (res == 0) {
+                return@Comparator o1.type.ordinal.compareTo(o2.type.ordinal)
+            }
+            return@Comparator res
+        })
+
+        fun addAll(list: List<SessionItem>) {
+            sessionItems.addAll(list)
+            sessionItems.forEachIndexed { index, item -> item.index = index }
+        }
+
+        fun toMutableList(): MutableList<SessionItem> {
+            return sessionItems.toMutableList()
+        }
+
+        fun toList(): List<SessionItem> {
+            return sessionItems.toList()
+        }
+
+        fun add(item: SessionItem) {
+            addAll(listOf(item))
+        }
     }
 }

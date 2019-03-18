@@ -10,10 +10,18 @@ interface SessionContract {
         fun itemChangedAt(pos: Int)
         fun itemAddedAt(pos: Int, sessionItem: SessionItem)
         fun itemRemovedAt(pos: Int)
+        /** Chooose Hp or Skill or Thing or Comment */
+        fun showAddItemDialog()
+
         fun showAddHpDialog(characterNames: List<String>)
+
         fun showAddSkillDialog(characterNames: List<String>)
+        fun showAddCharacterSkillDialog(character: Int, skillNames: List<String>)
+
         fun showAddThingDialog(characterNames: List<String>)
-        fun addComment()
+        fun showAddCharacterThingDialog(character: Int, thingNames: List<String>)
+
+        fun showAddComment()
     }
     interface Controller {
         fun getSessionDatetime(): String
@@ -21,7 +29,16 @@ interface SessionContract {
         fun onSkillChanged(pos: Int, value: Int)
         fun onThingChanged(pos: Int, value: Int)
         fun onCommentChanged(pos: Int, comment: String)
-        fun addHpDiff(which: Int)
+        fun addHpDiff(character: Int)
+
+        fun addSkillDiffForCharacter(character: Int)
+        fun addCharacterSkillDiff(character: Int, skill: Int)
+
+        fun addThingDiffForCharacter(character: Int)
+        fun addCharacterThingDiff(character: Int, thing: Int)
+
+        fun addCommentDiff()
+        fun onAddItemClicked(which: Int)
     }
 }
 

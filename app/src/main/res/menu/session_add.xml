@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/session_add_hp" android:title="Healthpoints"/>
-    <item android:id="@+id/session_add_skill" android:title="Skill"/>
-    <item android:id="@+id/session_add_thing" android:title="Thing"/>
-    <item android:id="@+id/session_add_comment" android:title="Comment"/>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/session_add"
+          android:icon="@drawable/baseline_add_24"
+          app:showAsAction="ifRoom"
+          android:title=""/>
+    <item android:id="@+id/session_show_archived" android:title="Show archived"/>
+    <item android:id="@+id/session_close" android:title="Close session"/>
 </menu>

@@ -55,8 +55,22 @@ class App : Application(), HasActivityInjector {
             worlds.add(World(worldId, "$worldId world"))
             val skillId = 0
             skills.add(Skill(skillId, "First skill", worldId))
+            skills.add(Skill(1, "Second skill", worldId))
+            skills.add(Skill(2, "Third skill", worldId))
+            skills.add(Skill(3, "4 skill", worldId))
+            skills.add(Skill(4, "5 skill", worldId))
+            skills.add(Skill(5, "6 skill", worldId))
+            skills.add(Skill(6, "7 skill", worldId))
+            skills.add(Skill(7, "8 skill", worldId))
+            skills.add(Skill(8, "9 skill", worldId))
+            skills.add(Skill(9, "10 skill", worldId))
+            skills.add(Skill(10, "11 skill", worldId))
+            skills.add(Skill(11, "12 skill", worldId))
+            skills.add(Skill(12, "13 skill", worldId))
             val thingId = 0
             things.add(Thing(thingId, "First thing", worldId))
+            things.add(Thing(1, "Second thing", worldId))
+            things.add(Thing(2, "Third thing", worldId))
             (1..3).forEach { gameId ->
                 games.add(Game(gameId, "$gameId game", worldId))
                 val characterId = 0
@@ -83,13 +97,10 @@ class Game(val id: Int, val name: String, val worldGroup: Int)
 class GameSession(val id: Int, val name: String, val gameGroup: Int, val worldGroup: Int, val startTime: Date)
 
 class Character(val id: Int, val name: String, val gameGroup: Int, val worldGroup: Int)
-// TODO Last used characters descending
 
 class Skill(val id: Int, val name: String, val worldGroup: Int)
-// TODO Last used skills descending
 
 class Thing(val id: Int, val name: String, val worldGroup: Int)
-// TODO Last used things descending
 
 class HealthPointDiff(val id: Int, var value: Int, val time: Date, val characterGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int)
 
@@ -98,4 +109,4 @@ class SkillDiff(val id: Int, var value: Int, val time: Date, val characterGroup:
 class ThingDiff(val id: Int, var value: Int, val time: Date, val characterGroup: Int, val thingGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int)
 
 class CommentDiff(val id: Int, var comment: String, val time: Date, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int)
-// TODO Состояния, особенности (плюсы минусы), дополнительные скиллы, заклинания
+// TODO Состояния, особенности (плюсы минусы), дополнительные скиллы, заклинания, баффы, дебаффы, ачивки
