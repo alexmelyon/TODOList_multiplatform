@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/session_add_hp" android:title="Healthpoints"/>
+    <item android:id="@+id/session_add_skill" android:title="Skill"/>
+    <item android:id="@+id/session_add_thing" android:title="Thing"/>
+    <item android:id="@+id/session_add_comment" android:title="Comment"/>
+</menu>

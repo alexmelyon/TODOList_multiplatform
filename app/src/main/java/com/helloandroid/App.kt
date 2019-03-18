@@ -60,7 +60,9 @@ class App : Application(), HasActivityInjector {
             (1..3).forEach { gameId ->
                 games.add(Game(gameId, "$gameId game", worldId))
                 val characterId = 0
-                characters.add(Character(characterId, "The Character", gameId, worldId))
+                characters.add(Character(characterId, "First Character", gameId, worldId))
+                characters.add(Character(1, "Second Character", gameId, worldId))
+                characters.add(Character(2, "Third Character", gameId, worldId))
                 (1..3).forEach { sessionId ->
                     val now = Calendar.getInstance().time
                     gameSessions.add(GameSession(sessionId, "$sessionId session", worldId, gameId, now))
