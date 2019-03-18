@@ -27,7 +27,7 @@ class SessionView @Inject constructor(val activity: MainActivity) : _FrameLayout
 
     override fun createView(container: ViewGroup): View {
         activity.supportActionBar!!.title = controller.getSessionDatetime()
-        // TODO + button
+        // TODO Add SessionItem button
         listAdapter = SessionDiffsAdapter(container.context).apply {
             onItemMinus = { id, type ->
                 when (type) {
@@ -40,7 +40,7 @@ class SessionView @Inject constructor(val activity: MainActivity) : _FrameLayout
                 when(type) {
                     SessionItemType.ITEM_HP -> controller.onHpChanged(id, +1)
                     SessionItemType.ITEM_SKILL -> controller.onSkillChanged(id, +1)
-                    SessionItemType.ITEM_THING -> controller.onSkillChanged(id, +1)
+                    SessionItemType.ITEM_THING -> controller.onThingChanged(id, +1)
                 }
             }
             onCommentChanged = { id, comment ->
@@ -54,6 +54,10 @@ class SessionView @Inject constructor(val activity: MainActivity) : _FrameLayout
 
     override fun setData(items: MutableList<SessionItem>) {
         listAdapter.items = items
+    }
+
+    override fun itemChangedAt(pos: Int) {
+        listAdapter.notifyItemChanged(pos)
     }
 
     class SessionDiffsAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -108,8 +112,8 @@ class SessionView @Inject constructor(val activity: MainActivity) : _FrameLayout
                     holder.title.text = items[position].title
                     holder.desc.text = items[position].desc
                     holder.value.text = items[position].value.toString()
-                    holder.minusButton.onClick { view -> onItemMinus(items[position].id, type) }
-                    holder.plusButton.onClick { view -> onItemPlus(items[position].id, type) }
+                    holder.minusButton.onClick { view -> onItemMinus(items[position].position, type) }
+                    holder.plusButton.onClick { view -> onItemPlus(items[position].position, type) }
                 }
                 SessionItemType.ITEM_COMMENT -> {
                     holder as ItemCommentViewHolder
@@ -121,7 +125,7 @@ class SessionView @Inject constructor(val activity: MainActivity) : _FrameLayout
                         textWatchers[holder.editText] = watcher
                         holder.editText.addTextChangedListener(watcher)
                     }
-                    textWatchers[holder.editText]!!.id = items[position].id
+                    textWatchers[holder.editText]!!.id = items[position].position
                 }
             }
         }

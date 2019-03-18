@@ -13,6 +13,7 @@ import ru.napoleonit.talan.di.ControllerInjector
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.Comparator
 
 val SESSION_KEY = "SESSION_KEY"
 
@@ -24,6 +25,8 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
     val world = App.instance.worlds.first { it.id == args.getInt(WORLD_KEY) }
     val game = App.instance.games.first { it.id == args.getInt(GAME_KEY) && it.worldGroup == world.id }
     val session = App.instance.gameSessions.first { it.id == args.getInt(SESSION_KEY) && it.gameGroup == game.id && it.worldGroup == world.id }
+
+    private val sessionItems = mutableListOf<SessionItem>()
 
     constructor(sessionId: Int, gameId: Int, worldId: Int) : this(Bundle().apply {
         putInt(SESSION_KEY, sessionId)
@@ -43,42 +46,79 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
     override fun onAttach(view: View) {
         super.onAttach(view)
         val characters = App.instance.characters.filter { it.gameGroup == game.id && it.worldGroup == world.id }
-        fun getCharacter(characterId: Int) = characters.single { it.id == characterId  }
+        fun getCharacter(characterId: Int) = characters.single { it.id == characterId }
         val skills = App.instance.skills.filter { it.worldGroup == world.id }
         fun getSkill(skillId: Int) = skills.single { it.id == skillId }
         val things = App.instance.things.filter { it.worldGroup == world.id }
         fun getThing(thingId: Int) = things.single { it.id == thingId }
-        val list = App.instance.hpDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }.map { SessionItem(SessionItemType.ITEM_HP, it.id, "HP", getCharacter(it.characterGroup).name, it.value) } +
-                App.instance.skillDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }.map { SessionItem(SessionItemType.ITEM_SKILL, it.id, getSkill(it.skillGroup).name, getCharacter(it.characterGroup).name, it.value) } +
-                App.instance.thingDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }.map { SessionItem(SessionItemType.ITEM_SKILL, it.id, getThing(it.thingGroup).name, getCharacter(it.characterGroup).name, it.value) } +
-                App.instance.commentDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }.map { SessionItem(SessionItemType.ITEM_COMMENT, it.id, "", "", 0) }
+//        val list = App.instance.hpDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }.map { SessionItem(it.time, SessionItemType.ITEM_HP, it.id, "HP", getCharacter(it.characterGroup).name, it.value) } +
+//                App.instance.skillDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }.map { SessionItem(it.time, SessionItemType.ITEM_SKILL, it.id, getSkill(it.skillGroup).name, getCharacter(it.characterGroup).name, it.value) } +
+//                App.instance.thingDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }.map { SessionItem(it.time, SessionItemType.ITEM_SKILL, it.id, getThing(it.thingGroup).name, getCharacter(it.characterGroup).name, it.value) } +
+//                App.instance.commentDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }.map { SessionItem(it.time, SessionItemType.ITEM_COMMENT, it.id, "", "", 0) }
 
         // TODO Order date descending
-        this.view.setData(list.toMutableList())
+
+        val tmpItems = TreeSet<SessionItem>(Comparator { o1, o2 ->
+            val res = o1.time.compareTo(o2.time)
+            if (res == 0) {
+                return@Comparator o1.type.ordinal.compareTo(o2.type.ordinal)
+            }
+            return@Comparator res
+        })
+        tmpItems.addAll(App.instance.hpDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
+            .map { SessionItem(it.id, it.time, SessionItemType.ITEM_HP, "HP", getCharacter(it.characterGroup).name, it.value, it.characterGroup) })
+        tmpItems.addAll(App.instance.skillDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
+            .map { SessionItem(it.id, it.time, SessionItemType.ITEM_SKILL, getSkill(it.skillGroup).name, getCharacter(it.characterGroup).name, it.value, it.characterGroup) })
+        tmpItems.addAll(App.instance.thingDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
+            .map { SessionItem(it.id, it.time, SessionItemType.ITEM_THING, getThing(it.thingGroup).name, getCharacter(it.characterGroup).name, it.value, it.characterGroup) })
+        tmpItems.addAll(App.instance.commentDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
+            .map { SessionItem(it.id, it.time, SessionItemType.ITEM_COMMENT, "", "", 0, -1, it.comment) })
+
+        sessionItems.addAll(tmpItems.toList())
+        sessionItems.forEachIndexed { index, item -> item.position = index }
+        this.view.setData(sessionItems)
     }
 
     override fun getSessionDatetime(): String {
         return session.startTime.let { SimpleDateFormat("d MMMM HH:mm", Locale.getDefault()).format(it) }
     }
 
-    override fun onHpChanged(id: Int, value: Int) {
-        // TODO update view
-        val hpDiff = App.instance.hpDiffs.single { it.id == id && it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
+    override fun onHpChanged(pos: Int, value: Int) {
+        val item = sessionItems[pos]
+        item.value += value
+        val hpId = item.id
+        val characterId = sessionItems[pos].characterId
+        val hpDiff = App.instance.hpDiffs.single { it.id == hpId && it.sessionGroup == session.id && it.characterGroup == characterId && it.gameGroup == game.id && it.worldGroup == world.id }
         hpDiff.value += value
+        this.view.itemChangedAt(pos)
     }
 
-    override fun onSkillChanged(id: Int, value: Int) {
-        val skillDiff = App.instance.skillDiffs.single { it.id == id && it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
+    override fun onSkillChanged(pos: Int, value: Int) {
+        val item = sessionItems[pos]
+        item.value += value
+        val skillId = item.id
+        val characterId = item.characterId
+        val skillDiff = App.instance.skillDiffs.single { it.id == skillId && it.characterGroup == characterId && it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
         skillDiff.value += value
+        this.view.itemChangedAt(pos)
     }
 
-    override fun onThingChanged(id: Int, value: Int) {
-        val thingDiff = App.instance.thingDiffs.single { it.id == id && it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
+    override fun onThingChanged(pos: Int, value: Int) {
+        val item = sessionItems[pos]
+        item.value += value
+        val thingId = item.id
+        val characterId = item.characterId
+        val thingDiff = App.instance.thingDiffs.single { it.id == thingId && it.characterGroup == characterId && it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
         thingDiff.value += value
+        this.view.itemChangedAt(pos)
     }
 
-    override fun onCommentChanged(id: Int, comment: String) {
-        val commentDiff = App.instance.commentDiffs.single { it.id == id && it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
+    override fun onCommentChanged(pos: Int, comment: String) {
+        val item = sessionItems[pos]
+        val commentId = item.id
+        item.comment = comment
+        val commentDiff = App.instance.commentDiffs.single { it.id == commentId && it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
         commentDiff.comment = comment
+        // Do not itemChangedAt
     }
 }

@@ -53,17 +53,21 @@ class App : Application(), HasActivityInjector {
     fun initWorld() {
         (1..3).forEach { worldId ->
             worlds.add(World(worldId, "$worldId world"))
-            skills.add(Skill(0, "First skill", worldId))
-            things.add(Thing(0, "First thing", worldId))
+            val skillId = 0
+            skills.add(Skill(skillId, "First skill", worldId))
+            val thingId = 0
+            things.add(Thing(thingId, "First thing", worldId))
             (1..3).forEach { gameId ->
                 games.add(Game(gameId, "$gameId game", worldId))
-                characters.add(Character(0, "The Character", gameId, worldId))
+                val characterId = 0
+                characters.add(Character(characterId, "The Character", gameId, worldId))
                 (1..3).forEach { sessionId ->
-                    gameSessions.add(GameSession(sessionId, "$sessionId session", worldId, gameId, Calendar.getInstance().time))
-                    hpDiffs += HealthPointDiff(0, 0, 0, sessionId, gameId, worldId)
-                    skillDiffs += SkillDiff(0, 0, 0, 0, sessionId, gameId, worldId)
-                    thingDiffs += ThingDiff(0, 0, 0, 0, sessionId, gameId, worldId)
-                    commentDiffs += CommentDiff(0, "Comment", sessionId, gameId, worldId)
+                    val now = Calendar.getInstance().time
+                    gameSessions.add(GameSession(sessionId, "$sessionId session", worldId, gameId, now))
+                    hpDiffs += HealthPointDiff(1, 0, now, characterId, sessionId, gameId, worldId)
+                    skillDiffs += SkillDiff(2, 0, now, characterId, skillId, sessionId, gameId, worldId)
+                    thingDiffs += ThingDiff(3, 0, now, characterId, thingId, sessionId, gameId, worldId)
+                    commentDiffs += CommentDiff(4, "Comment", now, sessionId, gameId, worldId)
                 }
             }
         }
@@ -77,15 +81,19 @@ class Game(val id: Int, val name: String, val worldGroup: Int)
 class GameSession(val id: Int, val name: String, val gameGroup: Int, val worldGroup: Int, val startTime: Date)
 
 class Character(val id: Int, val name: String, val gameGroup: Int, val worldGroup: Int)
+// TODO Last used characters descending
 
 class Skill(val id: Int, val name: String, val worldGroup: Int)
+// TODO Last used skills descending
 
 class Thing(val id: Int, val name: String, val worldGroup: Int)
+// TODO Last used things descending
 
-class HealthPointDiff(val id: Int, var value: Int, val characterGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int)
+class HealthPointDiff(val id: Int, var value: Int, val time: Date, val characterGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int)
 
-class SkillDiff(val id: Int, var value: Int, val characterGroup: Int, val skillGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int)
+class SkillDiff(val id: Int, var value: Int, val time: Date, val characterGroup: Int, val skillGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int)
 
-class ThingDiff(val id: Int, var value: Int, val characterGroup: Int, val thingGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int)
+class ThingDiff(val id: Int, var value: Int, val time: Date, val characterGroup: Int, val thingGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int)
 
-class CommentDiff(val id: Int, var comment: String, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int)
+class CommentDiff(val id: Int, var comment: String, val time: Date, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int)
+// TODO Состояния, особенности (плюсы минусы), дополнительные скиллы, заклинания

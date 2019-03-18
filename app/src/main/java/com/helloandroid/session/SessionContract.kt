@@ -1,18 +1,20 @@
 package com.helloandroid.session
 
 import android.view.ViewGroup
+import java.util.*
 
 interface SessionContract {
     interface View {
         fun createView(container: ViewGroup): android.view.View
         fun setData(items: MutableList<SessionItem>)
+        fun itemChangedAt(pos: Int)
     }
     interface Controller {
         fun getSessionDatetime(): String
-        fun onHpChanged(id: Int, value: Int)
-        fun onSkillChanged(id: Int, value: Int)
-        fun onThingChanged(id: Int, value: Int)
-        fun onCommentChanged(id: Int, comment: String)
+        fun onHpChanged(pos: Int, value: Int)
+        fun onSkillChanged(pos: Int, value: Int)
+        fun onThingChanged(pos: Int, value: Int)
+        fun onCommentChanged(pos: Int, comment: String)
     }
 }
 
@@ -23,4 +25,4 @@ enum class SessionItemType {
     ITEM_COMMENT
 }
 
-class SessionItem(val type: SessionItemType, val id: Int, val title: String, val desc: String, val value: Int, val comment: String = "")
+class SessionItem(val id: Int, val time: Date, val type: SessionItemType, val title: String, val desc: String, var value: Int, val characterId: Int, var comment: String = "", var position: Int = -1)
