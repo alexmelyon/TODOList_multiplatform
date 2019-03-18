@@ -196,7 +196,14 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
     }
 
     override fun addCommentDiff() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val comments = App.instance.commentDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
+        val maxId = comments.maxBy { it.id }?.id ?: -1
+        val commentDiff = CommentDiff(maxId + 1, "", Calendar.getInstance().time, session.id, game.id, world.id)
+        App.instance.commentDiffs.add(commentDiff)
+
+        val thing = SessionItem(commentDiff.id, commentDiff.time, SessionItemType.ITEM_COMMENT, "", "", 0, -1, commentDiff.comment)
+        itemsWrapper.add(thing)
+        view.itemAddedAt(thing.index, thing)
     }
 
     private fun getCharacters(): List<Character> {
