@@ -20,18 +20,18 @@ class SessionView @Inject constructor(val activity: MainActivity) : _FrameLayout
         activity.supportActionBar!!.title = controller.getSessionDatetime()
         // TODO Add SessionItem button
         listAdapter = SessionDiffsAdapter(container.context).apply {
-            onItemMinus = { id, type ->
+            onItemMinus = { pos, type ->
                 when (type) {
-                    SessionItemType.ITEM_HP -> controller.onHpChanged(id, -1)
-                    SessionItemType.ITEM_SKILL -> controller.onSkillChanged(id, -1)
-                    SessionItemType.ITEM_THING -> controller.onThingChanged(id, -1)
+                    SessionItemType.ITEM_HP -> controller.onHpChanged(pos, -1)
+                    SessionItemType.ITEM_SKILL -> controller.onSkillChanged(pos, -1)
+                    SessionItemType.ITEM_THING -> controller.onThingChanged(pos, -1)
                 }
             }
-            onItemPlus = { id, type ->
+            onItemPlus = { pos, type ->
                 when (type) {
-                    SessionItemType.ITEM_HP -> controller.onHpChanged(id, +1)
-                    SessionItemType.ITEM_SKILL -> controller.onSkillChanged(id, +1)
-                    SessionItemType.ITEM_THING -> controller.onThingChanged(id, +1)
+                    SessionItemType.ITEM_HP -> controller.onHpChanged(pos, +1)
+                    SessionItemType.ITEM_SKILL -> controller.onSkillChanged(pos, +1)
+                    SessionItemType.ITEM_THING -> controller.onThingChanged(pos, +1)
                 }
             }
             onCommentChanged = { id, comment ->
@@ -57,6 +57,7 @@ class SessionView @Inject constructor(val activity: MainActivity) : _FrameLayout
     }
 
     override fun itemRemovedAt(pos: Int) {
+        listAdapter.items.removeAt(pos)
         listAdapter.notifyItemRemoved(pos)
     }
 

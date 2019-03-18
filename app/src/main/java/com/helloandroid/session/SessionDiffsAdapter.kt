@@ -7,6 +7,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.TextView
 import com.helloandroid.R
 import kotlinx.android.synthetic.main.session_item_comment.view.*
@@ -21,11 +22,11 @@ class SessionDiffsAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
             field = value
             notifyDataSetChanged()
         }
-    var onItemPlus: (Int, SessionItemType) -> Unit = { id, type -> }
-    var onItemMinus: (Int, SessionItemType) -> Unit = { id, type -> }
-    var onCommentChanged: (Int, String) -> Unit = { id, comment -> }
+    var onItemPlus: (Int, SessionItemType) -> Unit = { pos, type -> }
+    var onItemMinus: (Int, SessionItemType) -> Unit = { pos, type -> }
+    var onCommentChanged: (Int, String) -> Unit = { pos, comment -> }
 
-    private val textWatchers = mutableMapOf<Any, IdTextWatcher>()
+    private val textWatchers = mutableMapOf<EditText, IdTextWatcher>()
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -66,25 +67,33 @@ class SessionDiffsAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                 holder.title.text = items[position].title
                 holder.desc.text = items[position].desc
                 holder.value.text = items[position].value.toString()
-                holder.minusButton.onClick { view -> onItemMinus(items[position].index, type) }
-                holder.plusButton.onClick { view -> onItemPlus(items[position].index, type) }
+                holder.minusButton.onClick { view ->
+                    val correctPosition = holder.adapterPosition
+                    onItemMinus(items[correctPosition].index, type)
+                }
+                holder.plusButton.onClick { view ->
+                    val correctPosition = holder.adapterPosition
+                    onItemPlus(items[correctPosition].index, type)
+                }
             }
             SessionItemType.ITEM_COMMENT -> {
                 holder as ItemCommentViewHolder
                 holder.editText.setText(items[position].comment, TextView.BufferType.EDITABLE)
                 if (textWatchers[holder.editText] == null) {
-                    val watcher = IdTextWatcher() { id, comment ->
-                        onCommentChanged(id, comment)
+                    val watcher = IdTextWatcher() { index, comment ->
+                        val correctPosition = holder.adapterPosition
+//                        onCommentChanged(index, comment)
+                        onCommentChanged(correctPosition, comment)
                     }
                     textWatchers[holder.editText] = watcher
                     holder.editText.addTextChangedListener(watcher)
                 }
-                textWatchers[holder.editText]!!.index= items[position].index
+                textWatchers[holder.editText]!!.index = position
             }
         }
     }
 
-    class IdTextWatcher(val textChanged: (Int, String) -> Unit): TextWatcher {
+    class IdTextWatcher(val textChanged: (Int, String) -> Unit) : TextWatcher {
         var index: Int = 0
 
         override fun afterTextChanged(s: Editable?) {}

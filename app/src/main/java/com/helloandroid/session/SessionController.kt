@@ -50,18 +50,12 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
 
     override fun onAttach(view: View) {
         super.onAttach(view)
-        val characters = App.instance.characters.filter { it.gameGroup == game.id && it.worldGroup == world.id }
+        val characters = getCharacters()
         fun getCharacter(characterId: Int) = characters.single { it.id == characterId }
-        val skills = App.instance.skills.filter { it.worldGroup == world.id }
+        val skills = getSkills()
         fun getSkill(skillId: Int) = skills.single { it.id == skillId }
-        val things = App.instance.things.filter { it.worldGroup == world.id }
+        val things = getThings()
         fun getThing(thingId: Int) = things.single { it.id == thingId }
-//        val list = App.instance.hpDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }.map { SessionItem(it.time, SessionItemType.ITEM_HP, it.id, "HP", getCharacter(it.characterGroup).name, it.value) } +
-//                App.instance.skillDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }.map { SessionItem(it.time, SessionItemType.ITEM_SKILL, it.id, getSkill(it.skillGroup).name, getCharacter(it.characterGroup).name, it.value) } +
-//                App.instance.thingDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }.map { SessionItem(it.time, SessionItemType.ITEM_SKILL, it.id, getThing(it.thingGroup).name, getCharacter(it.characterGroup).name, it.value) } +
-//                App.instance.commentDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }.map { SessionItem(it.time, SessionItemType.ITEM_COMMENT, it.id, "", "", 0) }
-
-        // TODO Order date descending
 
         itemsWrapper.addAll(App.instance.hpDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_HP, "HP", getCharacter(it.characterGroup).name, it.value, it.characterGroup) })

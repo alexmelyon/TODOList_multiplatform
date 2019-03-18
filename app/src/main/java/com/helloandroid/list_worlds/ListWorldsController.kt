@@ -17,6 +17,7 @@ class ListWorldsController : Controller(), ListWorldsContract.Controller {
     lateinit var view: ListWorldsContract.View
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
+        setHasOptionsMenu(true)
         return view.createView(container)
     }
 
