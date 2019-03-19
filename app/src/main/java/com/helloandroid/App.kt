@@ -95,25 +95,23 @@ class App : Application(), HasActivityInjector {
     }
 }
 
-class World(val id: Int, val name: String, val time: Date) {
-    override fun toString() = name
-}
+class World(val id: Int, var name: String, val time: Date, var archived: Boolean = false)
 
-class Game(val id: Int, val name: String, val worldGroup: Int, val time: Date)
+class Game(val id: Int, var name: String, val worldGroup: Int, val time: Date, var archived: Boolean = false)
 
-class GameSession(val id: Int, val name: String, val gameGroup: Int, val worldGroup: Int, val startTime: Date, var closed: Boolean, val endTime: Date)
+class GameSession(val id: Int, var name: String, val gameGroup: Int, val worldGroup: Int, val startTime: Date, var closed: Boolean, val endTime: Date)
 
-class Character(val id: Int, val name: String, val gameGroup: Int, val worldGroup: Int)
+class Character(val id: Int, var name: String, val gameGroup: Int, val worldGroup: Int, var archived: Boolean = false)
 
-class Skill(val id: Int, val name: String, val worldGroup: Int)
+class Skill(val id: Int, var name: String, val worldGroup: Int, var archived: Boolean = false)
 
-class Thing(val id: Int, val name: String, val worldGroup: Int)
+class Thing(val id: Int, var name: String, val worldGroup: Int, var archived: Boolean = false)
 
-class HealthPointDiff(val id: Int, var value: Int, val time: Date, val characterGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int)
+class HealthPointDiff(val id: Int, var value: Int, val time: Date, val characterGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int, var archived: Boolean = false)
 
-class SkillDiff(val id: Int, var value: Int, val time: Date, val characterGroup: Int, val skillGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int)
+class SkillDiff(val id: Int, var value: Int, val time: Date, val characterGroup: Int, val skillGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int, var archived: Boolean = false)
 
-class ThingDiff(val id: Int, var value: Int, val time: Date, val characterGroup: Int, val thingGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int)
+class ThingDiff(val id: Int, var value: Int, val time: Date, val characterGroup: Int, val thingGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int, var archived: Boolean = false)
 
-class CommentDiff(val id: Int, var comment: String, val time: Date, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int)
+class CommentDiff(val id: Int, var comment: String, val time: Date, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int, var archived: Boolean = false)
 // TODO Состояния, особенности (плюсы минусы), дополнительные скиллы, заклинания, баффы, дебаффы, ачивки

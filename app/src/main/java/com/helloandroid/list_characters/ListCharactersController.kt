@@ -2,11 +2,11 @@ package com.helloandroid.list_characters
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import com.bluelinelabs.conductor.Controller
 import com.helloandroid.App
+import com.helloandroid.Character
+import com.helloandroid.R
 import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.list_sessions.GAME_KEY
 import ru.napoleonit.talan.di.ControllerInjector
@@ -28,7 +28,20 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
     })
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
+        setHasOptionsMenu(true)
         return view.createView(container)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.character_add, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.add_character -> view.showAddCharacterDialog()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onContextAvailable(context: Context) {
@@ -38,7 +51,7 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
         characterItems = TreeSet(Comparator { o1, o2 ->
             return@Comparator o1.name.compareTo(o2.name)
         })
-        val characters = App.instance.characters.filter { it.gameGroup == game.id && it.worldGroup == world.id }
+        val characters = App.instance.characters.filter { it.gameGroup == game.id && it.worldGroup == world.id && !it.archived }
         val sessionsIds = App.instance.gameSessions.filter { it.gameGroup == game.id && it.worldGroup == world.id && it.closed }.map { it.id }
         characters.forEach { character ->
             val hp = sessionsIds.fold(0) { total, next ->
@@ -60,12 +73,41 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
                 }.map { skillTovalue -> things.single { it.id == skillTovalue.first }.name to skillTovalue.second }
                 .groupBy { it.first }
                 .map { it.key to it.value.sumBy { it.second } }
-            characterItems.add(CharacterItem(character.name, hp, skillsDiffs, thingDiffs))
+            characterItems.add(CharacterItem(character.id, character.name, hp, skillsDiffs, thingDiffs))
+            characterItems.forEachIndexed { index, item ->
+                item.index = index
+            }
         }
     }
 
     override fun onAttach(view: View) {
         super.onAttach(view)
         this.view.setData(characterItems.toMutableList())
+    }
+
+    override fun createCharacter(characterName: String) {
+        val maxId = App.instance.characters.filter { it.gameGroup == game.id && it.worldGroup == world.id }
+            .maxBy { it.id }?.id ?: -1
+        val character = Character(maxId + 1, characterName, game.id, world.id, archived = false)
+        App.instance.characters.add(character)
+
+        val item = CharacterItem(character.id, characterName, 0, listOf(), listOf())
+        characterItems.add(item)
+        characterItems.forEachIndexed { index, item ->
+            item.index = index
+        }
+        view.addedAt(item.index, item)
+    }
+
+    override fun archiveCharacter(pos: Int, item: CharacterItem) {
+        val character = App.instance.characters.filter { it.gameGroup == game.id && it.worldGroup == world.id }
+            .single { it.id == item.id }
+        character.archived = true
+
+        characterItems.remove(item)
+        characterItems.forEachIndexed { index, item ->
+            item.index = index
+        }
+        view.removedAt(pos)
     }
 }

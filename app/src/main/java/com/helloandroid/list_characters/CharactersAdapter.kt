@@ -14,7 +14,7 @@ import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.textColor
 import org.jetbrains.anko.textView
 
-class CharactersAdapter(val context: Context) : RecyclerView.Adapter<CharactersAdapter.ViewHolder>() {
+class CharactersAdapter(val context: Context, val onLongTapListener: (Int, CharacterItem) -> Unit) : RecyclerView.Adapter<CharactersAdapter.ViewHolder>() {
 
     var items = mutableListOf<CharacterItem>()
         set(value) {
@@ -71,6 +71,21 @@ class CharactersAdapter(val context: Context) : RecyclerView.Adapter<CharactersA
         holder.hp.text = "HP " + items[position].hp
         holder.skills.text = items[position].skills.fold("") { total, next -> "$total\n${next.first} ${next.second}"}
         holder.things.text = items[position].things.fold("") { total, next -> "$total\n${next.first} ${next.second}"}
+        holder.itemView.setOnLongClickListener {
+            val correctPosition = holder.adapterPosition
+            onLongTapListener(correctPosition, items[position])
+            return@setOnLongClickListener true
+        }
+    }
+
+    fun adddedAt(index: Int, item: CharacterItem) {
+        items.add(index, item)
+        notifyItemInserted(index)
+    }
+
+    fun removedAt(pos: Int) {
+        items.removeAt(pos)
+        notifyItemRemoved(pos)
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {

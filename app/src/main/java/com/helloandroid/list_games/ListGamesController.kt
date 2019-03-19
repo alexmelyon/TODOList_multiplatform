@@ -63,7 +63,6 @@ class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Co
     }
 
     override fun onItemClick(pos: Int) {
-//        router.pushController(RouterTransaction.with(ListSessionsController(world.id, App.instance.gameSessions[pos].id)))
         router.pushController(RouterTransaction.with(GamePagerController(world.id, App.instance.gameSessions[pos].id)))
     }
 

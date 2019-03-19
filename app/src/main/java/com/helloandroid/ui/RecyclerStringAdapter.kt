@@ -41,7 +41,7 @@ class RecyclerStringAdapter(val context: Context, val onItemClickListener: (Int)
         text1.text = items[position]
         text1.setOnClickListener { view ->
             val correctPosition = holder.adapterPosition
-            onItemClickListener(position)
+            onItemClickListener(correctPosition)
         }
         text1.setOnLongClickListener { view ->
             val correctPosition = holder.adapterPosition
