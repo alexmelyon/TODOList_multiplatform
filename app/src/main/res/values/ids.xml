@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="character_name" type="id"/>
+    <item name="character_hp" type="id"/>
+    <item name="character_skills" type="id"/>
+    <item name="character_things" type="id"/>
+</resources>

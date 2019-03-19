@@ -79,10 +79,15 @@ class App : Application(), HasActivityInjector {
                 characters.add(Character(1, "Second Character", gameId, worldId))
                 characters.add(Character(2, "Third Character", gameId, worldId))
                 (1..3).forEach { sessionId ->
-                    gameSessions.add(GameSession(sessionId, "$sessionId session", worldId, gameId, now))
-                    hpDiffs += HealthPointDiff(1, 0, now, characterId, sessionId, gameId, worldId)
-                    skillDiffs += SkillDiff(2, 0, now, characterId, skillId, sessionId, gameId, worldId)
-                    thingDiffs += ThingDiff(3, 0, now, characterId, thingId, sessionId, gameId, worldId)
+                    val minusHour = Calendar.getInstance().apply {
+                        add(Calendar.HOUR, -1)
+                    }
+                    gameSessions.add(GameSession(sessionId, "$sessionId session", worldId, gameId, minusHour.time, true, now))
+                    hpDiffs += HealthPointDiff(1, 1, now, characterId, sessionId, gameId, worldId)
+                    skillDiffs += SkillDiff(2, 2, now, characterId, skillId, sessionId, gameId, worldId)
+                    skillDiffs += SkillDiff(22, 3, now, characterId, skillId, sessionId, gameId, worldId)
+                    thingDiffs += ThingDiff(3, 3, now, characterId, thingId, sessionId, gameId, worldId)
+                    thingDiffs += ThingDiff(33, 4, now, characterId, thingId, sessionId, gameId, worldId)
                     commentDiffs += CommentDiff(4, "Comment", now, sessionId, gameId, worldId)
                 }
             }
@@ -96,7 +101,7 @@ class World(val id: Int, val name: String, val time: Date) {
 
 class Game(val id: Int, val name: String, val worldGroup: Int, val time: Date)
 
-class GameSession(val id: Int, val name: String, val gameGroup: Int, val worldGroup: Int, val startTime: Date)
+class GameSession(val id: Int, val name: String, val gameGroup: Int, val worldGroup: Int, val startTime: Date, var closed: Boolean, val endTime: Date)
 
 class Character(val id: Int, val name: String, val gameGroup: Int, val worldGroup: Int)
 

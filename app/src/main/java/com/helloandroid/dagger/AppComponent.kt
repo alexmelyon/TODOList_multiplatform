@@ -3,6 +3,7 @@ package com.helloandroid.dagger
 import android.app.Activity
 import com.helloandroid.App
 import com.helloandroid.MainActivity
+import com.helloandroid.list_characters.ListCharactersControllerModule
 import com.helloandroid.list_games.ListGamesControllerModule
 import com.helloandroid.list_sessions.ListSessionsControllerModule
 import com.helloandroid.list_worlds.ListWorldsControllerModule
@@ -21,6 +22,7 @@ import javax.inject.Singleton
 @Subcomponent(modules = [
     ListWorldsControllerModule::class,
     ListGamesControllerModule::class,
+    ListCharactersControllerModule::class,
     ListSessionsControllerModule::class,
     SessionControllerModule::class
 ])

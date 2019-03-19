@@ -17,8 +17,6 @@ val GAME_KEY = "GAME_KEY"
 
 class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContract.Controller {
 
-    // TODO Viewpager Characters/Sessions
-
     @Inject
     lateinit var view: ListSessionsContract.View
 
