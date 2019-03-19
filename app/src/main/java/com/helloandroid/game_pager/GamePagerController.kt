@@ -25,6 +25,8 @@ import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.support.v4.viewPager
 import org.jetbrains.anko.wrapContent
 
+val SELECTED_TAB = "SELECTED_TAB"
+
 class GamePagerController(args: Bundle) : Controller(args) {
 
     val PAGE_CHARACTERS = 0
@@ -32,6 +34,7 @@ class GamePagerController(args: Bundle) : Controller(args) {
 
     val world = App.instance.worlds.first { it.id == args.getInt(WORLD_KEY) }
     val game = App.instance.games.first { it.id == args.getInt(GAME_KEY) && it.worldGroup == world.id }
+    var selectedTab = 0
 
     constructor(worldId: Int, gameId: Int) : this(Bundle().apply {
         putInt(WORLD_KEY, worldId)
@@ -45,6 +48,7 @@ class GamePagerController(args: Bundle) : Controller(args) {
     init {
         pagerAdapter = object : RouterPagerAdapter(this) {
             override fun configureRouter(router: Router, position: Int) {
+                selectedTab = position
                 if (!router.hasRootController()) {
                     val page = when (position) {
                         PAGE_CHARACTERS -> ListCharactersController(world.id, game.id)
@@ -83,6 +87,7 @@ class GamePagerController(args: Bundle) : Controller(args) {
             }.lparams(matchParent, matchParent)
         }
         tabLayout.setupWithViewPager(viewPager)
+        tabLayout.getTabAt(selectedTab)?.select()
         return view
     }
 

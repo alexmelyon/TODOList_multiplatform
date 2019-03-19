@@ -45,6 +45,7 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
     }
 
     override fun onItemClick(pos: Int) {
+        val router = parentController?.router ?: this.router
         router.pushController(RouterTransaction.with(SessionController(App.instance.gameSessions[pos].id, game.id, world.id)))
     }
 
