@@ -34,7 +34,7 @@ class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Co
 
     override fun onAttach(view: View) {
         super.onAttach(view)
-        this.view.setData(App.instance.games.filter { it.worldGroup == world.id }.map { it.name })
+        this.view.setData(App.instance.games.filter { it.worldGroup == world.id }.map { it.name }.toMutableList())
     }
 
     override fun onItemClick(pos: Int) {

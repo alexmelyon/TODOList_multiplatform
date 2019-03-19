@@ -1,7 +1,7 @@
 package com.helloandroid.session
 
-import android.app.AlertDialog
 import android.content.DialogInterface
+import android.support.v7.app.AlertDialog
 import android.view.View
 import android.view.ViewGroup
 import com.helloandroid.MainActivity

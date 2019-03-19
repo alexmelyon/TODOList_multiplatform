@@ -10,14 +10,16 @@ import android.view.ViewGroup
 import android.widget.TextView
 import org.jetbrains.anko.textColor
 
-class RecyclerStringAdapter(val context: Context, val onItemClickListener: (Int) -> Unit) : RecyclerView.Adapter<RecyclerStringAdapter.ViewHolder>() {
+class RecyclerStringAdapter(val context: Context, val onItemClickListener: (Int) -> Unit = { pos -> }) : RecyclerView.Adapter<RecyclerStringAdapter.ViewHolder>() {
+
+    var onItemLongclickListener: (Int, String) -> Unit = { pos, name -> }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(context)
     }
 
-    var items: List<String> = listOf()
+    var items: MutableList<String> = mutableListOf()
         set(value) {
             field = value
             notifyDataSetChanged()
@@ -35,10 +37,27 @@ class RecyclerStringAdapter(val context: Context, val onItemClickListener: (Int)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.itemView.findViewById<TextView>(android.R.id.text1).text = items[position]
-        holder.itemView.findViewById<TextView>(android.R.id.text1).setOnClickListener { view ->
+        val text1 = holder.itemView.findViewById<TextView>(android.R.id.text1)
+        text1.text = items[position]
+        text1.setOnClickListener { view ->
+            val correctPosition = holder.adapterPosition
             onItemClickListener(position)
         }
+        text1.setOnLongClickListener { view ->
+            val correctPosition = holder.adapterPosition
+            onItemLongclickListener(correctPosition, text1.text.toString())
+            return@setOnLongClickListener true
+        }
+    }
+
+    fun itemAddedAt(pos: Int, name: String) {
+        items.add(pos, name)
+        notifyItemInserted(pos)
+    }
+
+    fun itemRemovedAt(pos: Int) {
+        items.removeAt(pos)
+        notifyItemRemoved(pos)
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view)

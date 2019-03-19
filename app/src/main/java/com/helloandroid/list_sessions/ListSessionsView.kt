@@ -25,7 +25,7 @@ class ListSessionsView @Inject constructor(val activity: MainActivity) : _FrameL
         }
     }
 
-    override fun setData(items: List<String>) {
+    override fun setData(items: MutableList<String>) {
         sessionsAdapter.items = items
     }
 

@@ -28,7 +28,7 @@ class ListGamesView @Inject constructor(val activity: MainActivity) : _FrameLayo
         }
     }
 
-    override fun setData(items: List<String>) {
+    override fun setData(items: MutableList<String>) {
         gamesAdapter.items = items
     }
 

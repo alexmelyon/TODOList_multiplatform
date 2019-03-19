@@ -51,8 +51,9 @@ class App : Application(), HasActivityInjector {
     }
 
     fun initWorld() {
+        val now = Calendar.getInstance().time
         (1..3).forEach { worldId ->
-            worlds.add(World(worldId, "$worldId world"))
+            worlds.add(World(worldId, "$worldId world", now))
             val skillId = 0
             skills.add(Skill(skillId, "First skill", worldId))
             skills.add(Skill(1, "Second skill", worldId))
@@ -78,7 +79,6 @@ class App : Application(), HasActivityInjector {
                 characters.add(Character(1, "Second Character", gameId, worldId))
                 characters.add(Character(2, "Third Character", gameId, worldId))
                 (1..3).forEach { sessionId ->
-                    val now = Calendar.getInstance().time
                     gameSessions.add(GameSession(sessionId, "$sessionId session", worldId, gameId, now))
                     hpDiffs += HealthPointDiff(1, 0, now, characterId, sessionId, gameId, worldId)
                     skillDiffs += SkillDiff(2, 0, now, characterId, skillId, sessionId, gameId, worldId)
@@ -90,7 +90,9 @@ class App : Application(), HasActivityInjector {
     }
 }
 
-class World(val id: Int, val name: String)
+class World(val id: Int, val name: String, val time: Date) {
+    override fun toString() = name
+}
 
 class Game(val id: Int, val name: String, val worldGroup: Int)
 

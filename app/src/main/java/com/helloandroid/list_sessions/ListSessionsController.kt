@@ -41,7 +41,7 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
 
     override fun onAttach(view: View) {
         super.onAttach(view)
-        this.view.setData(App.instance.gameSessions.filter { it.worldGroup == world.id && it.gameGroup == game.id }.map { it.name })
+        this.view.setData(App.instance.gameSessions.filter { it.worldGroup == world.id && it.gameGroup == game.id }.map { it.name }.toMutableList())
     }
 
     override fun onItemClick(pos: Int) {

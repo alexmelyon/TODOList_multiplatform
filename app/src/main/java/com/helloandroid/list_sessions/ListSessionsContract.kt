@@ -5,7 +5,7 @@ import android.view.ViewGroup
 interface ListSessionsContract {
     interface View {
         fun createView(container: ViewGroup): android.view.View
-        fun setData(items: List<String>)
+        fun setData(items: MutableList<String>)
     }
 
     interface Controller {

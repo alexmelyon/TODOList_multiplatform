@@ -1,7 +1,10 @@
 package com.helloandroid.list_worlds
 
+import android.content.DialogInterface
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
+import android.widget.EditText
 import com.helloandroid.MainActivity
 import com.helloandroid.R
 import com.helloandroid.ui.RecyclerStringAdapter
@@ -24,12 +27,46 @@ class ListWorldsView @Inject constructor(val activity: MainActivity) : _FrameLay
         worldsAdapter = RecyclerStringAdapter(container.context) { pos ->
             controller.onItemClick(pos)
         }
+        worldsAdapter.onItemLongclickListener = { pos, name ->
+            AlertDialog.Builder(activity)
+                .setTitle("Remove world?")
+                .setMessage(name)
+                .setPositiveButton("OK", DialogInterface.OnClickListener { dialog, which ->
+                    controller.removeWorldAt(pos)
+                })
+                .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, which ->
+                    dialog.dismiss()
+                })
+                .show()
+        }
         worldsView = recyclerView {
             adapter = worldsAdapter
         }.lparams(matchParent, matchParent)
     }
 
-    override fun setData(items: List<String>) {
+    override fun setData(items: MutableList<String>) {
         worldsAdapter.items = items
+    }
+
+    override fun addedAt(i: Int, name: String) {
+        worldsAdapter.itemAddedAt(i, name)
+    }
+
+    override fun removedAt(pos: Int) {
+        worldsAdapter.itemRemovedAt(pos)
+    }
+
+    override fun showCreateWorldDialog() {
+        val editText = EditText(activity)
+        AlertDialog.Builder(activity)
+            .setTitle("World name:")
+            .setView(editText)
+            .setPositiveButton("OK", DialogInterface.OnClickListener { dialog, which ->
+                controller.createWorld(editText.text.toString())
+            })
+            .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, which ->
+                dialog.dismiss()
+            })
+            .show()
     }
 }

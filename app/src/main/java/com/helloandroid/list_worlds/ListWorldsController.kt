@@ -1,20 +1,23 @@
 package com.helloandroid.list_worlds
 
 import android.content.Context
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
 import com.helloandroid.App
+import com.helloandroid.R
+import com.helloandroid.World
 import com.helloandroid.list_games.ListGamesController
 import ru.napoleonit.talan.di.ControllerInjector
+import java.util.*
 import javax.inject.Inject
 
 class ListWorldsController : Controller(), ListWorldsContract.Controller {
 
     @Inject
     lateinit var view: ListWorldsContract.View
+
+    private lateinit var setWorlds : TreeSet<World>
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         setHasOptionsMenu(true)
@@ -28,11 +31,46 @@ class ListWorldsController : Controller(), ListWorldsContract.Controller {
 
     override fun onAttach(view: View) {
         super.onAttach(view)
-        this.view.setData(App.instance.worlds.map { it.name })
+        setWorlds = TreeSet(kotlin.Comparator { o1, o2 ->
+            val res = o2.time.compareTo(o1.time)
+            if(res == 0) {
+                return@Comparator o1.name.compareTo(o2.name)
+            }
+            return@Comparator res
+        })
+        setWorlds.addAll(App.instance.worlds)
+        this.view.setData(setWorlds.toList().map { it.name }.toMutableList())
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.worlds_add, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId) {
+            R.id.world_add -> view.showCreateWorldDialog()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onItemClick(pos: Int) {
         router.pushController(RouterTransaction.with(ListGamesController(App.instance.worlds[pos].id)))
     }
 
+    override fun createWorld(worldName: String) {
+        val maxid = App.instance.worlds.maxBy { it.id }?.id ?: -1
+        val world = World(maxid + 1, worldName, Calendar.getInstance().time)
+        App.instance.worlds.add(world)
+
+        setWorlds.add(world)
+        view.addedAt(0, worldName)
+    }
+
+    override fun removeWorldAt(pos: Int) {
+        val world = setWorlds.toList()[pos]
+        App.instance.worlds.remove(world)
+        setWorlds.remove(world)
+        view.removedAt(pos)
+    }
 }
