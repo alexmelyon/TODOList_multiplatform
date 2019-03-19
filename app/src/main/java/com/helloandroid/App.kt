@@ -73,7 +73,7 @@ class App : Application(), HasActivityInjector {
             things.add(Thing(1, "Second thing", worldId))
             things.add(Thing(2, "Third thing", worldId))
             (1..3).forEach { gameId ->
-                games.add(Game(gameId, "$gameId game", worldId))
+                games.add(Game(gameId, "$gameId game", worldId, now))
                 val characterId = 0
                 characters.add(Character(characterId, "First Character", gameId, worldId))
                 characters.add(Character(1, "Second Character", gameId, worldId))
@@ -94,7 +94,7 @@ class World(val id: Int, val name: String, val time: Date) {
     override fun toString() = name
 }
 
-class Game(val id: Int, val name: String, val worldGroup: Int)
+class Game(val id: Int, val name: String, val worldGroup: Int, val time: Date)
 
 class GameSession(val id: Int, val name: String, val gameGroup: Int, val worldGroup: Int, val startTime: Date)
 
