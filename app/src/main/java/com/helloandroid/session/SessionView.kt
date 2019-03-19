@@ -78,37 +78,31 @@ class SessionView @Inject constructor(val activity: MainActivity) : _FrameLayout
             .show()
     }
 
-    override fun showAddSkillDialog(characterNames: List<String>) {
-        AlertDialog.Builder(activity)
-            .setTitle("Select character")
-            .setItems(characterNames.toTypedArray(), DialogInterface.OnClickListener { dialog, which ->
-                controller.addSkillDiffForCharacter(which)
-            }).show()
-    }
-
-    override fun showAddCharacterSkillDialog(character: Int, skillNames: List<String>) {
+    override fun showAddSkillDialog(characterNames: List<String>, skillNames: List<String>) {
         AlertDialog.Builder(activity)
             .setTitle("Select skill")
-            .setItems(skillNames.toTypedArray(), DialogInterface.OnClickListener { dialog, which ->
-                controller.addCharacterSkillDiff(character, which)
+            .setItems(skillNames.toTypedArray(), DialogInterface.OnClickListener { dialog, skill ->
+
+                AlertDialog.Builder(activity)
+                    .setTitle("Select character")
+                    .setItems(characterNames.toTypedArray(), DialogInterface.OnClickListener { dialog, character ->
+                        controller.addCharacterSkillDiff(character, skill)
+                    }).show()
             }).show()
+
     }
 
-    override fun showAddThingDialog(characterNames: List<String>) {
-        AlertDialog.Builder(activity)
-            .setTitle("Select character")
-            .setItems(characterNames.toTypedArray(), DialogInterface.OnClickListener { dialog, which ->
-                controller.addThingDiffForCharacter(which)
-            }).show()
-    }
-
-    override fun showAddCharacterThingDialog(character: Int, thingNames: List<String>) {
+    override fun showAddThingDialog(characterNames: List<String>, thingNames: List<String>) {
         AlertDialog.Builder(activity)
             .setTitle("Select thing")
-            .setItems(thingNames.toTypedArray(), DialogInterface.OnClickListener { dialog, which ->
-                controller.addCharacterThingDiff(character, which)
-            })
-            .show()
+            .setItems(thingNames.toTypedArray(), DialogInterface.OnClickListener { dialog, thing ->
+
+                AlertDialog.Builder(activity)
+                    .setTitle("Select character")
+                    .setItems(characterNames.toTypedArray(), DialogInterface.OnClickListener { dialog, character ->
+                        controller.addCharacterThingDiff(character, thing)
+                    }).show()
+            }).show()
     }
 
     override fun showAddComment() {

@@ -12,15 +12,9 @@ interface SessionContract {
         fun itemRemovedAt(pos: Int)
         /** Chooose Hp or Skill or Thing or Comment */
         fun showAddItemDialog()
-
         fun showAddHpDialog(characterNames: List<String>)
-
-        fun showAddSkillDialog(characterNames: List<String>)
-        fun showAddCharacterSkillDialog(character: Int, skillNames: List<String>)
-
-        fun showAddThingDialog(characterNames: List<String>)
-        fun showAddCharacterThingDialog(character: Int, thingNames: List<String>)
-
+        fun showAddSkillDialog(characterNames: List<String>, skillNames: List<String>)
+        fun showAddThingDialog(characterNames: List<String>, thingNames: List<String>)
         fun showAddComment()
     }
     interface Controller {
@@ -30,11 +24,7 @@ interface SessionContract {
         fun onThingChanged(pos: Int, value: Int)
         fun onCommentChanged(pos: Int, comment: String)
         fun addHpDiff(character: Int)
-
-        fun addSkillDiffForCharacter(character: Int)
         fun addCharacterSkillDiff(character: Int, skill: Int)
-
-        fun addThingDiffForCharacter(character: Int)
         fun addCharacterThingDiff(character: Int, thing: Int)
 
         fun addCommentDiff()

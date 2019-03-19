@@ -95,8 +95,14 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
         val characterNames = getCharacters().map { it.name }
         when(which) {
             SESSION_ADD_HP -> view.showAddHpDialog(characterNames)
-            SESSION_ADD_SKILL -> view.showAddSkillDialog(characterNames)
-            SESSION_ADD_THING -> view.showAddThingDialog(characterNames)
+            SESSION_ADD_SKILL -> {
+                val skillNames = getSkills().map { it.name }
+                view.showAddSkillDialog(characterNames, skillNames)
+            }
+            SESSION_ADD_THING -> {
+                val thingNames = getThings().map { it.name }
+                view.showAddThingDialog(characterNames, thingNames)
+            }
             SESSION_ADD_COMMENT -> view.showAddComment()
         }
     }
@@ -153,11 +159,6 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
         this.view.itemAddedAt(item.index, item)
     }
 
-    override fun addSkillDiffForCharacter(character: Int) {
-        val skillNames = getSkills().map { it.name }
-        view.showAddCharacterSkillDialog(character, skillNames)
-    }
-
     override fun addCharacterSkillDiff(character: Int, skill: Int) {
         val selectedCharacter = getCharacters()[character]
         val maxId = App.instance.skillDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
@@ -169,11 +170,6 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
         val item = SessionItem(skillDiff.id, skillDiff.time, SessionItemType.ITEM_SKILL, selectedSkill.name, selectedCharacter.name, skillDiff.value, selectedCharacter.id)
         itemsWrapper.add(item)
         view.itemAddedAt(item.index, item)
-    }
-
-    override fun addThingDiffForCharacter(character: Int) {
-        val thingNames = getThings().map { it.name }
-        view.showAddCharacterThingDialog(character, thingNames)
     }
 
     override fun addCharacterThingDiff(character: Int, thing: Int) {
