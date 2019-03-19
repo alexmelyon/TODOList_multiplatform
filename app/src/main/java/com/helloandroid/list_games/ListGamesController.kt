@@ -8,12 +8,14 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.helloandroid.App
 import com.helloandroid.Game
 import com.helloandroid.R
-import com.helloandroid.list_sessions.ListSessionsController
+import com.helloandroid.game_pager.GamePagerController
 import ru.napoleonit.talan.di.ControllerInjector
 import java.util.*
 import javax.inject.Inject
 
 val WORLD_KEY = "WORLD_KEY"
+
+// TODO Pager Skills, Items
 
 class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Controller {
 
@@ -61,7 +63,8 @@ class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Co
     }
 
     override fun onItemClick(pos: Int) {
-        router.pushController(RouterTransaction.with(ListSessionsController(world.id, App.instance.gameSessions[pos].id)))
+//        router.pushController(RouterTransaction.with(ListSessionsController(world.id, App.instance.gameSessions[pos].id)))
+        router.pushController(RouterTransaction.with(GamePagerController(world.id, App.instance.gameSessions[pos].id)))
     }
 
     override fun getWorldName(): String {
