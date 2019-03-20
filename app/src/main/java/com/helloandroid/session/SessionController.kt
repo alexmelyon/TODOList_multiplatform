@@ -8,8 +8,8 @@ import com.bluelinelabs.conductor.Controller
 import com.helloandroid.*
 import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.list_sessions.GAME_KEY
+import com.helloandroid.list_sessions.ListSessionsDelegate
 import ru.napoleonit.talan.di.ControllerInjector
-import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 import kotlin.Comparator
@@ -29,6 +29,7 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
     val world = App.instance.worlds.first { it.id == args.getInt(WORLD_KEY) }
     val game = App.instance.games.first { it.id == args.getInt(GAME_KEY) && it.worldGroup == world.id }
     val session = App.instance.gameSessions.first { it.id == args.getInt(SESSION_KEY) && it.gameGroup == game.id && it.worldGroup == world.id }
+    var delegate: ListSessionsDelegate? = null
 
     val itemsWrapper = SessionItemsWrapper()
 
@@ -46,10 +47,7 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
         ControllerInjector.inject(this)
-    }
 
-    override fun onAttach(view: View) {
-        super.onAttach(view)
         val characters = getCharacters()
         fun getCharacter(characterId: Int) = characters.single { it.id == characterId }
         val skills = getSkills()
@@ -65,6 +63,10 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_THING, getThing(it.thingGroup).name, getCharacter(it.characterGroup).name, it.value, it.characterGroup) })
         itemsWrapper.addAll(App.instance.commentDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_COMMENT, "", "", 0, -1, it.comment) })
+    }
+
+    override fun onAttach(view: View) {
+        super.onAttach(view)
 
         this.view.setData(itemsWrapper.toMutableList())
     }
@@ -83,8 +85,13 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
         return super.onOptionsItemSelected(item)
     }
 
-    override fun getSessionDatetime(): String {
-        return session.startTime.let { SimpleDateFormat("d MMMM HH:mm", Locale.getDefault()).format(it) }
+    override fun getTitle(): String {
+//        return session.startTime.let { SimpleDateFormat("d MMMM HH:mm", Locale.getDefault()).format(it) }
+        return session.name
+    }
+
+    override fun isSessionOpen(): Boolean {
+        return session.open
     }
 
     override fun onAddItemClicked(which: Int) {
@@ -142,9 +149,9 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
         // Do not itemChangedAt
     }
 
-    override fun addHpDiff(which: Int) {
+    override fun addHpDiff(character: Int) {
         val characters = getCharacters()
-        val selectedCharacter = characters[which]
+        val selectedCharacter = characters[character]
         val maxId = App.instance.hpDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
             .maxBy { it.id }?.id ?: -1
         val hpDiff = HealthPointDiff(maxId + 1, 0, Calendar.getInstance().time, selectedCharacter.id, session.id, game.id, world.id)
@@ -193,23 +200,32 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
     }
 
     private fun getCharacters(): List<Character> {
-        return App.instance.characters.filter { it.gameGroup == game.id && it.worldGroup == world.id }.sortedBy { it.name }
+        return App.instance.characters.filter { it.gameGroup == game.id && it.worldGroup == world.id }
+            .filterNot { it.archived }
+            .sortedBy { it.name }
     }
 
     private fun getSkills(): List<Skill> {
-        return App.instance.skills.filter { it.worldGroup == world.id }.sortedBy { it.name }
+        return App.instance.skills.filter { it.worldGroup == world.id }
+            .filterNot { it.archived }
+            .sortedBy { it.name }
     }
 
     private fun getThings(): List<Thing> {
-        return App.instance.things.filter { it.worldGroup == world.id }.sortedBy { it.name }
+        return App.instance.things.filter { it.worldGroup == world.id }
+            .filterNot { it.archived }
+            .sortedBy { it.name }
     }
 
     class SessionItemsWrapper {
 
         private val sessionItems: TreeSet<SessionItem> = TreeSet<SessionItem>(Comparator { o1, o2 ->
-            val res = o2.time.compareTo(o1.time)
+            var res = o2.time.compareTo(o1.time)
             if (res == 0) {
-                return@Comparator o1.type.ordinal.compareTo(o2.type.ordinal)
+                res = o1.type.ordinal.compareTo(o2.type.ordinal)
+                if(res == 0) {
+                    res = o1.id.compareTo(o2.id)
+                }
             }
             return@Comparator res
         })
@@ -236,7 +252,6 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
         session.open = false
         session.endTime = Calendar.getInstance().time
         router.popCurrentController()
-        // TODO Update ListCharacters
-        // TODO Update ListSessions
+        delegate?.updateScreenSessionClosed()
     }
 }

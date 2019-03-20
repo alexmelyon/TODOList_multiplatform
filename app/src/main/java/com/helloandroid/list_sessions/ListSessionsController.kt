@@ -9,6 +9,7 @@ import com.helloandroid.App
 import com.helloandroid.GameSession
 import com.helloandroid.R
 import com.helloandroid.game_pager.GamePagerController
+import com.helloandroid.list_characters.ListCharactersDelegate
 import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.session.SessionController
 import ru.napoleonit.talan.di.ControllerInjector
@@ -17,15 +18,21 @@ import javax.inject.Inject
 
 val GAME_KEY = "GAME_KEY"
 
-class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContract.Controller {
+interface ListSessionsDelegate {
+    fun updateScreenSessionClosed()
+}
+
+// TODO Headers for open and closed sessions
+class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContract.Controller, ListSessionsDelegate {
 
     @Inject
     lateinit var view: ListSessionsContract.View
 
-    private lateinit var sessionsList: MutableList<GameSession>
-
     val world = App.instance.worlds.first { it.id == args.getInt(WORLD_KEY) }
     val game = App.instance.games.first { it.id == args.getInt(GAME_KEY) && it.worldGroup == world.id }
+    var delegate: ListCharactersDelegate? = null
+
+    private lateinit var sessionsList: MutableList<GameSession>
 
     constructor(worldId: Int, gameId: Int) : this(Bundle().apply {
         putInt(WORLD_KEY, worldId)
@@ -56,10 +63,16 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
         ControllerInjector.inject(this)
+
+        updateScreen()
     }
 
-    override fun onAttach(view: View) {
-        super.onAttach(view)
+    override fun updateScreenSessionClosed() {
+        updateScreen()
+        delegate?.updateCharactersScreen()
+    }
+
+    fun updateScreen() {
         sessionsList = App.instance.gameSessions.filter { it.worldGroup == world.id && it.gameGroup == game.id }
             .filterNot { it.archived }
             .sortedWith(Comparator { o1, o2 ->
@@ -75,6 +88,10 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
                 return@Comparator o1.name.compareTo(o2.name)
             })
             .toMutableList()
+    }
+
+    override fun onAttach(view: View) {
+        super.onAttach(view)
         // TODO Description time
         this.view.setData(sessionsList)
     }
@@ -82,7 +99,9 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
     override fun onItemClick(pos: Int) {
         val router = parentController?.router ?: this.router
         val sessionId = sessionsList[pos].id
-        router.pushController(RouterTransaction.with(SessionController(sessionId, game.id, world.id)))
+        router.pushController(RouterTransaction.with(SessionController(sessionId, game.id, world.id).apply {
+            delegate = this@ListSessionsController
+        }))
     }
 
     override fun getGameName(): String {

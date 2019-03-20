@@ -19,7 +19,7 @@ interface SessionContract {
         fun showCloseSessionDialog(name: String)
     }
     interface Controller {
-        fun getSessionDatetime(): String
+        fun getTitle(): String
         fun onHpChanged(pos: Int, value: Int)
         fun onSkillChanged(pos: Int, value: Int)
         fun onThingChanged(pos: Int, value: Int)
@@ -31,6 +31,7 @@ interface SessionContract {
         fun addCommentDiff()
         fun onAddItemClicked(which: Int)
         fun closeSession()
+        fun isSessionOpen(): Boolean
     }
 }
 

@@ -37,7 +37,7 @@ class RecyclerStringAdapter<T>(val context: Context, val onItemClickListener: (I
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val text1 = holder.itemView.findViewById<TextView>(android.R.id.text1)
+        val text1 = holder.text1
         text1.text = items[position].toString()
         text1.setOnClickListener { view ->
             val correctPosition = holder.adapterPosition
@@ -60,5 +60,8 @@ class RecyclerStringAdapter<T>(val context: Context, val onItemClickListener: (I
         notifyItemRemoved(pos)
     }
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val text1 = view.findViewById<TextView>(android.R.id.text1)
+//        val text2 = view.findViewById<TextView>(android.R.id.text2)
+    }
 }

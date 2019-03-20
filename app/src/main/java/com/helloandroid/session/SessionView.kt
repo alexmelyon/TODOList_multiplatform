@@ -17,8 +17,8 @@ class SessionView @Inject constructor(val activity: MainActivity) : _FrameLayout
     lateinit var listAdapter: SessionDiffsAdapter
 
     override fun createView(container: ViewGroup): View {
-        activity.supportActionBar!!.title = controller.getSessionDatetime()
-        listAdapter = SessionDiffsAdapter(container.context).apply {
+        activity.supportActionBar!!.title = controller.getTitle()
+        listAdapter = SessionDiffsAdapter(container.context, editable = controller.isSessionOpen()).apply {
             onItemMinus = { pos, type ->
                 when (type) {
                     SessionItemType.ITEM_HP -> controller.onHpChanged(pos, -1)
@@ -71,8 +71,8 @@ class SessionView @Inject constructor(val activity: MainActivity) : _FrameLayout
     override fun showAddHpDialog(characterNames: List<String>) {
         AlertDialog.Builder(activity)
             .setTitle("Select character")
-            .setItems(characterNames.toTypedArray(), DialogInterface.OnClickListener { dialog, which ->
-                controller.addHpDiff(which)
+            .setItems(characterNames.toTypedArray(), DialogInterface.OnClickListener { dialog, character ->
+                controller.addHpDiff(character)
             })
             .show()
     }

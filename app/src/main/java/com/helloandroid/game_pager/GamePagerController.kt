@@ -32,6 +32,7 @@ class GamePagerController(args: Bundle) : Controller(args) {
     val game = App.instance.games.first { it.id == args.getInt(GAME_KEY) && it.worldGroup == world.id }
     var selectedTab = 0
     var selectedController: Controller? = null
+    val listCharactersController = ListCharactersController(world.id, game.id)
     val childPages = mutableMapOf<Int, Controller>()
     lateinit var menu: Menu
     lateinit var menuInflater: MenuInflater
@@ -50,8 +51,10 @@ class GamePagerController(args: Bundle) : Controller(args) {
             override fun configureRouter(router: Router, position: Int) {
                 if (!router.hasRootController()) {
                     val page = when (position) {
-                        PAGE_CHARACTERS -> ListCharactersController(world.id, game.id)
-                        PAGE_SESSIONS -> ListSessionsController(world.id, game.id)
+                        PAGE_CHARACTERS -> listCharactersController
+                        PAGE_SESSIONS -> ListSessionsController(world.id, game.id).apply {
+                            delegate = listCharactersController
+                        }
                         else -> throw IllegalArgumentException("Wrong page $position")
                     }
                     childPages[position] = page

@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.session_item_int.view.*
 import org.jetbrains.anko.layoutInflater
 import org.jetbrains.anko.sdk15.listeners.onClick
 
-class SessionDiffsAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class SessionDiffsAdapter(val context: Context, val editable: Boolean) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var items = mutableListOf<SessionItem>()
         set(value) {
@@ -67,10 +67,12 @@ class SessionDiffsAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                 holder.title.text = items[position].title
                 holder.desc.text = items[position].desc
                 holder.value.text = items[position].value.toString()
+                holder.minusButton.visibility = if(editable) View.VISIBLE else View.INVISIBLE
                 holder.minusButton.onClick { view ->
                     val correctPosition = holder.adapterPosition
                     onItemMinus(items[correctPosition].index, type)
                 }
+                holder.plusButton.visibility = if(editable) View.VISIBLE else View.INVISIBLE
                 holder.plusButton.onClick { view ->
                     val correctPosition = holder.adapterPosition
                     onItemPlus(items[correctPosition].index, type)
@@ -78,11 +80,11 @@ class SessionDiffsAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
             }
             SessionItemType.ITEM_COMMENT -> {
                 holder as ItemCommentViewHolder
+                holder.editText.isEnabled = editable
                 holder.editText.setText(items[position].comment, TextView.BufferType.EDITABLE)
                 if (textWatchers[holder.editText] == null) {
                     val watcher = IdTextWatcher() { index, comment ->
                         val correctPosition = holder.adapterPosition
-//                        onCommentChanged(index, comment)
                         onCommentChanged(correctPosition, comment)
                     }
                     textWatchers[holder.editText] = watcher

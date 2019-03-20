@@ -15,7 +15,7 @@ import java.util.*
 import javax.inject.Inject
 
 interface ListCharactersDelegate {
-    fun updateScreen()
+    fun updateCharactersScreen()
 }
 
 class ListCharactersController(args: Bundle) : Controller(args), ListCharactersContract.Controller, ListCharactersDelegate {
@@ -57,35 +57,43 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
         super.onContextAvailable(context)
         ControllerInjector.inject(this)
 
-        updateScreen()
+        updateCharactersScreen()
     }
 
-    override fun updateScreen() {
+    override fun updateCharactersScreen() {
         characterItems = TreeSet(Comparator { o1, o2 ->
             return@Comparator o1.name.compareTo(o2.name)
         })
-        val characters = App.instance.characters.filter { it.gameGroup == game.id && it.worldGroup == world.id }.filterNot { it.archived }
-        val sessionsIds = App.instance.gameSessions.filter { it.gameGroup == game.id && it.worldGroup == world.id }.filterNot { it.open }.map { it.id }
+        val characters = App.instance.characters.filter { it.gameGroup == game.id && it.worldGroup == world.id }
+            .filterNot { it.archived }
+        val closedSessions = App.instance.gameSessions.filter { it.gameGroup == game.id && it.worldGroup == world.id }
+            .filterNot { it.open }
+            .map { it.id }
         characters.forEach { character ->
-            val hp = sessionsIds.fold(0) { total, next ->
-                App.instance.hpDiffs.filter { it.characterGroup == character.id && sessionsIds.contains(it.sessionGroup) && it.gameGroup == game.id && it.worldGroup == world.id }
+            val hp = closedSessions.fold(0) { total, next ->
+                App.instance.hpDiffs.filter { it.characterGroup == character.id && closedSessions.contains(it.sessionGroup) && it.gameGroup == game.id && it.worldGroup == world.id }
                     .sumBy { it.value }
             }
+
             val skills = App.instance.skills.filter { it.worldGroup == world.id }
-            val skillsDiffs = App.instance.skillDiffs.filter { it.characterGroup == character.id && sessionsIds.contains(it.sessionGroup) && it.gameGroup == game.id && it.worldGroup == world.id }
+            val skillsDiffs = App.instance.skillDiffs.filter { it.characterGroup == character.id && closedSessions.contains(it.sessionGroup) && it.gameGroup == game.id && it.worldGroup == world.id }
                 .fold(listOf<Pair<Int, Int>>()) { total, next ->
                     total + listOf(Pair(next.skillGroup, next.value))
                 }.map { skillTovalue -> skills.single { it.id == skillTovalue.first }.name to skillTovalue.second }
                 .groupBy { it.first }
                 .map { it.key to it.value.sumBy { it.second } }
+                .filter { it.second != 0}
+
             val things = App.instance.things.filter { it.worldGroup == world.id }
             // TODO Refactor this boilerplate
-            val thingDiffs = App.instance.thingDiffs.filter { it.characterGroup == character.id && sessionsIds.contains(it.sessionGroup) && it.gameGroup == game.id && it.worldGroup == world.id }
+            val thingDiffs = App.instance.thingDiffs.filter { it.characterGroup == character.id && closedSessions.contains(it.sessionGroup) && it.gameGroup == game.id && it.worldGroup == world.id }
                 .fold(listOf<Pair<Int, Int>>()) { total, next ->
                     total + listOf(Pair(next.thingGroup, next.value))
-                }.map { skillTovalue -> things.single { it.id == skillTovalue.first }.name to skillTovalue.second }
+                }.map { thingTovalue -> things.single { it.id == thingTovalue.first }.name to thingTovalue.second }
                 .groupBy { it.first }
                 .map { it.key to it.value.sumBy { it.second } }
+                .filter { it.second != 0}
+
             characterItems.add(CharacterItem(character.id, character.name, hp, skillsDiffs, thingDiffs))
             characterItems.forEachIndexed { index, item ->
                 item.index = index
