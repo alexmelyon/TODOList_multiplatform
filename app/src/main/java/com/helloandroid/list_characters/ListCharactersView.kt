@@ -57,7 +57,7 @@ class ListCharactersView @Inject constructor(val activity: MainActivity) : _Fram
         charactersAdapter.adddedAt(index, item)
     }
 
-    override fun removedAt(pos: Int) {
+    override fun archiveddAt(pos: Int) {
         charactersAdapter.removedAt(pos)
     }
 }

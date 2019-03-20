@@ -28,10 +28,10 @@ class ListGamesView @Inject constructor(val activity: MainActivity) : _FrameLayo
         }
         gamesAdapter.onItemLongclickListener = { pos, name ->
             AlertDialog.Builder(activity)
-                .setTitle("Remove game?")
+                .setTitle("Archive game?")
                 .setMessage(name)
                 .setPositiveButton("OK", DialogInterface.OnClickListener { dialog, which ->
-                    controller.removeGameAt(pos)
+                    controller.archiveGameAt(pos)
                 })
                 .show()
         }
@@ -59,7 +59,7 @@ class ListGamesView @Inject constructor(val activity: MainActivity) : _FrameLayo
         gamesAdapter.itemAddedAt(pos, gameName)
     }
 
-    override fun removedAt(pos: Int) {
+    override fun archivedAt(pos: Int) {
         gamesAdapter.itemRemovedAt(pos)
     }
 }

@@ -72,6 +72,6 @@ class ListWorldsController : Controller(), ListWorldsContract.Controller {
         world.archived = true
 
         setWorlds.remove(world)
-        view.removedAt(pos)
+        view.archivedAt(pos)
     }
 }

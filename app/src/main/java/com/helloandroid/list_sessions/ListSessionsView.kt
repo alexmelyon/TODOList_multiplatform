@@ -63,7 +63,7 @@ class ListSessionsView @Inject constructor(val activity: MainActivity) : _FrameL
         sessionsAdapter.itemAddedAt(pos, session)
     }
 
-    override fun removedAt(pos: Int) {
+    override fun archivedAt(pos: Int) {
         sessionsAdapter.itemRemovedAt(pos)
     }
 }

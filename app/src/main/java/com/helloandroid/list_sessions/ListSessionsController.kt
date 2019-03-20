@@ -96,6 +96,6 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
         val session = App.instance.gameSessions.single { it.id == item.id && it.gameGroup == game.id && it.worldGroup == world.id }
         session.archived = true
 
-        view.removedAt(pos)
+        view.archivedAt(pos)
     }
 }

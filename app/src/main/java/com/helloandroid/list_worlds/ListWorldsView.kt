@@ -53,7 +53,7 @@ class ListWorldsView @Inject constructor(val activity: MainActivity) : _FrameLay
         worldsAdapter.itemAddedAt(i, world)
     }
 
-    override fun removedAt(pos: Int) {
+    override fun archivedAt(pos: Int) {
         worldsAdapter.itemRemovedAt(pos)
     }
 

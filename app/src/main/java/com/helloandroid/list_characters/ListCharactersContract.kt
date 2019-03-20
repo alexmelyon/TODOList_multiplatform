@@ -9,7 +9,7 @@ interface ListCharactersContract {
         fun setData(items: MutableList<CharacterItem>)
         fun showAddCharacterDialog()
         fun addedAt(index: Int, item: CharacterItem)
-        fun removedAt(pos: Int)
+        fun archiveddAt(pos: Int)
     }
 
     interface Controller {

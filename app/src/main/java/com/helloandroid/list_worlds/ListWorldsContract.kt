@@ -16,6 +16,6 @@ interface ListWorldsContract {
         fun setData(items: MutableList<World>)
         fun showCreateWorldDialog()
         fun addedAt(i: Int, world: World)
-        fun removedAt(pos: Int)
+        fun archivedAt(pos: Int)
     }
 }

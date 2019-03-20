@@ -9,7 +9,7 @@ interface ListSessionsContract {
         fun setData(items: MutableList<GameSession>)
         fun showCreateSessionDialog()
         fun addedAt(pos: Int, session: GameSession)
-        fun removedAt(pos: Int)
+        fun archivedAt(pos: Int)
     }
 
     interface Controller {

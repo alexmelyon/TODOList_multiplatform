@@ -113,6 +113,6 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
         characterItems.forEachIndexed { index, item ->
             item.index = index
         }
-        view.removedAt(pos)
+        view.archiveddAt(pos)
     }
 }

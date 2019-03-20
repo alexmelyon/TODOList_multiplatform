@@ -23,7 +23,7 @@ class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Co
 
     constructor(worldId: Int) : this(Bundle().apply { putInt(WORLD_KEY, worldId) })
 
-    private val games = TreeSet<Game>(kotlin.Comparator { o1, o2 ->
+    private val gamesSet = TreeSet<Game>(kotlin.Comparator { o1, o2 ->
         val res = o2.time.compareTo(o1.time)
         if(res == 0) {
             return@Comparator o1.name.compareTo(o2.name)
@@ -43,7 +43,7 @@ class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Co
         super.onContextAvailable(context)
         ControllerInjector.inject(this)
 
-        games.addAll(App.instance.games)
+        gamesSet.addAll(App.instance.games.filterNot { it.archived })
     }
 
     override fun onAttach(view: View) {
@@ -79,11 +79,11 @@ class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Co
         view.addedAt(0, gameName)
     }
 
-    override fun removeGameAt(pos: Int) {
-        val game = games.toList()[pos]
-        App.instance.games.remove(game)
+    override fun archiveGameAt(pos: Int) {
+        val game = gamesSet.toList()[pos]
+        game.archived = true
 
-        games.remove(game)
-        view.removedAt(pos)
+        gamesSet.remove(game)
+        view.archivedAt(pos)
     }
 }
