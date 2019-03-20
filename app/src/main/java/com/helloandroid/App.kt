@@ -102,7 +102,7 @@ class World(val id: Int, var name: String, val time: Date, var archived: Boolean
 class Game(val id: Int, var name: String, val worldGroup: Int, val time: Date, var archived: Boolean = false)
 
 class GameSession(val id: Int, var name: String, val gameGroup: Int, val worldGroup: Int, val startTime: Date, var open: Boolean, var endTime: Date, var archived: Boolean = false) {
-    override fun toString() = "$name ${if(open) "Open" else "Closed"}"
+    override fun toString() = name
 }
 
 class Character(val id: Int, var name: String, val gameGroup: Int, val worldGroup: Int, var archived: Boolean = false)

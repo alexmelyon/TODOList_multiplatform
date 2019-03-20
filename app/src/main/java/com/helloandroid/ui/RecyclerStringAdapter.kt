@@ -13,6 +13,7 @@ import org.jetbrains.anko.textColor
 class RecyclerStringAdapter<T>(val context: Context, val onItemClickListener: (Int) -> Unit = { pos -> }) : RecyclerView.Adapter<RecyclerStringAdapter.ViewHolder>() {
 
     var onItemLongclickListener: (Int, T) -> Unit = { pos, item -> }
+    var onDescriptionValue: ((Int) -> String)? = null
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
@@ -26,10 +27,17 @@ class RecyclerStringAdapter<T>(val context: Context, val onItemClickListener: (I
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val layout = if(onDescriptionValue == null) {
+            android.R.layout.simple_list_item_1
+        } else {
+            android.R.layout.simple_list_item_2
+        }
         val v = LayoutInflater.from(parent.context)
-            .inflate(android.R.layout.simple_list_item_1, parent, false)
-        v.findViewById<TextView>(android.R.id.text1).textColor = Color.BLACK
-        return ViewHolder(v)
+            .inflate(layout, parent, false)
+        val vh = ViewHolder(v)
+        vh.text1.textColor = Color.BLACK
+        vh.text2?.textColor = Color.GRAY
+        return vh
     }
 
     override fun getItemCount(): Int {
@@ -37,16 +45,18 @@ class RecyclerStringAdapter<T>(val context: Context, val onItemClickListener: (I
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val correctPosition = holder.adapterPosition
         val text1 = holder.text1
         text1.text = items[position].toString()
-        text1.setOnClickListener { view ->
-            val correctPosition = holder.adapterPosition
+        holder.itemView.setOnClickListener { view ->
             onItemClickListener(correctPosition)
         }
-        text1.setOnLongClickListener { view ->
-            val correctPosition = holder.adapterPosition
+        holder.itemView.setOnLongClickListener { view ->
             onItemLongclickListener(correctPosition, items[position])
             return@setOnLongClickListener true
+        }
+        if(onDescriptionValue != null) {
+            holder.text2.text = onDescriptionValue?.invoke(correctPosition)
         }
     }
 
@@ -62,6 +72,6 @@ class RecyclerStringAdapter<T>(val context: Context, val onItemClickListener: (I
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val text1 = view.findViewById<TextView>(android.R.id.text1)
-//        val text2 = view.findViewById<TextView>(android.R.id.text2)
+        val text2 = view.findViewById<TextView>(android.R.id.text2)
     }
 }

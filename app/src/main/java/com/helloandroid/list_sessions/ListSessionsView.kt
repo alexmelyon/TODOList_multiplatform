@@ -24,6 +24,9 @@ class ListSessionsView @Inject constructor(val activity: MainActivity) : _FrameL
         sessionsAdapter = RecyclerStringAdapter(container.context) { pos ->
             controller.onItemClick(pos)
         }
+        sessionsAdapter.onDescriptionValue = { pos ->
+            controller.getDescription(pos)
+        }
         sessionsAdapter.onItemLongclickListener = { pos, session ->
             AlertDialog.Builder(activity)
                 .setTitle("Archive session?")

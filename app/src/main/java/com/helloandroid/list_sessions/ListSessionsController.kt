@@ -13,6 +13,7 @@ import com.helloandroid.list_characters.ListCharactersDelegate
 import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.session.SessionController
 import ru.napoleonit.talan.di.ControllerInjector
+import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
@@ -92,8 +93,12 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
 
     override fun onAttach(view: View) {
         super.onAttach(view)
-        // TODO Description time
         this.view.setData(sessionsList)
+    }
+
+    override fun getDescription(pos: Int): String {
+        val session = sessionsList[pos]
+        return session.startTime.let { SimpleDateFormat("d MMMM HH:mm", Locale.getDefault()).format(it) }
     }
 
     override fun onItemClick(pos: Int) {

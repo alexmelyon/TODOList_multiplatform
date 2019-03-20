@@ -86,7 +86,6 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
     }
 
     override fun getTitle(): String {
-//        return session.startTime.let { SimpleDateFormat("d MMMM HH:mm", Locale.getDefault()).format(it) }
         return session.name
     }
 

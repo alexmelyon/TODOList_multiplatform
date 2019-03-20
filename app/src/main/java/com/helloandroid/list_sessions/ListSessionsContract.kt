@@ -17,5 +17,6 @@ interface ListSessionsContract {
         fun getGameName(): String
         fun createSession(sessionName: String)
         fun archiveSession(pos: Int, session: GameSession)
+        fun getDescription(pos: Int): String
     }
 }
