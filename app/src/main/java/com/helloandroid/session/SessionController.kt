@@ -69,10 +69,6 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
         this.view.setData(itemsWrapper.toMutableList())
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        super.onPrepareOptionsMenu(menu)
-    }
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.session_add, menu)
@@ -80,7 +76,7 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            R.id.session_add -> view.showAddItemDialog()
+            R.id.session_add_item -> view.showAddItemDialog()
             R.id.session_show_archived -> Log.i("JCD", "SHOW ARCHIVED") // TODO Checkbox
             R.id.session_close -> Log.i("JCD", "SESSION CLOSE")
         }

@@ -48,11 +48,13 @@ class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Co
 
     override fun onAttach(view: View) {
         super.onAttach(view)
+        val games = App.instance.games.filter { it.worldGroup == world.id }
+            .filterNot { it.archived }
         this.view.setData(games.toList().map { it.name }.toMutableList())
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.game_add, menu)
+        inflater.inflate(R.menu.list_games_add, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

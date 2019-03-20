@@ -1,6 +1,7 @@
 package com.helloandroid.list_worlds
 
 import android.view.ViewGroup
+import com.helloandroid.World
 
 interface ListWorldsContract {
 
@@ -12,9 +13,9 @@ interface ListWorldsContract {
 
     interface View {
         fun createView(container: ViewGroup): android.view.View
-        fun setData(items: MutableList<String>)
+        fun setData(items: MutableList<World>)
         fun showCreateWorldDialog()
-        fun addedAt(i: Int, name: String)
+        fun addedAt(i: Int, world: World)
         fun removedAt(pos: Int)
     }
 }

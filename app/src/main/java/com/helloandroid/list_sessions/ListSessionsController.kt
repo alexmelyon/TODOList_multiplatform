@@ -2,15 +2,17 @@ package com.helloandroid.list_sessions
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
 import com.helloandroid.App
+import com.helloandroid.GameSession
+import com.helloandroid.R
+import com.helloandroid.game_pager.GamePagerController
 import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.session.SessionController
 import ru.napoleonit.talan.di.ControllerInjector
+import java.util.*
 import javax.inject.Inject
 
 val GAME_KEY = "GAME_KEY"
@@ -29,7 +31,24 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
     })
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
+        setHasOptionsMenu(true)
         return view.createView(container)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        val parent = parentController as GamePagerController
+        if (parent.selectedController != this) {
+            return
+        }
+        menu.clear()
+        inflater.inflate(R.menu.list_sessions_add, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.add_session -> view.showCreateSessionDialog()
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onContextAvailable(context: Context) {
@@ -39,7 +58,18 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
 
     override fun onAttach(view: View) {
         super.onAttach(view)
-        this.view.setData(App.instance.gameSessions.filter { it.worldGroup == world.id && it.gameGroup == game.id }.map { it.name }.toMutableList())
+        val sessions = App.instance.gameSessions.filter { it.worldGroup == world.id && it.gameGroup == game.id }
+            .sortedWith(Comparator { o1, o2 ->
+                if (o1.closed && o2.closed) {
+                    return@Comparator o2.endTime.compareTo(o1.endTime)
+                } else if (!o1.closed && !o2.closed) {
+                    return@Comparator o2.startTime.compareTo(o1.startTime)
+                } else {
+                    return@Comparator o1.closed.compareTo(o2.closed)
+                }
+            })
+            .toMutableList()
+        this.view.setData(sessions)
     }
 
     override fun onItemClick(pos: Int) {
@@ -49,5 +79,15 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
 
     override fun getGameName(): String {
         return game.name
+    }
+
+    override fun createSession(sessionName: String) {
+        val maxId = App.instance.gameSessions.filter { it.gameGroup == game.id && it.worldGroup == world.id }
+            .maxBy { it.id }?.id ?: -1
+        val now = Calendar.getInstance().time
+        val session = GameSession(maxId + 1, sessionName, game.id, world.id, now, false, now)
+        App.instance.gameSessions.add(session)
+
+        view.addedAt(0, session)
     }
 }

@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import org.jetbrains.anko.textColor
 
-class RecyclerStringAdapter(val context: Context, val onItemClickListener: (Int) -> Unit = { pos -> }) : RecyclerView.Adapter<RecyclerStringAdapter.ViewHolder>() {
+class RecyclerStringAdapter<T>(val context: Context, val onItemClickListener: (Int) -> Unit = { pos -> }) : RecyclerView.Adapter<RecyclerStringAdapter.ViewHolder>() {
 
     var onItemLongclickListener: (Int, String) -> Unit = { pos, name -> }
 
@@ -19,7 +19,7 @@ class RecyclerStringAdapter(val context: Context, val onItemClickListener: (Int)
         recyclerView.layoutManager = LinearLayoutManager(context)
     }
 
-    var items: MutableList<String> = mutableListOf()
+    var items: MutableList<T> = mutableListOf()
         set(value) {
             field = value
             notifyDataSetChanged()
@@ -38,7 +38,7 @@ class RecyclerStringAdapter(val context: Context, val onItemClickListener: (Int)
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val text1 = holder.itemView.findViewById<TextView>(android.R.id.text1)
-        text1.text = items[position]
+        text1.text = items[position].toString()
         text1.setOnClickListener { view ->
             val correctPosition = holder.adapterPosition
             onItemClickListener(correctPosition)
@@ -50,7 +50,7 @@ class RecyclerStringAdapter(val context: Context, val onItemClickListener: (Int)
         }
     }
 
-    fun itemAddedAt(pos: Int, name: String) {
+    fun itemAddedAt(pos: Int, name: T) {
         items.add(pos, name)
         notifyItemInserted(pos)
     }

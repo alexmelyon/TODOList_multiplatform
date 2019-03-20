@@ -18,7 +18,7 @@ class ListGamesView @Inject constructor(val activity: MainActivity) : _FrameLayo
     lateinit var controller: ListGamesContract.Controller
 
     lateinit var gamesView: RecyclerView
-    lateinit var gamesAdapter: RecyclerStringAdapter
+    lateinit var gamesAdapter: RecyclerStringAdapter<String>
 
     override fun createView(container: ViewGroup) = container.context.linearLayout {
         activity.supportActionBar!!.title = controller.getWorldName()

@@ -4,9 +4,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.view.ViewPager
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.LinearLayout
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.Router
@@ -25,8 +23,6 @@ import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.support.v4.viewPager
 import org.jetbrains.anko.wrapContent
 
-val SELECTED_TAB = "SELECTED_TAB"
-
 class GamePagerController(args: Bundle) : Controller(args) {
 
     val PAGE_CHARACTERS = 0
@@ -35,6 +31,10 @@ class GamePagerController(args: Bundle) : Controller(args) {
     val world = App.instance.worlds.first { it.id == args.getInt(WORLD_KEY) }
     val game = App.instance.games.first { it.id == args.getInt(GAME_KEY) && it.worldGroup == world.id }
     var selectedTab = 0
+    var selectedController: Controller? = null
+    val childPages = mutableMapOf<Int, Controller>()
+    lateinit var menu: Menu
+    lateinit var menuInflater: MenuInflater
 
     constructor(worldId: Int, gameId: Int) : this(Bundle().apply {
         putInt(WORLD_KEY, worldId)
@@ -48,12 +48,15 @@ class GamePagerController(args: Bundle) : Controller(args) {
     init {
         pagerAdapter = object : RouterPagerAdapter(this) {
             override fun configureRouter(router: Router, position: Int) {
-                selectedTab = position
                 if (!router.hasRootController()) {
                     val page = when (position) {
                         PAGE_CHARACTERS -> ListCharactersController(world.id, game.id)
                         PAGE_SESSIONS -> ListSessionsController(world.id, game.id)
                         else -> throw IllegalArgumentException("Wrong page $position")
+                    }
+                    childPages[position] = page
+                    if(selectedTab == position) {
+                        selectedController = page
                     }
                     router.setRoot(RouterTransaction.with(page))
                 }
@@ -86,9 +89,33 @@ class GamePagerController(args: Bundle) : Controller(args) {
                 adapter = pagerAdapter
             }.lparams(matchParent, matchParent)
         }
+        return view
+    }
+
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        setHasOptionsMenu(true)
+        val listener = object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                println("onTabSelected")
+                selectedTab = tab.position
+                selectedController = childPages[tab.position]
+                childPages[selectedTab]?.onCreateOptionsMenu(menu, menuInflater)
+                setHasOptionsMenu(true)
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {
+                println("onTabUnselected")
+            }
+
+            override fun onTabReselected(tab: TabLayout.Tab) {
+                println("onTabReselected")
+            }
+        }
+        tabLayout.addOnTabSelectedListener(listener)
         tabLayout.setupWithViewPager(viewPager)
         tabLayout.getTabAt(selectedTab)?.select()
-        return view
+//        listener.onTabSelected(tabLayout.getTabAt(selectedTab))
     }
 
     override fun onDestroyView(view: View) {
@@ -97,5 +124,10 @@ class GamePagerController(args: Bundle) : Controller(args) {
         }
         tabLayout.setupWithViewPager(null)
         super.onDestroyView(view)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        this.menu = menu
+        this.menuInflater = inflater
     }
 }

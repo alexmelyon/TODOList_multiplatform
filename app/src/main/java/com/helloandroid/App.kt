@@ -95,11 +95,15 @@ class App : Application(), HasActivityInjector {
     }
 }
 
-class World(val id: Int, var name: String, val time: Date, var archived: Boolean = false)
+class World(val id: Int, var name: String, val time: Date, var archived: Boolean = false) {
+    override fun toString() = name
+}
 
 class Game(val id: Int, var name: String, val worldGroup: Int, val time: Date, var archived: Boolean = false)
 
-class GameSession(val id: Int, var name: String, val gameGroup: Int, val worldGroup: Int, val startTime: Date, var closed: Boolean, val endTime: Date)
+class GameSession(val id: Int, var name: String, val gameGroup: Int, val worldGroup: Int, val startTime: Date, var closed: Boolean, val endTime: Date) {
+    override fun toString() = name
+}
 
 class Character(val id: Int, var name: String, val gameGroup: Int, val worldGroup: Int, var archived: Boolean = false)
 

@@ -39,12 +39,12 @@ class ListWorldsController : Controller(), ListWorldsContract.Controller {
             return@Comparator res
         })
         setWorlds.addAll(App.instance.worlds)
-        this.view.setData(setWorlds.toList().map { it.name }.toMutableList())
+        this.view.setData(setWorlds.toMutableList())
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.worlds_add, menu)
+        inflater.inflate(R.menu.list_worlds_add, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -64,7 +64,7 @@ class ListWorldsController : Controller(), ListWorldsContract.Controller {
         App.instance.worlds.add(world)
 
         setWorlds.add(world)
-        view.addedAt(0, worldName)
+        view.addedAt(0, world)
     }
 
     override fun removeWorldAt(pos: Int) {

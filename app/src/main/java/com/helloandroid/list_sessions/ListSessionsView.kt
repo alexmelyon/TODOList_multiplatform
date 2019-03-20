@@ -1,7 +1,11 @@
 package com.helloandroid.list_sessions
 
+import android.content.DialogInterface
+import android.support.v7.app.AlertDialog
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import com.helloandroid.GameSession
 import com.helloandroid.MainActivity
 import com.helloandroid.ui.RecyclerStringAdapter
 import org.jetbrains.anko._FrameLayout
@@ -13,7 +17,7 @@ class ListSessionsView @Inject constructor(val activity: MainActivity) : _FrameL
     @Inject
     lateinit var controller: ListSessionsContract.Controller
 
-    lateinit var sessionsAdapter: RecyclerStringAdapter
+    lateinit var sessionsAdapter: RecyclerStringAdapter<GameSession>
 
     override fun createView(container: ViewGroup): View {
         activity.supportActionBar!!.title = controller.getGameName()
@@ -25,8 +29,25 @@ class ListSessionsView @Inject constructor(val activity: MainActivity) : _FrameL
         }
     }
 
-    override fun setData(items: MutableList<String>) {
+    override fun setData(items: MutableList<GameSession>) {
         sessionsAdapter.items = items
     }
 
+    override fun showCreateSessionDialog() {
+        val editText = EditText(activity)
+        AlertDialog.Builder(activity)
+            .setTitle("Session name:")
+            .setView(editText)
+            .setPositiveButton("OK", DialogInterface.OnClickListener { dialog, which ->
+                controller.createSession(editText.text.toString())
+            })
+            .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, which ->
+                dialog.dismiss()
+            })
+            .show()
+    }
+
+    override fun addedAt(pos: Int, session: GameSession) {
+        sessionsAdapter.itemAddedAt(pos, session)
+    }
 }

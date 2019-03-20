@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import com.helloandroid.MainActivity
 import com.helloandroid.R
+import com.helloandroid.World
 import com.helloandroid.ui.RecyclerStringAdapter
 import org.jetbrains.anko._FrameLayout
 import org.jetbrains.anko.matchParent
@@ -20,7 +21,7 @@ class ListWorldsView @Inject constructor(val activity: MainActivity) : _FrameLay
     lateinit var controller: ListWorldsContract.Controller
 
     lateinit var worldsView: RecyclerView
-    lateinit var worldsAdapter: RecyclerStringAdapter
+    lateinit var worldsAdapter: RecyclerStringAdapter<World>
 
     override fun createView(container: ViewGroup) = container.context.verticalLayout {
         activity.supportActionBar!!.title = container.context.getString(R.string.app_name)
@@ -44,12 +45,12 @@ class ListWorldsView @Inject constructor(val activity: MainActivity) : _FrameLay
         }.lparams(matchParent, matchParent)
     }
 
-    override fun setData(items: MutableList<String>) {
+    override fun setData(items: MutableList<World>) {
         worldsAdapter.items = items
     }
 
-    override fun addedAt(i: Int, name: String) {
-        worldsAdapter.itemAddedAt(i, name)
+    override fun addedAt(i: Int, world: World) {
+        worldsAdapter.itemAddedAt(i, world)
     }
 
     override fun removedAt(pos: Int) {
