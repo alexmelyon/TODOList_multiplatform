@@ -18,7 +18,6 @@ class SessionView @Inject constructor(val activity: MainActivity) : _FrameLayout
 
     override fun createView(container: ViewGroup): View {
         activity.supportActionBar!!.title = controller.getSessionDatetime()
-        // TODO Add SessionItem button
         listAdapter = SessionDiffsAdapter(container.context).apply {
             onItemMinus = { pos, type ->
                 when (type) {
@@ -109,4 +108,16 @@ class SessionView @Inject constructor(val activity: MainActivity) : _FrameLayout
         controller.addCommentDiff()
     }
 
+    override fun showCloseSessionDialog(name: String) {
+        AlertDialog.Builder(activity)
+            .setTitle("Close this session?")
+            .setTitle(name)
+            .setPositiveButton("OK", DialogInterface.OnClickListener { dialog, which ->
+                controller.closeSession()
+            })
+            .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, which ->
+                dialog.dismiss()
+            })
+            .show()
+    }
 }

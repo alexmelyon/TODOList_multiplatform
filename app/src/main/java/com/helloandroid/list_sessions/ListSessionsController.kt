@@ -22,6 +22,8 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
     @Inject
     lateinit var view: ListSessionsContract.View
 
+    private lateinit var sessionsList: MutableList<GameSession>
+
     val world = App.instance.worlds.first { it.id == args.getInt(WORLD_KEY) }
     val game = App.instance.games.first { it.id == args.getInt(GAME_KEY) && it.worldGroup == world.id }
 
@@ -58,24 +60,28 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
 
     override fun onAttach(view: View) {
         super.onAttach(view)
-        val sessions = App.instance.gameSessions.filter { it.worldGroup == world.id && it.gameGroup == game.id }
+        sessionsList = App.instance.gameSessions.filter { it.worldGroup == world.id && it.gameGroup == game.id }
             .filterNot { it.archived }
             .sortedWith(Comparator { o1, o2 ->
-                if (o1.closed && o2.closed) {
-                    return@Comparator o2.endTime.compareTo(o1.endTime)
-                } else if (!o1.closed && !o2.closed) {
-                    return@Comparator o2.startTime.compareTo(o1.startTime)
-                } else {
-                    return@Comparator o1.closed.compareTo(o2.closed)
+                if (o1.open != o2.open) {
+                    return@Comparator o2.open.compareTo(o1.open)
                 }
+                if (o1.open && o1.startTime != o2.startTime) {
+                    return@Comparator o1.startTime.compareTo(o2.startTime)
+                }
+                if (!o1.open && o1.endTime != o2.endTime) {
+                    return@Comparator o1.endTime.compareTo(o2.endTime)
+                }
+                return@Comparator o2.name.compareTo(o1.name)
             })
             .toMutableList()
-        this.view.setData(sessions)
+        this.view.setData(sessionsList)
     }
 
     override fun onItemClick(pos: Int) {
         val router = parentController?.router ?: this.router
-        router.pushController(RouterTransaction.with(SessionController(App.instance.gameSessions[pos].id, game.id, world.id)))
+        val sessionId = sessionsList[pos].id
+        router.pushController(RouterTransaction.with(SessionController(sessionId, game.id, world.id)))
     }
 
     override fun getGameName(): String {

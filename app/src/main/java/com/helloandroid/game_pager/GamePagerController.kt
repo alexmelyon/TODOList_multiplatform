@@ -89,6 +89,7 @@ class GamePagerController(args: Bundle) : Controller(args) {
                 adapter = pagerAdapter
             }.lparams(matchParent, matchParent)
         }
+        tabLayout.setupWithViewPager(viewPager)
         return view
     }
 
@@ -113,7 +114,6 @@ class GamePagerController(args: Bundle) : Controller(args) {
             }
         }
         tabLayout.addOnTabSelectedListener(listener)
-        tabLayout.setupWithViewPager(viewPager)
         tabLayout.getTabAt(selectedTab)?.select()
 //        listener.onTabSelected(tabLayout.getTabAt(selectedTab))
     }

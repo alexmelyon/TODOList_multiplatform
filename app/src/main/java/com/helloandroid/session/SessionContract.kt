@@ -16,6 +16,7 @@ interface SessionContract {
         fun showAddSkillDialog(characterNames: List<String>, skillNames: List<String>)
         fun showAddThingDialog(characterNames: List<String>, thingNames: List<String>)
         fun showAddComment()
+        fun showCloseSessionDialog(name: String)
     }
     interface Controller {
         fun getSessionDatetime(): String
@@ -29,6 +30,7 @@ interface SessionContract {
 
         fun addCommentDiff()
         fun onAddItemClicked(which: Int)
+        fun closeSession()
     }
 }
 

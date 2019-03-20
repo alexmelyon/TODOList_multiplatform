@@ -57,7 +57,7 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
             return@Comparator o1.name.compareTo(o2.name)
         })
         val characters = App.instance.characters.filter { it.gameGroup == game.id && it.worldGroup == world.id && !it.archived }
-        val sessionsIds = App.instance.gameSessions.filter { it.gameGroup == game.id && it.worldGroup == world.id && it.closed }.map { it.id }
+        val sessionsIds = App.instance.gameSessions.filter { it.gameGroup == game.id && it.worldGroup == world.id }.filterNot { it.open }.map { it.id }
         characters.forEach { character ->
             val hp = sessionsIds.fold(0) { total, next ->
                 App.instance.hpDiffs.filter { it.characterGroup == character.id && sessionsIds.contains(it.sessionGroup) && it.gameGroup == game.id && it.worldGroup == world.id }

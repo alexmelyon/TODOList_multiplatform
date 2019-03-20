@@ -78,7 +78,7 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
         when(item.itemId) {
             R.id.session_add_item -> view.showAddItemDialog()
             R.id.session_show_archived -> Log.i("JCD", "SHOW ARCHIVED") // TODO Checkbox
-            R.id.session_close -> Log.i("JCD", "SESSION CLOSE")
+            R.id.session_close -> view.showCloseSessionDialog(session.name)
         }
         return super.onOptionsItemSelected(item)
     }
@@ -230,5 +230,12 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
         fun add(item: SessionItem) {
             addAll(listOf(item))
         }
+    }
+
+    override fun closeSession() {
+        session.open = false
+        router.popCurrentController()
+        // TODO Update ListCharacters
+        // TODO Update ListSessions
     }
 }
