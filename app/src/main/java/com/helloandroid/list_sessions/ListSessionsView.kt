@@ -24,6 +24,18 @@ class ListSessionsView @Inject constructor(val activity: MainActivity) : _FrameL
         sessionsAdapter = RecyclerStringAdapter(container.context) { pos ->
             controller.onItemClick(pos)
         }
+        sessionsAdapter.onItemLongclickListener = { pos, session ->
+            AlertDialog.Builder(activity)
+                .setTitle("Archive session?")
+                .setMessage(session.name)
+                .setPositiveButton("OK", DialogInterface.OnClickListener { dialog, which ->
+                    controller.archiveSession(pos, session)
+                })
+                .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, which ->
+                    dialog.dismiss()
+                })
+                .show()
+        }
         return container.context.recyclerView {
             adapter = sessionsAdapter
         }
@@ -49,5 +61,9 @@ class ListSessionsView @Inject constructor(val activity: MainActivity) : _FrameL
 
     override fun addedAt(pos: Int, session: GameSession) {
         sessionsAdapter.itemAddedAt(pos, session)
+    }
+
+    override fun removedAt(pos: Int) {
+        sessionsAdapter.itemRemovedAt(pos)
     }
 }

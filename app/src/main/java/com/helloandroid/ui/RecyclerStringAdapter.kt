@@ -12,7 +12,7 @@ import org.jetbrains.anko.textColor
 
 class RecyclerStringAdapter<T>(val context: Context, val onItemClickListener: (Int) -> Unit = { pos -> }) : RecyclerView.Adapter<RecyclerStringAdapter.ViewHolder>() {
 
-    var onItemLongclickListener: (Int, String) -> Unit = { pos, name -> }
+    var onItemLongclickListener: (Int, T) -> Unit = { pos, item -> }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
@@ -45,7 +45,7 @@ class RecyclerStringAdapter<T>(val context: Context, val onItemClickListener: (I
         }
         text1.setOnLongClickListener { view ->
             val correctPosition = holder.adapterPosition
-            onItemLongclickListener(correctPosition, text1.text.toString())
+            onItemLongclickListener(correctPosition, items[position])
             return@setOnLongClickListener true
         }
     }

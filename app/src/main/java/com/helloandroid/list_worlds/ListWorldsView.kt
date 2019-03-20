@@ -28,10 +28,10 @@ class ListWorldsView @Inject constructor(val activity: MainActivity) : _FrameLay
         worldsAdapter = RecyclerStringAdapter(container.context) { pos ->
             controller.onItemClick(pos)
         }
-        worldsAdapter.onItemLongclickListener = { pos, name ->
+        worldsAdapter.onItemLongclickListener = { pos, world ->
             AlertDialog.Builder(activity)
                 .setTitle("Remove world?")
-                .setMessage(name)
+                .setMessage(world.name)
                 .setPositiveButton("OK", DialogInterface.OnClickListener { dialog, which ->
                     controller.removeWorldAt(pos)
                 })

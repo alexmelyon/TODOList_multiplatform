@@ -8,12 +8,14 @@ interface ListSessionsContract {
         fun createView(container: ViewGroup): android.view.View
         fun setData(items: MutableList<GameSession>)
         fun showCreateSessionDialog()
-        fun addedAt(pos: Int, sessionName: GameSession)
+        fun addedAt(pos: Int, session: GameSession)
+        fun removedAt(pos: Int)
     }
 
     interface Controller {
         fun onItemClick(pos: Int)
         fun getGameName(): String
         fun createSession(sessionName: String)
+        fun archiveSession(pos: Int, session: GameSession)
     }
 }

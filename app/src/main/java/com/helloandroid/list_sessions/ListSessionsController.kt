@@ -58,7 +58,7 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
 
     override fun onAttach(view: View) {
         super.onAttach(view)
-        val sessions = App.instance.gameSessions.filter { it.worldGroup == world.id && it.gameGroup == game.id }
+        val sessions = App.instance.gameSessions.filter { it.worldGroup == world.id && it.gameGroup == game.id && !it.archived }
             .sortedWith(Comparator { o1, o2 ->
                 if (o1.closed && o2.closed) {
                     return@Comparator o2.endTime.compareTo(o1.endTime)
@@ -89,5 +89,12 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
         App.instance.gameSessions.add(session)
 
         view.addedAt(0, session)
+    }
+
+    override fun archiveSession(pos: Int, item: GameSession) {
+        val session = App.instance.gameSessions.single { it.id == item.id && it.gameGroup == game.id && it.worldGroup == world.id }
+        session.archived = true
+
+        view.removedAt(pos)
     }
 }
