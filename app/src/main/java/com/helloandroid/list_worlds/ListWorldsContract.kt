@@ -8,7 +8,7 @@ interface ListWorldsContract {
     interface Controller {
         fun onItemClick(pos: Int)
         fun createWorld(worldName: String)
-        fun removeWorldAt(pos: Int)
+        fun archiveWorldAt(pos: Int)
     }
 
     interface View {

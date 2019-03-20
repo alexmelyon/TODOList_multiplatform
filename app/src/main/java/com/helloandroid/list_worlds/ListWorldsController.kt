@@ -38,7 +38,7 @@ class ListWorldsController : Controller(), ListWorldsContract.Controller {
             }
             return@Comparator res
         })
-        setWorlds.addAll(App.instance.worlds)
+        setWorlds.addAll(App.instance.worlds.filterNot { it.archived })
         this.view.setData(setWorlds.toMutableList())
     }
 
@@ -67,9 +67,10 @@ class ListWorldsController : Controller(), ListWorldsContract.Controller {
         view.addedAt(0, world)
     }
 
-    override fun removeWorldAt(pos: Int) {
+    override fun archiveWorldAt(pos: Int) {
         val world = setWorlds.toList()[pos]
-        App.instance.worlds.remove(world)
+        world.archived = true
+
         setWorlds.remove(world)
         view.removedAt(pos)
     }

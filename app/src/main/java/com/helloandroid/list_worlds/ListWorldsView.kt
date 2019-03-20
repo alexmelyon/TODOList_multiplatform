@@ -30,10 +30,10 @@ class ListWorldsView @Inject constructor(val activity: MainActivity) : _FrameLay
         }
         worldsAdapter.onItemLongclickListener = { pos, world ->
             AlertDialog.Builder(activity)
-                .setTitle("Remove world?")
+                .setTitle("Archive world?")
                 .setMessage(world.name)
                 .setPositiveButton("OK", DialogInterface.OnClickListener { dialog, which ->
-                    controller.removeWorldAt(pos)
+                    controller.archiveWorldAt(pos)
                 })
                 .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, which ->
                     dialog.dismiss()
