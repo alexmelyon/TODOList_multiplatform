@@ -78,9 +78,9 @@ class App : Application(), HasActivityInjector {
                 characters.add(Character(characterId, "First Character", gameId, worldId))
                 characters.add(Character(1, "Second Character", gameId, worldId))
                 characters.add(Character(2, "Third Character", gameId, worldId))
-                (1..3).forEach { sessionId ->
+                (1..6).forEach { sessionId ->
                     val minusHour = Calendar.getInstance().apply {
-                        add(Calendar.HOUR, -1)
+                        add(Calendar.HOUR, -sessionId)
                     }
                     gameSessions.add(GameSession(sessionId, "$sessionId session", worldId, gameId, minusHour.time, true, now))
                     hpDiffs += HealthPointDiff(1, 1, now, characterId, sessionId, gameId, worldId)
@@ -101,7 +101,7 @@ class World(val id: Int, var name: String, val time: Date, var archived: Boolean
 
 class Game(val id: Int, var name: String, val worldGroup: Int, val time: Date, var archived: Boolean = false)
 
-class GameSession(val id: Int, var name: String, val gameGroup: Int, val worldGroup: Int, val startTime: Date, var open: Boolean, val endTime: Date, var archived: Boolean = false) {
+class GameSession(val id: Int, var name: String, val gameGroup: Int, val worldGroup: Int, val startTime: Date, var open: Boolean, var endTime: Date, var archived: Boolean = false) {
     override fun toString() = "$name ${if(open) "Open" else "Closed"}"
 }
 

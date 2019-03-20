@@ -234,6 +234,7 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
 
     override fun closeSession() {
         session.open = false
+        session.endTime = Calendar.getInstance().time
         router.popCurrentController()
         // TODO Update ListCharacters
         // TODO Update ListSessions

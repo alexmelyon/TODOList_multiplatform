@@ -67,14 +67,15 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
                     return@Comparator o2.open.compareTo(o1.open)
                 }
                 if (o1.open && o1.startTime != o2.startTime) {
-                    return@Comparator o1.startTime.compareTo(o2.startTime)
+                    return@Comparator o2.startTime.compareTo(o1.startTime)
                 }
                 if (!o1.open && o1.endTime != o2.endTime) {
-                    return@Comparator o1.endTime.compareTo(o2.endTime)
+                    return@Comparator o2.endTime.compareTo(o1.endTime)
                 }
-                return@Comparator o2.name.compareTo(o1.name)
+                return@Comparator o1.name.compareTo(o2.name)
             })
             .toMutableList()
+        // TODO Description time
         this.view.setData(sessionsList)
     }
 

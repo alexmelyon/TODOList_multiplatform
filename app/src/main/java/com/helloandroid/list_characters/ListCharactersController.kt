@@ -14,7 +14,11 @@ import ru.napoleonit.talan.di.ControllerInjector
 import java.util.*
 import javax.inject.Inject
 
-class ListCharactersController(args: Bundle) : Controller(args), ListCharactersContract.Controller {
+interface ListCharactersDelegate {
+    fun updateScreen()
+}
+
+class ListCharactersController(args: Bundle) : Controller(args), ListCharactersContract.Controller, ListCharactersDelegate {
 
     @Inject
     lateinit var view: ListCharactersContract.View
@@ -53,10 +57,14 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
         super.onContextAvailable(context)
         ControllerInjector.inject(this)
 
+        updateScreen()
+    }
+
+    override fun updateScreen() {
         characterItems = TreeSet(Comparator { o1, o2 ->
             return@Comparator o1.name.compareTo(o2.name)
         })
-        val characters = App.instance.characters.filter { it.gameGroup == game.id && it.worldGroup == world.id && !it.archived }
+        val characters = App.instance.characters.filter { it.gameGroup == game.id && it.worldGroup == world.id }.filterNot { it.archived }
         val sessionsIds = App.instance.gameSessions.filter { it.gameGroup == game.id && it.worldGroup == world.id }.filterNot { it.open }.map { it.id }
         characters.forEach { character ->
             val hp = sessionsIds.fold(0) { total, next ->
