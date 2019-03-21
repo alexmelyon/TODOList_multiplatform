@@ -6,9 +6,9 @@ import android.util.Log
 import android.view.*
 import com.bluelinelabs.conductor.Controller
 import com.helloandroid.*
+import com.helloandroid.list_characters.updateCharacters
 import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.list_sessions.GAME_KEY
-import com.helloandroid.list_sessions.ListSessionsDelegate
 import ru.napoleonit.talan.di.ControllerInjector
 import java.util.*
 import javax.inject.Inject
@@ -29,7 +29,7 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
     val world = App.instance.worlds.first { it.id == args.getInt(WORLD_KEY) }
     val game = App.instance.games.first { it.id == args.getInt(GAME_KEY) && it.worldGroup == world.id }
     val session = App.instance.gameSessions.first { it.id == args.getInt(SESSION_KEY) && it.gameGroup == game.id && it.worldGroup == world.id }
-    var delegate: ListSessionsDelegate? = null
+//    var delegate: WeakReference<ListSessionsDelegate>? = null
 
     val itemsWrapper = SessionItemsWrapper()
 
@@ -78,7 +78,7 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            R.id.menu_add_session_item -> view.showAddItemDialog()
+            R.id.menu_add_session_item -> view.showAddSomethingDialog()
             R.id.session_show_archived -> Log.i("JCD", "SHOW ARCHIVED") // TODO Checkbox
             R.id.session_close -> view.showCloseSessionDialog(session.name)
         }
@@ -250,7 +250,9 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
     override fun closeSession() {
         session.open = false
         session.endTime = Calendar.getInstance().time
+//        delegate?.get()?.updateListSessionsScreen(activity!!)
+        updateCharacters(game, world)
+
         router.popCurrentController()
-        delegate?.updateScreenSessionClosed()
     }
 }

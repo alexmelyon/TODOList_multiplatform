@@ -1,5 +1,6 @@
 package com.helloandroid.list_sessions
 
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.view.*
@@ -8,7 +9,6 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.helloandroid.App
 import com.helloandroid.GameSession
 import com.helloandroid.R
-import com.helloandroid.list_characters.ListCharactersDelegate
 import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.session.SessionController
 import ru.napoleonit.talan.di.ControllerInjector
@@ -19,7 +19,7 @@ import javax.inject.Inject
 val GAME_KEY = "GAME_KEY"
 
 interface ListSessionsDelegate {
-    fun updateScreenSessionClosed()
+    fun updateListSessionsScreen(activity: Activity)
 }
 
 // TODO Headers for open and closed sessions
@@ -30,7 +30,7 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
 
     val world = App.instance.worlds.first { it.id == args.getInt(WORLD_KEY) }
     val game = App.instance.games.first { it.id == args.getInt(GAME_KEY) && it.worldGroup == world.id }
-    var delegate: ListCharactersDelegate? = null
+//    var delegate: WeakReference<ListCharactersDelegate>? = null
 
     private lateinit var sessionsList: MutableList<GameSession>
 
@@ -40,17 +40,12 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
     })
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
-        setHasOptionsMenu(true)
         return view.createView(container)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        val parent = parentController as GamePagerController
-//        if (parent.selectedController != this) {
-//            return
-//        }
-//        menu.clear()
-//        inflater.inflate(R.menu.list_sessions, menu)
+        menu.clear()
+        inflater.inflate(R.menu.list_sessions, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -67,9 +62,9 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
         updateScreen()
     }
 
-    override fun updateScreenSessionClosed() {
+    override fun updateListSessionsScreen(activity: Activity) {
         updateScreen()
-        delegate?.updateCharactersScreen()
+//        delegate?.get()?.updateCharactersScreen(activity)
     }
 
     fun updateScreen() {
@@ -104,7 +99,7 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
         val router = parentController?.router ?: this.router
         val sessionId = sessionsList[pos].id
         router.pushController(RouterTransaction.with(SessionController(sessionId, game.id, world.id).apply {
-            delegate = this@ListSessionsController
+//            delegate = WeakReference(this@ListSessionsController)
         }))
     }
 
@@ -116,7 +111,7 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
         val maxId = App.instance.gameSessions.filter { it.gameGroup == game.id && it.worldGroup == world.id }
             .maxBy { it.id }?.id ?: -1
         val now = Calendar.getInstance().time
-        val session = GameSession(maxId + 1, sessionName, game.id, world.id, now, false, now)
+        val session = GameSession(maxId + 1, sessionName, game.id, world.id, now, open = true, endTime = now)
         App.instance.gameSessions.add(session)
 
         view.addedAt(0, session)

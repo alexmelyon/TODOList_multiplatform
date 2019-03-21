@@ -60,7 +60,7 @@ class SessionView @Inject constructor(val activity: MainActivity) : _FrameLayout
         listAdapter.notifyItemRemoved(pos)
     }
 
-    override fun showAddItemDialog() {
+    override fun showAddSomethingDialog() {
         AlertDialog.Builder(activity)
             .setItems(arrayOf("Add Healthpoints", "Add Skill", "Add Thing", "Add Comment"), DialogInterface.OnClickListener { dialog, which ->
                 controller.onAddItemClicked(which)
@@ -79,26 +79,23 @@ class SessionView @Inject constructor(val activity: MainActivity) : _FrameLayout
 
     override fun showAddSkillDialog(characterNames: List<String>, skillNames: List<String>) {
         AlertDialog.Builder(activity)
-            .setTitle("Select skill")
-            .setItems(skillNames.toTypedArray(), DialogInterface.OnClickListener { dialog, skill ->
-
+            .setTitle("Select character")
+            .setItems(characterNames.toTypedArray(), DialogInterface.OnClickListener { dialog, character ->
                 AlertDialog.Builder(activity)
-                    .setTitle("Select character")
-                    .setItems(characterNames.toTypedArray(), DialogInterface.OnClickListener { dialog, character ->
+                    .setTitle("Select skill")
+                    .setItems(skillNames.toTypedArray(), DialogInterface.OnClickListener { dialog, skill ->
                         controller.addCharacterSkillDiff(character, skill)
                     }).show()
             }).show()
-
     }
 
     override fun showAddThingDialog(characterNames: List<String>, thingNames: List<String>) {
         AlertDialog.Builder(activity)
-            .setTitle("Select thing")
-            .setItems(thingNames.toTypedArray(), DialogInterface.OnClickListener { dialog, thing ->
-
+            .setTitle("Select character")
+            .setItems(characterNames.toTypedArray(), DialogInterface.OnClickListener { dialog, character ->
                 AlertDialog.Builder(activity)
-                    .setTitle("Select character")
-                    .setItems(characterNames.toTypedArray(), DialogInterface.OnClickListener { dialog, character ->
+                    .setTitle("Select thing")
+                    .setItems(thingNames.toTypedArray(), DialogInterface.OnClickListener { dialog, thing ->
                         controller.addCharacterThingDiff(character, thing)
                     }).show()
             }).show()

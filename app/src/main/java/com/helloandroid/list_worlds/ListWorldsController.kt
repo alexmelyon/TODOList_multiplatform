@@ -55,6 +55,7 @@ class ListWorldsController : Controller(), ListWorldsContract.Controller {
     }
 
     override fun onItemClick(pos: Int) {
+        // FIXME
 //        router.pushController(RouterTransaction.with(ListGamesController(App.instance.worlds[pos].id)))
         router.pushController(RouterTransaction.with(WorldPagerController(App.instance.worlds[pos].id)))
     }

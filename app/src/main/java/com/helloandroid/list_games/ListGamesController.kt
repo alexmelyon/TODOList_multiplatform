@@ -35,7 +35,6 @@ class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Co
     lateinit var view: ListGamesContract.View
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
-//        setHasOptionsMenu(true)
         return view.createView(container)
     }
 
@@ -73,6 +72,7 @@ class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Co
     }
 
     override fun onItemClick(pos: Int) {
+        val router = parentController?.router ?: router
         router.pushController(RouterTransaction.with(GamePagerController(world.id, App.instance.gameSessions[pos].id)))
     }
 

@@ -27,9 +27,11 @@ class SessionDiffsAdapter(val context: Context, val editable: Boolean) : Recycle
     var onCommentChanged: (Int, String) -> Unit = { pos, comment -> }
 
     private val textWatchers = mutableMapOf<EditText, IdTextWatcher>()
+    private var layoutManager: RecyclerView.LayoutManager? = null
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
-        recyclerView.layoutManager = LinearLayoutManager(context)
+        layoutManager = LinearLayoutManager(context)
+        recyclerView.layoutManager = layoutManager
     }
 
     override fun getItemViewType(position: Int): Int {

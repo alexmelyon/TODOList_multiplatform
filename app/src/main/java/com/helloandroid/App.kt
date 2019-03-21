@@ -122,4 +122,6 @@ class SkillDiff(val id: Int, var value: Int, val time: Date, val characterGroup:
 class ThingDiff(val id: Int, var value: Int, val time: Date, val characterGroup: Int, val thingGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int, var archived: Boolean = false)
 
 class CommentDiff(val id: Int, var comment: String, val time: Date, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int, var archived: Boolean = false)
-// TODO Состояния, особенности (плюсы минусы), дополнительные скиллы, заклинания, баффы, дебаффы, ачивки
+// TODO Комментарий по персонажу, Состояния, особенности (плюсы минусы), дополнительные скиллы, заклинания, баффы, дебаффы, ачивки
+// TODO Пресеты по DND, Fallout, SW:KotOR
+// TODO Room
