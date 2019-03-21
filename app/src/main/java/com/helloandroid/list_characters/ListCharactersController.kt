@@ -7,7 +7,6 @@ import com.bluelinelabs.conductor.Controller
 import com.helloandroid.App
 import com.helloandroid.Character
 import com.helloandroid.R
-import com.helloandroid.game_pager.GamePagerController
 import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.list_sessions.GAME_KEY
 import ru.napoleonit.talan.di.ControllerInjector
@@ -38,12 +37,12 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        val parent = parentController as GamePagerController
-        if(parent.selectedController != this) {
-            return
-        }
-        menu.clear()
-        inflater.inflate(R.menu.list_characters, menu)
+//        val parent = parentController as GamePagerController
+//        if(parent.selectedController != this) {
+//            return
+//        }
+//        menu.clear()
+//        inflater.inflate(R.menu.list_characters, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

@@ -8,7 +8,6 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.helloandroid.App
 import com.helloandroid.GameSession
 import com.helloandroid.R
-import com.helloandroid.game_pager.GamePagerController
 import com.helloandroid.list_characters.ListCharactersDelegate
 import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.session.SessionController
@@ -46,12 +45,12 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        val parent = parentController as GamePagerController
-        if (parent.selectedController != this) {
-            return
-        }
-        menu.clear()
-        inflater.inflate(R.menu.list_sessions, menu)
+//        val parent = parentController as GamePagerController
+//        if (parent.selectedController != this) {
+//            return
+//        }
+//        menu.clear()
+//        inflater.inflate(R.menu.list_sessions, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

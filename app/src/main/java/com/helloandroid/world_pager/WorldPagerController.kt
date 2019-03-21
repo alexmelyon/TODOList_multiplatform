@@ -12,6 +12,7 @@ import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import com.helloandroid.App
+import com.helloandroid.MainActivity
 import com.helloandroid.R
 import com.helloandroid.list_games.ListGamesController
 import com.helloandroid.list_games.WORLD_KEY
@@ -25,14 +26,7 @@ import org.jetbrains.anko.wrapContent
 
 class WorldPagerController(args: Bundle) : Controller(args) {
 
-    val PAGE_GAMES = 0
-    val PAGE_SKILLS = 1
-    val PAGE_THINGS = 2
-
-    val worldId = App.instance.worlds.single { it.id == args.getInt(WORLD_KEY) }.id
-
-    private var menu: Menu? = null
-    private var menuInflater: MenuInflater? = null
+    private val world = App.instance.worlds.single { it.id == args.getInt(WORLD_KEY) }
 
     constructor(worldId: Int) : this(Bundle().apply {
         putInt(WORLD_KEY, worldId)
@@ -41,13 +35,18 @@ class WorldPagerController(args: Bundle) : Controller(args) {
     private lateinit var tabLayout: TabLayout
     private lateinit var viewPager: ViewPager
     private val pagerAdapter: PagerAdapter
-    private val listPages = listOf(ListGamesController(worldId), ListSkillsController(worldId), ListThingsController(worldId))
+    private val listPages = listOf(
+        "Games" to ListGamesController(world.id),
+        "Skills" to ListSkillsController(world.id),
+        "Things" to ListThingsController(world.id))
+    private lateinit var menu: Menu
+    private lateinit var menuInflater: MenuInflater
 
     init {
         pagerAdapter = object : RouterPagerAdapter(this) {
             override fun configureRouter(router: Router, position: Int) {
                 if (!router.hasRootController()) {
-                    val page = listPages[position]
+                    val page = listPages[position].second
                     router.setRoot(RouterTransaction.with(page))
                 }
             }
@@ -57,17 +56,13 @@ class WorldPagerController(args: Bundle) : Controller(args) {
             }
 
             override fun getPageTitle(position: Int): CharSequence? {
-                when(position) {
-                    PAGE_GAMES -> return "Games"
-                    PAGE_SKILLS -> return "Skills"
-                    PAGE_THINGS -> return "Things"
-                }
-                return super.getPageTitle(position)
+                return listPages[position].first
             }
         }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
+        (activity as MainActivity).supportActionBar!!.title = world.name
         setHasOptionsMenu(true)
 
         val view = container.context.linearLayout {
@@ -84,13 +79,21 @@ class WorldPagerController(args: Bundle) : Controller(args) {
         return view
     }
 
+    override fun onDestroy() {
+        if(activity?.isChangingConfigurations() ?: false) {
+            viewPager.adapter = null
+        }
+        tabLayout.setupWithViewPager(null)
+        super.onDestroy()
+    }
+
     val tabselectedListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab) {
-            listPages[tab.position].onCreateOptionsMenu(menu!!, menuInflater!!)
+            listPages[tab.position].second.onCreateOptionsMenu(menu, menuInflater)
         }
 
         override fun onTabReselected(tab: TabLayout.Tab) {
-            listPages[tab.position].onCreateOptionsMenu(menu!!, menuInflater!!)
+            listPages[tab.position].second.onCreateOptionsMenu(menu, menuInflater)
         }
 
         override fun onTabUnselected(tab: TabLayout.Tab?) { }
@@ -105,6 +108,6 @@ class WorldPagerController(args: Bundle) : Controller(args) {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return listPages[tabLayout.selectedTabPosition].onOptionsItemSelected(item)
+        return listPages[tabLayout.selectedTabPosition].second.onOptionsItemSelected(item)
     }
 }
