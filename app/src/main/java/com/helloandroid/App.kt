@@ -55,23 +55,23 @@ class App : Application(), HasActivityInjector {
         (1..3).forEach { worldId ->
             worlds.add(World(worldId, "$worldId world", now))
             val skillId = 0
-            skills.add(Skill(skillId, "First skill", worldId))
-            skills.add(Skill(1, "Second skill", worldId))
-            skills.add(Skill(2, "Third skill", worldId))
-            skills.add(Skill(3, "4 skill", worldId))
-            skills.add(Skill(4, "5 skill", worldId))
-            skills.add(Skill(5, "6 skill", worldId))
-            skills.add(Skill(6, "7 skill", worldId))
-            skills.add(Skill(7, "8 skill", worldId))
-            skills.add(Skill(8, "9 skill", worldId))
-            skills.add(Skill(9, "10 skill", worldId))
-            skills.add(Skill(10, "11 skill", worldId))
-            skills.add(Skill(11, "12 skill", worldId))
-            skills.add(Skill(12, "13 skill", worldId))
+            skills.add(Skill(skillId, "First skill", worldId, now))
+            skills.add(Skill(1, "Second skill", worldId, now))
+            skills.add(Skill(2, "Third skill", worldId, now))
+            skills.add(Skill(3, "4 skill", worldId, now))
+            skills.add(Skill(4, "5 skill", worldId, now))
+            skills.add(Skill(5, "6 skill", worldId, now))
+            skills.add(Skill(6, "7 skill", worldId, now))
+            skills.add(Skill(7, "8 skill", worldId, now))
+            skills.add(Skill(8, "9 skill", worldId, now))
+            skills.add(Skill(9, "10 skill", worldId, now))
+            skills.add(Skill(10, "11 skill", worldId, now))
+            skills.add(Skill(11, "12 skill", worldId, now))
+            skills.add(Skill(12, "13 skill", worldId, now))
             val thingId = 0
-            things.add(Thing(thingId, "First thing", worldId))
-            things.add(Thing(1, "Second thing", worldId))
-            things.add(Thing(2, "Third thing", worldId))
+            things.add(Thing(thingId, "First thing", worldId, now))
+            things.add(Thing(1, "Second thing", worldId, now))
+            things.add(Thing(2, "Third thing", worldId, now))
             (1..3).forEach { gameId ->
                 games.add(Game(gameId, "$gameId game", worldId, now))
                 val characterId = 0
@@ -95,7 +95,7 @@ class App : Application(), HasActivityInjector {
     }
 }
 
-class World(val id: Int, var name: String, val time: Date, var archived: Boolean = false) {
+class World(val id: Int, var name: String, val createTime: Date, var archived: Boolean = false) {
     override fun toString() = name
 }
 
@@ -107,9 +107,13 @@ class GameSession(val id: Int, var name: String, val gameGroup: Int, val worldGr
 
 class Character(val id: Int, var name: String, val gameGroup: Int, val worldGroup: Int, var archived: Boolean = false)
 
-class Skill(val id: Int, var name: String, val worldGroup: Int, var archived: Boolean = false)
+class Skill(val id: Int, var name: String, val worldGroup: Int, val lastUsed: Date, var archived: Boolean = false) {
+    override fun toString() = name
+}
 
-class Thing(val id: Int, var name: String, val worldGroup: Int, var archived: Boolean = false)
+class Thing(val id: Int, var name: String, val worldGroup: Int, val lastUsed: Date, var archived: Boolean = false) {
+    override fun toString() = name
+}
 
 class HealthPointDiff(val id: Int, var value: Int, val time: Date, val characterGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int, var archived: Boolean = false)
 

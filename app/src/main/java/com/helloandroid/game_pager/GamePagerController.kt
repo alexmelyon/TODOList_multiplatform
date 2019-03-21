@@ -1,5 +1,6 @@
 package com.helloandroid.game_pager
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.TabLayout
@@ -96,9 +97,9 @@ class GamePagerController(args: Bundle) : Controller(args) {
         return view
     }
 
-    override fun onAttach(view: View) {
-        super.onAttach(view)
-        setHasOptionsMenu(true)
+    override fun onContextAvailable(context: Context) {
+        super.onContextAvailable(context)
+
         val listener = object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
                 println("onTabSelected")
@@ -117,8 +118,12 @@ class GamePagerController(args: Bundle) : Controller(args) {
             }
         }
         tabLayout.addOnTabSelectedListener(listener)
+    }
+
+    override fun onAttach(view: View) {
+        super.onAttach(view)
+        setHasOptionsMenu(true)
         tabLayout.getTabAt(selectedTab)?.select()
-//        listener.onTabSelected(tabLayout.getTabAt(selectedTab))
     }
 
     override fun onDestroyView(view: View) {

@@ -35,7 +35,7 @@ class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Co
     lateinit var view: ListGamesContract.View
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
-        setHasOptionsMenu(true)
+//        setHasOptionsMenu(true)
         return view.createView(container)
     }
 
@@ -50,16 +50,24 @@ class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Co
         super.onAttach(view)
         val games = App.instance.games.filter { it.worldGroup == world.id }
             .filterNot { it.archived }
+            .sortedWith(kotlin.Comparator { o1, o2 ->
+                var res = o2.time.compareTo(o1.time)
+                if(res == 0) {
+                    res = o1.name.compareTo(o2.name)
+                }
+                return@Comparator res
+            })
         this.view.setData(games.toList().map { it.name }.toMutableList())
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.list_games_add, menu)
+        menu.clear()
+        inflater.inflate(R.menu.list_games, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            R.id.game_add -> view.showAddGameDialog()
+            R.id.menu_add_game -> view.showAddGameDialog()
         }
         return super.onOptionsItemSelected(item)
     }

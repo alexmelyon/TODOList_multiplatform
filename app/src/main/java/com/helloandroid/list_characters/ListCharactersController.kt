@@ -43,12 +43,12 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
             return
         }
         menu.clear()
-        inflater.inflate(R.menu.list_characters_add, menu)
+        inflater.inflate(R.menu.list_characters, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            R.id.add_character -> view.showAddCharacterDialog()
+            R.id.menu_add_character -> view.showAddCharacterDialog()
         }
         return super.onOptionsItemSelected(item)
     }

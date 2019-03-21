@@ -12,12 +12,14 @@ import org.jetbrains.anko.textColor
 
 class RecyclerStringAdapter<T>(val context: Context, val onItemClickListener: (Int) -> Unit = { pos -> }) : RecyclerView.Adapter<RecyclerStringAdapter.ViewHolder>() {
 
+    var layoutManager: RecyclerView.LayoutManager? = null
     var onItemLongclickListener: (Int, T) -> Unit = { pos, item -> }
     var onDescriptionValue: ((Int) -> String)? = null
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
-        recyclerView.layoutManager = LinearLayoutManager(context)
+        layoutManager = LinearLayoutManager(context)
+        recyclerView.layoutManager = layoutManager
     }
 
     var items: MutableList<T> = mutableListOf()
@@ -63,6 +65,8 @@ class RecyclerStringAdapter<T>(val context: Context, val onItemClickListener: (I
     fun itemAddedAt(pos: Int, name: T) {
         items.add(pos, name)
         notifyItemInserted(pos)
+
+        layoutManager?.scrollToPosition(0)
     }
 
     fun itemRemovedAt(pos: Int) {

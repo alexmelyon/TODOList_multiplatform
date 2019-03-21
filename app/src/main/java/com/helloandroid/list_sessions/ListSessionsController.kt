@@ -51,12 +51,12 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
             return
         }
         menu.clear()
-        inflater.inflate(R.menu.list_sessions_add, menu)
+        inflater.inflate(R.menu.list_sessions, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.add_session -> view.showCreateSessionDialog()
+            R.id.menu_add_session -> view.showCreateSessionDialog()
         }
         return super.onOptionsItemSelected(item)
     }

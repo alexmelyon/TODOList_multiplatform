@@ -73,12 +73,12 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.session_add, menu)
+        inflater.inflate(R.menu.session, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            R.id.session_add_item -> view.showAddItemDialog()
+            R.id.menu_add_session_item -> view.showAddItemDialog()
             R.id.session_show_archived -> Log.i("JCD", "SHOW ARCHIVED") // TODO Checkbox
             R.id.session_close -> view.showCloseSessionDialog(session.name)
         }

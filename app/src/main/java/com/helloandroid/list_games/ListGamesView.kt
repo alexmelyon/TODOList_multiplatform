@@ -52,6 +52,9 @@ class ListGamesView @Inject constructor(val activity: MainActivity) : _FrameLayo
             .setPositiveButton("OK", DialogInterface.OnClickListener { dialog, which ->
                 controller.createGame(editText.text.toString())
             })
+            .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, which ->
+                dialog.dismiss()
+            })
             .show()
     }
 

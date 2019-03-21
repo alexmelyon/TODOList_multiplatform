@@ -7,7 +7,7 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.helloandroid.App
 import com.helloandroid.R
 import com.helloandroid.World
-import com.helloandroid.list_games.ListGamesController
+import com.helloandroid.world_pager.WorldPagerController
 import ru.napoleonit.talan.di.ControllerInjector
 import java.util.*
 import javax.inject.Inject
@@ -32,7 +32,7 @@ class ListWorldsController : Controller(), ListWorldsContract.Controller {
     override fun onAttach(view: View) {
         super.onAttach(view)
         setWorlds = TreeSet(kotlin.Comparator { o1, o2 ->
-            val res = o2.time.compareTo(o1.time)
+            val res = o2.createTime.compareTo(o1.createTime)
             if(res == 0) {
                 return@Comparator o1.name.compareTo(o2.name)
             }
@@ -44,18 +44,19 @@ class ListWorldsController : Controller(), ListWorldsContract.Controller {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.list_worlds_add, menu)
+        inflater.inflate(R.menu.list_worlds, menu)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            R.id.world_add -> view.showCreateWorldDialog()
+            R.id.menu_add_world -> view.showCreateWorldDialog()
         }
         return super.onOptionsItemSelected(item)
     }
 
     override fun onItemClick(pos: Int) {
-        router.pushController(RouterTransaction.with(ListGamesController(App.instance.worlds[pos].id)))
+//        router.pushController(RouterTransaction.with(ListGamesController(App.instance.worlds[pos].id)))
+        router.pushController(RouterTransaction.with(WorldPagerController(App.instance.worlds[pos].id)))
     }
 
     override fun createWorld(worldName: String) {
