@@ -54,7 +54,10 @@ class ListSkillsController(args: Bundle) : Controller(args), ListSkillsContract.
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            R.id.menu_add_skill -> view.showAddSkillDialog()
+            R.id.menu_add_skill -> {
+                view.showAddSkillDialog()
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }

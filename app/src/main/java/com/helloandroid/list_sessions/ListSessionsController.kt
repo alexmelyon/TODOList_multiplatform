@@ -50,7 +50,10 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menu_add_session -> view.showCreateSessionDialog()
+            R.id.menu_add_session -> {
+                view.showCreateSessionDialog()
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }

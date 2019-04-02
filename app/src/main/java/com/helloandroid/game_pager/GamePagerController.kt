@@ -39,9 +39,8 @@ class GamePagerController(args: Bundle) : Controller(args) {
     lateinit var tabLayout: TabLayout
     lateinit var viewPager: ViewPager
     val pagerAdapter: RouterPagerAdapter
-    val listCharactersController = ListCharactersController(world.id, game.id)
-    var selectedTab = 0
-    val listPages = listOf(
+//    var selectedTab = 0
+    val screenToController = listOf(
         "Characters" to ListCharactersController(world.id, game.id),
         "Sessions" to ListSessionsController(world.id, game.id).apply {
 //            delegate = WeakReference(listCharactersController)
@@ -53,7 +52,7 @@ class GamePagerController(args: Bundle) : Controller(args) {
         pagerAdapter = object : RouterPagerAdapter(this) {
             override fun configureRouter(router: Router, position: Int) {
                 if (!router.hasRootController()) {
-                    val page = listPages[position].second
+                    val page = screenToController[position].second
                     router.setRoot(RouterTransaction.with(page))
                 }
             }
@@ -63,7 +62,7 @@ class GamePagerController(args: Bundle) : Controller(args) {
             }
 
             override fun getPageTitle(position: Int): CharSequence? {
-                return listPages[position].first
+                return screenToController[position].first
             }
         }
     }
@@ -83,7 +82,6 @@ class GamePagerController(args: Bundle) : Controller(args) {
             }.lparams(matchParent, matchParent)
         }
         tabLayout.setupWithViewPager(viewPager)
-        tabLayout.getTabAt(selectedTab)?.select()
         return view
     }
 
@@ -97,12 +95,11 @@ class GamePagerController(args: Bundle) : Controller(args) {
 
     val tabselectedListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab) {
-            selectedTab = tab.position
-            listPages[tab.position].second.onCreateOptionsMenu(menu, menuInflater)
+            screenToController[tab.position].second.onCreateOptionsMenu(menu, menuInflater)
         }
 
         override fun onTabReselected(tab: TabLayout.Tab) {
-            listPages[tab.position].second.onCreateOptionsMenu(menu, menuInflater)
+            screenToController[tab.position].second.onCreateOptionsMenu(menu, menuInflater)
         }
 
         override fun onTabUnselected(tab: TabLayout.Tab?) {}
@@ -116,9 +113,7 @@ class GamePagerController(args: Bundle) : Controller(args) {
         tabLayout.getTabAt(tabLayout.selectedTabPosition)?.select()
     }
 
-    // FIXME Если есть, то createCharacter вызывается дважды
-    // Если нет, то createSession не вызывается
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//        return listPages[tabLayout.selectedTabPosition].second.onOptionsItemSelected(item)
-//    }
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return screenToController[tabLayout.selectedTabPosition].second.onOptionsItemSelected(item)
+    }
 }

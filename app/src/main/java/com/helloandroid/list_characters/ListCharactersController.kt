@@ -74,7 +74,7 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
     })
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
-        setHasOptionsMenu(true)
+//        setHasOptionsMenu(true)
         return view.createView(container)
     }
 
@@ -84,9 +84,11 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // FIXME
         when(item.itemId) {
-            R.id.menu_add_character -> view.showAddCharacterDialog()
+            R.id.menu_add_character -> {
+                view.showAddCharacterDialog()
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }

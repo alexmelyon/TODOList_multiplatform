@@ -35,7 +35,7 @@ class WorldPagerController(args: Bundle) : Controller(args) {
     private lateinit var tabLayout: TabLayout
     private lateinit var viewPager: ViewPager
     private val pagerAdapter: PagerAdapter
-    private val listPages = listOf(
+    private val screenToController = listOf(
         "Games" to ListGamesController(world.id),
         "Skills" to ListSkillsController(world.id),
         "Things" to ListThingsController(world.id))
@@ -46,7 +46,7 @@ class WorldPagerController(args: Bundle) : Controller(args) {
         pagerAdapter = object : RouterPagerAdapter(this) {
             override fun configureRouter(router: Router, position: Int) {
                 if (!router.hasRootController()) {
-                    val page = listPages[position].second
+                    val page = screenToController[position].second
                     router.setRoot(RouterTransaction.with(page))
                 }
             }
@@ -56,7 +56,7 @@ class WorldPagerController(args: Bundle) : Controller(args) {
             }
 
             override fun getPageTitle(position: Int): CharSequence? {
-                return listPages[position].first
+                return screenToController[position].first
             }
         }
     }
@@ -89,11 +89,11 @@ class WorldPagerController(args: Bundle) : Controller(args) {
 
     val tabselectedListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab) {
-            listPages[tab.position].second.onCreateOptionsMenu(menu, menuInflater)
+            screenToController[tab.position].second.onCreateOptionsMenu(menu, menuInflater)
         }
 
         override fun onTabReselected(tab: TabLayout.Tab) {
-            listPages[tab.position].second.onCreateOptionsMenu(menu, menuInflater)
+            screenToController[tab.position].second.onCreateOptionsMenu(menu, menuInflater)
         }
 
         override fun onTabUnselected(tab: TabLayout.Tab?) { }
@@ -108,6 +108,6 @@ class WorldPagerController(args: Bundle) : Controller(args) {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return listPages[tabLayout.selectedTabPosition].second.onOptionsItemSelected(item)
+        return screenToController[tabLayout.selectedTabPosition].second.onOptionsItemSelected(item)
     }
 }

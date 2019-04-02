@@ -55,7 +55,10 @@ class ListThingsController(args: Bundle) : Controller(args), ListThingsContract.
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            R.id.menu_add_thing -> view.showAddThingDialog()
+            R.id.menu_add_thing -> {
+                view.showAddThingDialog()
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }

@@ -78,9 +78,19 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            R.id.menu_add_session_item -> view.showAddSomethingDialog()
-            R.id.session_show_archived -> Log.i("JCD", "SHOW ARCHIVED") // TODO Checkbox
-            R.id.session_close -> view.showCloseSessionDialog(session.name)
+            R.id.menu_add_session_item -> {
+                view.showAddSomethingDialog()
+                return true
+            }
+            R.id.session_show_archived -> {
+                // TODO Checkbox
+                Log.i("JCD", "SHOW ARCHIVED")
+                return true
+            }
+            R.id.session_close -> {
+                view.showCloseSessionDialog(session.name)
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }

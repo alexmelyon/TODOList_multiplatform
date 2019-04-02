@@ -49,14 +49,15 @@ class ListWorldsController : Controller(), ListWorldsContract.Controller {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            R.id.menu_add_world -> view.showCreateWorldDialog()
+            R.id.menu_add_world -> {
+                view.showCreateWorldDialog()
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }
 
     override fun onItemClick(pos: Int) {
-        // FIXME
-//        router.pushController(RouterTransaction.with(ListGamesController(App.instance.worlds[pos].id)))
         router.pushController(RouterTransaction.with(WorldPagerController(App.instance.worlds[pos].id)))
     }
 

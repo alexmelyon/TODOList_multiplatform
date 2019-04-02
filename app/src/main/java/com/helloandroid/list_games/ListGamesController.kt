@@ -66,7 +66,10 @@ class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Co
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            R.id.menu_add_game -> view.showAddGameDialog()
+            R.id.menu_add_game -> {
+                view.showAddGameDialog()
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }
