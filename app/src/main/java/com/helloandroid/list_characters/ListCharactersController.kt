@@ -74,7 +74,6 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
     })
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
-//        setHasOptionsMenu(true)
         return view.createView(container)
     }
 

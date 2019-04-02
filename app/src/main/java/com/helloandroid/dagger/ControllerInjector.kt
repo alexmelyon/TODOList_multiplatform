@@ -6,7 +6,6 @@ import com.bluelinelabs.conductor.Controller
 object ControllerInjector {
 
     fun inject(controller: Controller, activity: Activity? = controller.activity) {
-//        val activity = controller.activity
         if (activity == null) {
             throw IllegalStateException("Controller $controller is not available activity")
         }

@@ -23,28 +23,28 @@ import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.support.v4.viewPager
 import org.jetbrains.anko.wrapContent
+import java.lang.ref.WeakReference
 
 class GamePagerController(args: Bundle) : Controller(args) {
 
     private val world = App.instance.worlds.first { it.id == args.getInt(WORLD_KEY) }
     private val game = App.instance.games.first { it.id == args.getInt(GAME_KEY) && it.worldGroup == world.id }
 
-    //
     constructor(worldId: Int, gameId: Int) : this(Bundle().apply {
         putInt(WORLD_KEY, worldId)
         putInt(GAME_KEY, gameId)
     })
 
-    //
     lateinit var tabLayout: TabLayout
     lateinit var viewPager: ViewPager
     val pagerAdapter: RouterPagerAdapter
-//    var selectedTab = 0
+    val listCharactersController = ListCharactersController(world. id, game.id)
     val screenToController = listOf(
-        "Characters" to ListCharactersController(world.id, game.id),
+        "Characters" to listCharactersController,
         "Sessions" to ListSessionsController(world.id, game.id).apply {
-//            delegate = WeakReference(listCharactersController)
+            delegate = WeakReference(listCharactersController)
         })
+    var selectedTab = 0
     lateinit var menu: Menu
     lateinit var menuInflater: MenuInflater
 
@@ -95,10 +95,12 @@ class GamePagerController(args: Bundle) : Controller(args) {
 
     val tabselectedListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab) {
+            selectedTab = tab.position
             screenToController[tab.position].second.onCreateOptionsMenu(menu, menuInflater)
         }
 
         override fun onTabReselected(tab: TabLayout.Tab) {
+            selectedTab = tab.position
             screenToController[tab.position].second.onCreateOptionsMenu(menu, menuInflater)
         }
 
@@ -110,7 +112,7 @@ class GamePagerController(args: Bundle) : Controller(args) {
         this.menuInflater = inflater
 
         tabLayout.addOnTabSelectedListener(tabselectedListener)
-        tabLayout.getTabAt(tabLayout.selectedTabPosition)?.select()
+        tabLayout.getTabAt(selectedTab)?.select()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

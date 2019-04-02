@@ -9,9 +9,11 @@ import com.bluelinelabs.conductor.RouterTransaction
 import com.helloandroid.App
 import com.helloandroid.GameSession
 import com.helloandroid.R
+import com.helloandroid.list_characters.ListCharactersDelegate
 import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.session.SessionController
 import ru.napoleonit.talan.di.ControllerInjector
+import java.lang.ref.WeakReference
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -30,7 +32,7 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
 
     val world = App.instance.worlds.first { it.id == args.getInt(WORLD_KEY) }
     val game = App.instance.games.first { it.id == args.getInt(GAME_KEY) && it.worldGroup == world.id }
-//    var delegate: WeakReference<ListCharactersDelegate>? = null
+    var delegate: WeakReference<ListCharactersDelegate>? = null
 
     private lateinit var sessionsList: MutableList<GameSession>
 
@@ -67,7 +69,7 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
 
     override fun updateListSessionsScreen(activity: Activity) {
         updateScreen()
-//        delegate?.get()?.updateCharactersScreen(activity)
+        delegate?.get()?.updateCharactersScreen(activity)
     }
 
     fun updateScreen() {
@@ -102,7 +104,7 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
         val router = parentController?.router ?: this.router
         val sessionId = sessionsList[pos].id
         router.pushController(RouterTransaction.with(SessionController(sessionId, game.id, world.id).apply {
-//            delegate = WeakReference(this@ListSessionsController)
+            delegate = WeakReference(this@ListSessionsController)
         }))
     }
 

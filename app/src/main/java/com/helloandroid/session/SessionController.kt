@@ -6,10 +6,11 @@ import android.util.Log
 import android.view.*
 import com.bluelinelabs.conductor.Controller
 import com.helloandroid.*
-import com.helloandroid.list_characters.updateCharacters
 import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.list_sessions.GAME_KEY
+import com.helloandroid.list_sessions.ListSessionsDelegate
 import ru.napoleonit.talan.di.ControllerInjector
+import java.lang.ref.WeakReference
 import java.util.*
 import javax.inject.Inject
 import kotlin.Comparator
@@ -29,7 +30,7 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
     val world = App.instance.worlds.first { it.id == args.getInt(WORLD_KEY) }
     val game = App.instance.games.first { it.id == args.getInt(GAME_KEY) && it.worldGroup == world.id }
     val session = App.instance.gameSessions.first { it.id == args.getInt(SESSION_KEY) && it.gameGroup == game.id && it.worldGroup == world.id }
-//    var delegate: WeakReference<ListSessionsDelegate>? = null
+    var delegate: WeakReference<ListSessionsDelegate>? = null
 
     val itemsWrapper = SessionItemsWrapper()
 
@@ -260,8 +261,8 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
     override fun closeSession() {
         session.open = false
         session.endTime = Calendar.getInstance().time
-//        delegate?.get()?.updateListSessionsScreen(activity!!)
-        updateCharacters(game, world)
+        delegate?.get()?.updateListSessionsScreen(activity!!)
+//        updateCharacters(game, world)
 
         router.popCurrentController()
     }
