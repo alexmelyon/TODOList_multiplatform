@@ -24,7 +24,6 @@ interface ListSessionsDelegate {
     fun updateListSessionsScreen(activity: Activity)
 }
 
-// TODO Headers for open and closed sessions
 class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContract.Controller, ListSessionsDelegate {
 
     @Inject
@@ -35,6 +34,7 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
     var delegate: WeakReference<ListCharactersDelegate>? = null
 
     private lateinit var sessionsList: MutableList<GameSession>
+    private var firstClosedSessionIndex = 0
 
     constructor(worldId: Int, gameId: Int) : this(Bundle().apply {
         putInt(WORLD_KEY, worldId)
@@ -76,6 +76,7 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
         sessionsList = App.instance.gameSessions.filter { it.worldGroup == world.id && it.gameGroup == game.id }
             .filterNot { it.archived }
             .sortedWith(Comparator { o1, o2 ->
+                // TODO My own comparator
                 if (o1.open != o2.open) {
                     return@Comparator o2.open.compareTo(o1.open)
                 }
@@ -88,6 +89,9 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
                 return@Comparator o1.name.compareTo(o2.name)
             })
             .toMutableList()
+        firstClosedSessionIndex = sessionsList.mapIndexed { index, it -> index to it }
+            .firstOrNull { !it.second.open }
+            ?.first ?: -1
     }
 
     override fun onAttach(view: View) {
@@ -98,6 +102,15 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
     override fun getDescription(pos: Int): String {
         val session = sessionsList[pos]
         return session.startTime.let { SimpleDateFormat("d MMMM HH:mm", Locale.getDefault()).format(it) }
+    }
+
+    override fun getHeader(pos: Int): String {
+        if(pos == 0) {
+            return "Open sessions"
+        } else if(pos == firstClosedSessionIndex) {
+            return "Closed sessions"
+        }
+        return ""
     }
 
     override fun onItemClick(pos: Int) {

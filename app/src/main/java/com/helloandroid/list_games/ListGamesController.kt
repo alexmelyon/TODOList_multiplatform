@@ -15,8 +15,6 @@ import javax.inject.Inject
 
 val WORLD_KEY = "WORLD_KEY"
 
-// TODO Pager Skills, Items
-
 class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Controller {
 
     val world = App.instance.worlds.first { it.id == args.getInt(WORLD_KEY) }

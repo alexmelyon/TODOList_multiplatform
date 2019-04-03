@@ -2,19 +2,23 @@ package com.helloandroid.ui
 
 import android.content.Context
 import android.graphics.Color
+import android.support.annotation.LayoutRes
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.TextView
+import com.helloandroid.R
 import org.jetbrains.anko.textColor
 
-class RecyclerStringAdapter<T>(val context: Context, val onItemClickListener: (Int) -> Unit = { pos -> }) : RecyclerView.Adapter<RecyclerStringAdapter.ViewHolder>() {
+class RecyclerStringAdapter<T>(val context: Context, @LayoutRes val layoutRes: Int = android.R.layout.simple_list_item_1, val onItemClickListener: (Int) -> Unit = { pos -> }) : RecyclerView.Adapter<RecyclerStringAdapter.ViewHolder>() {
 
     var layoutManager: RecyclerView.LayoutManager? = null
     var onItemLongclickListener: (Int, T) -> Unit = { pos, item -> }
-    var onDescriptionValue: ((Int) -> String)? = null
+    var onGetDescriptionValue: ((Int) -> String)? = null
+    var onGetHeaderValue: ((Int) -> String)? = null
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
@@ -29,13 +33,8 @@ class RecyclerStringAdapter<T>(val context: Context, val onItemClickListener: (I
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val layout = if(onDescriptionValue == null) {
-            android.R.layout.simple_list_item_1
-        } else {
-            android.R.layout.simple_list_item_2
-        }
         val v = LayoutInflater.from(parent.context)
-            .inflate(layout, parent, false)
+            .inflate(layoutRes, parent, false)
         val vh = ViewHolder(v)
         vh.text1.textColor = Color.BLACK
         vh.text2?.textColor = Color.GRAY
@@ -57,8 +56,18 @@ class RecyclerStringAdapter<T>(val context: Context, val onItemClickListener: (I
             onItemLongclickListener(correctPosition, items[position])
             return@setOnLongClickListener true
         }
-        if(onDescriptionValue != null) {
-            holder.text2.text = onDescriptionValue?.invoke(correctPosition)
+        if (onGetDescriptionValue != null) {
+            holder.text2.text = onGetDescriptionValue?.invoke(correctPosition)
+        }
+        if(onGetHeaderValue != null) {
+            val header = onGetHeaderValue!!.invoke(correctPosition)
+            if(header.isNotEmpty()) {
+                holder.headerView?.visibility = View.VISIBLE
+                holder.headerText?.text = header
+            } else {
+                holder.headerView?.visibility = View.GONE
+                holder.headerText?.text = ""
+            }
         }
     }
 
@@ -77,5 +86,7 @@ class RecyclerStringAdapter<T>(val context: Context, val onItemClickListener: (I
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val text1 = view.findViewById<TextView>(android.R.id.text1)
         val text2 = view.findViewById<TextView>(android.R.id.text2)
+        val headerView = view.findViewById<FrameLayout>(R.id.header_view)
+        val headerText = view.findViewById<TextView>(R.id.header_text)
     }
 }

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import com.helloandroid.GameSession
 import com.helloandroid.MainActivity
+import com.helloandroid.R
 import com.helloandroid.ui.RecyclerStringAdapter
 import org.jetbrains.anko._FrameLayout
 import org.jetbrains.anko.recyclerview.v7.recyclerView
@@ -21,11 +22,14 @@ class ListSessionsView @Inject constructor(val activity: MainActivity) : _FrameL
 
     override fun createView(container: ViewGroup): View {
         activity.supportActionBar!!.title = controller.getGameName()
-        sessionsAdapter = RecyclerStringAdapter(container.context) { pos ->
+        sessionsAdapter = RecyclerStringAdapter(container.context, R.layout.simple_list_item_2_with_header) { pos ->
             controller.onItemClick(pos)
         }
-        sessionsAdapter.onDescriptionValue = { pos ->
+        sessionsAdapter.onGetDescriptionValue = { pos ->
             controller.getDescription(pos)
+        }
+        sessionsAdapter.onGetHeaderValue = { pos ->
+            controller.getHeader(pos)
         }
         sessionsAdapter.onItemLongclickListener = { pos, session ->
             AlertDialog.Builder(activity)

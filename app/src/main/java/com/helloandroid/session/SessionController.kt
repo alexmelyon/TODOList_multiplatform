@@ -262,7 +262,6 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
         session.open = false
         session.endTime = Calendar.getInstance().time
         delegate?.get()?.updateListSessionsScreen(activity!!)
-//        updateCharacters(game, world)
 
         router.popCurrentController()
     }
