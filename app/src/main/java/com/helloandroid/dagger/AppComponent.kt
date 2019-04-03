@@ -9,6 +9,7 @@ import com.helloandroid.list_sessions.ListSessionsControllerModule
 import com.helloandroid.list_skills.ListSkillsControllerModule
 import com.helloandroid.list_things.ListThingsControllerModule
 import com.helloandroid.list_worlds.ListWorldsControllerModule
+import com.helloandroid.room.DbModule
 import com.helloandroid.session.SessionControllerModule
 import dagger.Binds
 import dagger.Component
@@ -28,7 +29,8 @@ import javax.inject.Singleton
     ListThingsControllerModule::class,
     ListCharactersControllerModule::class,
     ListSessionsControllerModule::class,
-    SessionControllerModule::class
+    SessionControllerModule::class,
+    DbModule::class
 ])
 interface MainActivitySubcomponent : AndroidInjector<MainActivity> {
     @Subcomponent.Builder

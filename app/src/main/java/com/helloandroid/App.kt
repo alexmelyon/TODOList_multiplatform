@@ -4,6 +4,8 @@ import android.app.Activity
 import android.app.Application
 import com.helloandroid.dagger.AppComponent
 import com.helloandroid.dagger.DaggerAppComponent
+import com.helloandroid.room.AppDatabase
+import com.helloandroid.room.World
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
@@ -15,6 +17,8 @@ class App : Application(), HasActivityInjector {
 
     @Inject
     lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Activity>
+    @Inject
+    lateinit var db: AppDatabase
 
     override fun activityInjector(): AndroidInjector<Activity> {
         println("GET ACTIVITY INJECTOR")
@@ -28,7 +32,11 @@ class App : Application(), HasActivityInjector {
             private set
     }
 
-    val worlds = mutableListOf<World>()
+        val worlds = mutableListOf<World>()
+//    val worlds: List<World>
+//        get() {
+//            return db.worldDao().getAll()
+//        }
     val games = mutableListOf<Game>()
     val gameSessions = mutableListOf<GameSession>()
     val characters = mutableListOf<Character>()
@@ -54,6 +62,7 @@ class App : Application(), HasActivityInjector {
         val now = Calendar.getInstance().time
         (1..3).forEach { worldId ->
             worlds.add(World(worldId, "$worldId world", now))
+//            db.worldDao().add(World(worldId, "$worldId world", now))
             val skillId = 0
             skills.add(Skill(skillId, "First skill", worldId, now))
             skills.add(Skill(1, "Second skill", worldId, now))
@@ -95,10 +104,6 @@ class App : Application(), HasActivityInjector {
     }
 }
 
-class World(val id: Int, var name: String, val createTime: Date, var archived: Boolean = false) {
-    override fun toString() = name
-}
-
 class Game(val id: Int, var name: String, val worldGroup: Int, val time: Date, var archived: Boolean = false)
 
 class GameSession(val id: Int, var name: String, val gameGroup: Int, val worldGroup: Int, val startTime: Date, var open: Boolean, var endTime: Date, var archived: Boolean = false) {
@@ -117,9 +122,29 @@ class Thing(val id: Int, var name: String, val worldGroup: Int, val lastUsed: Da
 
 class HealthPointDiff(val id: Int, var value: Int, val time: Date, val characterGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int, var archived: Boolean = false)
 
-class SkillDiff(val id: Int, var value: Int, val time: Date, val characterGroup: Int, val skillGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int, var archived: Boolean = false)
+class SkillDiff(
+    val id: Int,
+    var value: Int,
+    val time: Date,
+    val characterGroup: Int,
+    val skillGroup: Int,
+    val sessionGroup: Int,
+    val gameGroup: Int,
+    val worldGroup: Int,
+    var archived: Boolean = false
+)
 
-class ThingDiff(val id: Int, var value: Int, val time: Date, val characterGroup: Int, val thingGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int, var archived: Boolean = false)
+class ThingDiff(
+    val id: Int,
+    var value: Int,
+    val time: Date,
+    val characterGroup: Int,
+    val thingGroup: Int,
+    val sessionGroup: Int,
+    val gameGroup: Int,
+    val worldGroup: Int,
+    var archived: Boolean = false
+)
 
 class CommentDiff(val id: Int, var comment: String, val time: Date, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int, var archived: Boolean = false)
 // TODO Комментарий по персонажу, Состояния, особенности (плюсы минусы), дополнительные скиллы, заклинания, баффы, дебаффы, ачивки

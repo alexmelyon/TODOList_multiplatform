@@ -6,7 +6,7 @@ import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
 import com.helloandroid.App
 import com.helloandroid.R
-import com.helloandroid.World
+import com.helloandroid.room.World
 import com.helloandroid.world_pager.WorldPagerController
 import ru.napoleonit.talan.di.ControllerInjector
 import java.util.*

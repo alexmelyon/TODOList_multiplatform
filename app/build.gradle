@@ -52,4 +52,10 @@ dependencies {
     // Conductor
     implementation "com.bluelinelabs:conductor:$conductor_version"
     implementation "com.bluelinelabs:conductor-support:$conductor_version"
+
+    // Room
+    def room_version = "2.1.0-alpha06"
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
 }
