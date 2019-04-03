@@ -1,15 +1,16 @@
 package com.helloandroid.room
 
-import androidx.room.Entity
-import androidx.room.Insert
-import androidx.room.Query
+import android.arch.persistence.room.*
 import java.util.*
 
 @Entity
-class World(val id: Int, var name: String, val createTime: Date, var archived: Boolean = false) {
+class World(var name: String, val createTime: Date, var archived: Boolean = false) {
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0
     override fun toString() = name
 }
 
+@Dao
 interface WorldDAO {
     @Query("SELECT * FROM world")
     fun getAll(): List<World>

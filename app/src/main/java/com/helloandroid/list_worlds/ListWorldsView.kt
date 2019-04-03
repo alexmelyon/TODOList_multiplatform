@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import com.helloandroid.MainActivity
 import com.helloandroid.R
-import com.helloandroid.World
+import com.helloandroid.room.World
 import com.helloandroid.ui.RecyclerStringAdapter
 import org.jetbrains.anko._FrameLayout
 import org.jetbrains.anko.matchParent

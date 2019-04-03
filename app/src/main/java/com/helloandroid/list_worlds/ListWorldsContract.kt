@@ -1,7 +1,7 @@
 package com.helloandroid.list_worlds
 
 import android.view.ViewGroup
-import com.helloandroid.World
+import com.helloandroid.room.World
 
 interface ListWorldsContract {
 

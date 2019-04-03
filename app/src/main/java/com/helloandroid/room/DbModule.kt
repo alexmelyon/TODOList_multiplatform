@@ -1,7 +1,7 @@
 package com.helloandroid.room
 
+import android.arch.persistence.room.Room
 import android.content.Context
-import androidx.room.Room
 import dagger.Module
 import dagger.Provides
 
@@ -9,6 +9,8 @@ import dagger.Provides
 class DbModule {
     @Provides
     fun provideDb(context: Context): AppDatabase {
-        return Room.databaseBuilder(context, AppDatabase::class.java, "MasterCharlistDB").build()
+        return Room.databaseBuilder(context, AppDatabase::class.java, "MasterCharlistDB")
+            .allowMainThreadQueries()
+            .build()
     }
 }

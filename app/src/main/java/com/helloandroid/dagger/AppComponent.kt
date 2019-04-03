@@ -1,6 +1,7 @@
 package com.helloandroid.dagger
 
 import android.app.Activity
+import android.content.Context
 import com.helloandroid.App
 import com.helloandroid.MainActivity
 import com.helloandroid.list_characters.ListCharactersControllerModule
@@ -11,10 +12,7 @@ import com.helloandroid.list_things.ListThingsControllerModule
 import com.helloandroid.list_worlds.ListWorldsControllerModule
 import com.helloandroid.room.DbModule
 import com.helloandroid.session.SessionControllerModule
-import dagger.Binds
-import dagger.Component
-import dagger.Module
-import dagger.Subcomponent
+import dagger.*
 import dagger.android.ActivityKey
 import dagger.android.AndroidInjectionModule
 import dagger.android.AndroidInjector
@@ -29,8 +27,7 @@ import javax.inject.Singleton
     ListThingsControllerModule::class,
     ListCharactersControllerModule::class,
     ListSessionsControllerModule::class,
-    SessionControllerModule::class,
-    DbModule::class
+    SessionControllerModule::class
 ])
 interface MainActivitySubcomponent : AndroidInjector<MainActivity> {
     @Subcomponent.Builder
@@ -38,16 +35,24 @@ interface MainActivitySubcomponent : AndroidInjector<MainActivity> {
 }
 
 @Module(subcomponents = [MainActivitySubcomponent::class])
-abstract class MainActivityModule {
+abstract class MainActivityModule(val context: Context) {
     @Binds
     @IntoMap
     @ActivityKey(MainActivity::class)
     abstract fun bindMainActivityInjectorFactory(builder: MainActivitySubcomponent.Builder): AndroidInjector.Factory<out Activity>
 }
 
+@Module
+class ContextModule(val context: Context) {
+    @Provides
+    fun provideContext() = context
+}
+
 @Component(modules = [
     MainActivityModule::class,
-    AndroidInjectionModule::class])
+    AndroidInjectionModule::class,
+    ContextModule::class,
+    DbModule::class])
 interface AppComponent {
     fun inject(app: App)
 }

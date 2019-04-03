@@ -35,7 +35,6 @@ dependencies {
 
     // Dagger
     kapt "com.google.dagger:dagger-compiler:$dagger_version"
-//    kapt "com.google.dagger:dagger-android-processor:$dagger_version"
     implementation "com.google.dagger:dagger:$dagger_version"
     implementation "com.google.dagger:dagger-android-support:$dagger_version"
 
@@ -54,8 +53,11 @@ dependencies {
     implementation "com.bluelinelabs:conductor-support:$conductor_version"
 
     // Room
-    def room_version = "2.1.0-alpha06"
-    implementation "androidx.room:room-runtime:$room_version"
-    kapt "androidx.room:room-compiler:$room_version"
-    implementation "androidx.room:room-ktx:$room_version"
+    def room_version = "1.1.1"
+    implementation "android.arch.persistence.room:runtime:$room_version"
+    kapt "android.arch.persistence.room:compiler:$room_version"
+
+    // Coroutines
+//    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.2.0-alpha'
+
 }

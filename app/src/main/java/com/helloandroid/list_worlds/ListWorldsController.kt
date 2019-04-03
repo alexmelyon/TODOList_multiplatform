@@ -17,7 +17,7 @@ class ListWorldsController : Controller(), ListWorldsContract.Controller {
     @Inject
     lateinit var view: ListWorldsContract.View
 
-    private lateinit var setWorlds : TreeSet<World>
+    private lateinit var setWorlds: TreeSet<World>
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         setHasOptionsMenu(true)
@@ -33,7 +33,7 @@ class ListWorldsController : Controller(), ListWorldsContract.Controller {
         super.onAttach(view)
         setWorlds = TreeSet(kotlin.Comparator { o1, o2 ->
             val res = o2.createTime.compareTo(o1.createTime)
-            if(res == 0) {
+            if (res == 0) {
                 return@Comparator o1.name.compareTo(o2.name)
             }
             return@Comparator res
@@ -48,7 +48,7 @@ class ListWorldsController : Controller(), ListWorldsContract.Controller {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.menu_add_world -> {
                 view.showCreateWorldDialog()
                 return true
@@ -67,8 +67,9 @@ class ListWorldsController : Controller(), ListWorldsContract.Controller {
 
     override fun createWorld(worldName: String) {
         val maxid = App.instance.worlds.maxBy { it.id }?.id ?: -1
-        val world = World(maxid + 1, worldName, Calendar.getInstance().time)
-        App.instance.worlds.add(world)
+        val world = World(worldName, Calendar.getInstance().time)
+//        App.instance.worlds.add(world)
+        App.instance.db.worldDao().add(world)
 
         setWorlds.add(world)
         view.addedAt(0, world)
