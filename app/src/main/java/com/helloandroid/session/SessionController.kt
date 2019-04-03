@@ -2,7 +2,6 @@ package com.helloandroid.session
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import com.bluelinelabs.conductor.Controller
 import com.helloandroid.*
@@ -81,11 +80,6 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
         when(item.itemId) {
             R.id.menu_add_session_item -> {
                 view.showAddSomethingDialog()
-                return true
-            }
-            R.id.session_show_archived -> {
-                // TODO Checkbox
-                Log.i("JCD", "SHOW ARCHIVED")
                 return true
             }
             R.id.session_close -> {

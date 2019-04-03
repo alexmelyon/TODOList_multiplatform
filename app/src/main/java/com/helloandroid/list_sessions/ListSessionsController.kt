@@ -105,7 +105,7 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
     }
 
     override fun getHeader(pos: Int): String {
-        if(pos == 0) {
+        if(pos == 0 && pos != firstClosedSessionIndex ) {
             return "Open sessions"
         } else if(pos == firstClosedSessionIndex) {
             return "Closed sessions"

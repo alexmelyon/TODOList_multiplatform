@@ -53,6 +53,10 @@ class ListWorldsController : Controller(), ListWorldsContract.Controller {
                 view.showCreateWorldDialog()
                 return true
             }
+            R.id.menu_show_tutorial -> {
+
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }
