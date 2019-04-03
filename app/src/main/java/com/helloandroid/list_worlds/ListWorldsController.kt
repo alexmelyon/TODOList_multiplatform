@@ -4,8 +4,8 @@ import android.content.Context
 import android.view.*
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
-import com.helloandroid.App
 import com.helloandroid.R
+import com.helloandroid.room.AppDatabase
 import com.helloandroid.room.World
 import com.helloandroid.world_pager.WorldPagerController
 import ru.napoleonit.talan.di.ControllerInjector
@@ -16,6 +16,8 @@ class ListWorldsController : Controller(), ListWorldsContract.Controller {
 
     @Inject
     lateinit var view: ListWorldsContract.View
+    @Inject
+    lateinit var db: AppDatabase
 
     private lateinit var setWorlds: TreeSet<World>
 
@@ -38,7 +40,7 @@ class ListWorldsController : Controller(), ListWorldsContract.Controller {
             }
             return@Comparator res
         })
-        setWorlds.addAll(App.instance.worlds.filterNot { it.archived })
+        setWorlds.addAll(db.worldDao().getAll())
         this.view.setData(setWorlds.toMutableList())
     }
 
@@ -62,14 +64,13 @@ class ListWorldsController : Controller(), ListWorldsContract.Controller {
     }
 
     override fun onItemClick(pos: Int) {
-        router.pushController(RouterTransaction.with(WorldPagerController(App.instance.worlds[pos].id)))
+        val worldId = db.worldDao().getAll()[pos].id
+        router.pushController(RouterTransaction.with(WorldPagerController(worldId)))
     }
 
     override fun createWorld(worldName: String) {
-        val maxid = App.instance.worlds.maxBy { it.id }?.id ?: -1
         val world = World(worldName, Calendar.getInstance().time)
-//        App.instance.worlds.add(world)
-        App.instance.db.worldDao().add(world)
+        db.worldDao().add(world)
 
         setWorlds.add(world)
         view.addedAt(0, world)

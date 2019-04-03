@@ -1,5 +1,6 @@
 package com.helloandroid.world_pager
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.TabLayout
@@ -11,22 +12,28 @@ import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
-import com.helloandroid.App
 import com.helloandroid.MainActivity
 import com.helloandroid.R
 import com.helloandroid.list_games.ListGamesController
 import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.list_skills.ListSkillsController
 import com.helloandroid.list_things.ListThingsController
+import com.helloandroid.room.AppDatabase
+import com.helloandroid.room.World
 import org.jetbrains.anko.design.tabLayout
 import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.support.v4.viewPager
 import org.jetbrains.anko.wrapContent
+import ru.napoleonit.talan.di.ControllerInjector
+import javax.inject.Inject
 
 class WorldPagerController(args: Bundle) : Controller(args) {
 
-    private val world = App.instance.worlds.single { it.id == args.getInt(WORLD_KEY) }
+    @Inject
+    lateinit var db: AppDatabase
+
+    private lateinit var world: World
 
     constructor(worldId: Int) : this(Bundle().apply {
         putInt(WORLD_KEY, worldId)
@@ -35,10 +42,7 @@ class WorldPagerController(args: Bundle) : Controller(args) {
     private lateinit var tabLayout: TabLayout
     private lateinit var viewPager: ViewPager
     private val pagerAdapter: PagerAdapter
-    private val screenToController = listOf(
-        "Games" to ListGamesController(world.id),
-        "Skills" to ListSkillsController(world.id),
-        "Things" to ListThingsController(world.id))
+    private lateinit var screenToController: List<Pair<String, Controller>>
     private lateinit var menu: Menu
     private lateinit var menuInflater: MenuInflater
 
@@ -59,6 +63,16 @@ class WorldPagerController(args: Bundle) : Controller(args) {
                 return screenToController[position].first
             }
         }
+    }
+
+    override fun onContextAvailable(context: Context) {
+        super.onContextAvailable(context)
+        ControllerInjector.inject(this)
+        world = db.worldDao().getWorldById(args.getInt(WORLD_KEY))
+        screenToController = listOf(
+            "Games" to ListGamesController(world.id),
+            "Skills" to ListSkillsController(world.id),
+            "Things" to ListThingsController(world.id))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {

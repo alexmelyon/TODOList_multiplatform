@@ -15,6 +15,9 @@ interface WorldDAO {
     @Query("SELECT * FROM world")
     fun getAll(): List<World>
 
+    @Query("SELECT * FROM world WHERE id = :worldId LIMIT 1")
+    fun getWorldById(worldId: Int): World
+
     @Insert
     fun add(world: World)
 }

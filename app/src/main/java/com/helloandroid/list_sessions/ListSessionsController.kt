@@ -7,10 +7,13 @@ import android.view.*
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
 import com.helloandroid.App
+import com.helloandroid.Game
 import com.helloandroid.GameSession
 import com.helloandroid.R
 import com.helloandroid.list_characters.ListCharactersDelegate
 import com.helloandroid.list_games.WORLD_KEY
+import com.helloandroid.room.AppDatabase
+import com.helloandroid.room.World
 import com.helloandroid.session.SessionController
 import ru.napoleonit.talan.di.ControllerInjector
 import java.lang.ref.WeakReference
@@ -28,9 +31,11 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
 
     @Inject
     lateinit var view: ListSessionsContract.View
+    @Inject
+    lateinit var db: AppDatabase
 
-    val world = App.instance.worlds.first { it.id == args.getInt(WORLD_KEY) }
-    val game = App.instance.games.first { it.id == args.getInt(GAME_KEY) && it.worldGroup == world.id }
+    lateinit var world: World
+    lateinit var game: Game
     var delegate: WeakReference<ListCharactersDelegate>? = null
 
     private lateinit var sessionsList: MutableList<GameSession>
@@ -40,6 +45,15 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
         putInt(WORLD_KEY, worldId)
         putInt(GAME_KEY, gameId)
     })
+
+    override fun onContextAvailable(context: Context) {
+        super.onContextAvailable(context)
+        ControllerInjector.inject(this)
+
+        world = db.worldDao().getWorldById(args.getInt(WORLD_KEY))
+        game = App.instance.games.first { it.id == args.getInt(GAME_KEY) && it.worldGroup == world.id }
+        updateScreen()
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         return view.createView(container)
@@ -58,13 +72,6 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    override fun onContextAvailable(context: Context) {
-        super.onContextAvailable(context)
-        ControllerInjector.inject(this)
-
-        updateScreen()
     }
 
     override fun updateListSessionsScreen(activity: Activity) {

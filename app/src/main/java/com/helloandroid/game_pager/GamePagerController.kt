@@ -1,6 +1,7 @@
 package com.helloandroid.game_pager
 
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.TabLayout
@@ -12,38 +13,42 @@ import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
 import com.helloandroid.App
+import com.helloandroid.Game
 import com.helloandroid.MainActivity
 import com.helloandroid.R
 import com.helloandroid.list_characters.ListCharactersController
 import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.list_sessions.GAME_KEY
 import com.helloandroid.list_sessions.ListSessionsController
+import com.helloandroid.room.AppDatabase
+import com.helloandroid.room.World
 import org.jetbrains.anko.design.tabLayout
 import org.jetbrains.anko.linearLayout
 import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.support.v4.viewPager
 import org.jetbrains.anko.wrapContent
+import ru.napoleonit.talan.di.ControllerInjector
 import java.lang.ref.WeakReference
+import javax.inject.Inject
 
 class GamePagerController(args: Bundle) : Controller(args) {
 
-    private val world = App.instance.worlds.first { it.id == args.getInt(WORLD_KEY) }
-    private val game = App.instance.games.first { it.id == args.getInt(GAME_KEY) && it.worldGroup == world.id }
+    private lateinit var world: World
+    private lateinit var game: Game
 
     constructor(worldId: Int, gameId: Int) : this(Bundle().apply {
         putInt(WORLD_KEY, worldId)
         putInt(GAME_KEY, gameId)
     })
 
+    @Inject
+    lateinit var db: AppDatabase
+
     lateinit var tabLayout: TabLayout
     lateinit var viewPager: ViewPager
     val pagerAdapter: RouterPagerAdapter
-    val listCharactersController = ListCharactersController(world. id, game.id)
-    val screenToController = listOf(
-        "Characters" to listCharactersController,
-        "Sessions" to ListSessionsController(world.id, game.id).apply {
-            delegate = WeakReference(listCharactersController)
-        })
+    lateinit var listCharactersController: ListCharactersController
+    lateinit var screenToController: List<Pair<String, Controller>>
     var selectedTab = 0
     lateinit var menu: Menu
     lateinit var menuInflater: MenuInflater
@@ -65,6 +70,20 @@ class GamePagerController(args: Bundle) : Controller(args) {
                 return screenToController[position].first
             }
         }
+    }
+
+    override fun onContextAvailable(context: Context) {
+        super.onContextAvailable(context)
+        ControllerInjector.inject(this)
+
+        world = db.worldDao().getWorldById(args.getInt(WORLD_KEY))
+        game = App.instance.games.first { it.id == args.getInt(GAME_KEY) && it.worldGroup == world.id }
+        listCharactersController = ListCharactersController(world. id, game.id)
+        screenToController = listOf(
+            "Characters" to listCharactersController,
+            "Sessions" to ListSessionsController(world.id, game.id).apply {
+                delegate = WeakReference(listCharactersController)
+            })
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {

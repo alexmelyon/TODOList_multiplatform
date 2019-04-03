@@ -8,6 +8,8 @@ import com.helloandroid.App
 import com.helloandroid.R
 import com.helloandroid.Thing
 import com.helloandroid.list_games.WORLD_KEY
+import com.helloandroid.room.AppDatabase
+import com.helloandroid.room.World
 import ru.napoleonit.talan.di.ControllerInjector
 import java.util.*
 import javax.inject.Inject
@@ -16,8 +18,10 @@ class ListThingsController(args: Bundle) : Controller(args), ListThingsContract.
 
     @Inject
     lateinit var view: ListThingsContract.View
+    @Inject
+    lateinit var db: AppDatabase
 
-    val world = App.instance.worlds.single { it.id == args.getInt(WORLD_KEY) }
+    lateinit var world: World
 
     constructor(worldId: Int) : this(Bundle().apply {
         putInt(WORLD_KEY, worldId)
@@ -31,6 +35,7 @@ class ListThingsController(args: Bundle) : Controller(args), ListThingsContract.
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
         ControllerInjector.inject(this)
+        world = db.worldDao().getWorldById(args.getInt(WORLD_KEY))
     }
 
     override fun onAttach(view: View) {

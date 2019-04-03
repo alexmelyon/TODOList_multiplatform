@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import com.helloandroid.App
 import com.helloandroid.MainActivity
+import com.helloandroid.game_pager.GamePagerControllerModule
 import com.helloandroid.list_characters.ListCharactersControllerModule
 import com.helloandroid.list_games.ListGamesControllerModule
 import com.helloandroid.list_sessions.ListSessionsControllerModule
@@ -12,6 +13,7 @@ import com.helloandroid.list_things.ListThingsControllerModule
 import com.helloandroid.list_worlds.ListWorldsControllerModule
 import com.helloandroid.room.DbModule
 import com.helloandroid.session.SessionControllerModule
+import com.helloandroid.world_pager.WorldPagerControllerModule
 import dagger.*
 import dagger.android.ActivityKey
 import dagger.android.AndroidInjectionModule
@@ -27,7 +29,9 @@ import javax.inject.Singleton
     ListThingsControllerModule::class,
     ListCharactersControllerModule::class,
     ListSessionsControllerModule::class,
-    SessionControllerModule::class
+    SessionControllerModule::class,
+    WorldPagerControllerModule::class,
+    GamePagerControllerModule::class
 ])
 interface MainActivitySubcomponent : AndroidInjector<MainActivity> {
     @Subcomponent.Builder

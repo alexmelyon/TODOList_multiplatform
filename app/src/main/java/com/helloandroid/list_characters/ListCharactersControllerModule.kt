@@ -8,12 +8,12 @@ import dagger.Subcomponent
 import dagger.android.AndroidInjector
 import dagger.multibindings.IntoMap
 
-@Module(subcomponents = [ListCharactersSubmodule::class])
+@Module(subcomponents = [ListCharactersSubcomponent::class])
 interface ListCharactersControllerModule {
     @Binds
     @IntoMap
     @ControllerKey(ListCharactersController::class)
-    fun provideInjectorFactory(builder: ListCharactersSubmodule.Builder) : AndroidInjector.Factory<out Controller>
+    fun provideInjectorFactory(builder: ListCharactersSubcomponent.Builder): AndroidInjector.Factory<out Controller>
 
     @Binds
     fun bindView(view: ListCharactersView): ListCharactersContract.View
@@ -23,7 +23,7 @@ interface ListCharactersControllerModule {
 }
 
 @Subcomponent
-interface ListCharactersSubmodule : AndroidInjector<ListCharactersController> {
+interface ListCharactersSubcomponent : AndroidInjector<ListCharactersController> {
     @Subcomponent.Builder
     abstract class Builder : AndroidInjector.Builder<ListCharactersController>()
 }

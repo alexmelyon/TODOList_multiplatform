@@ -5,12 +5,9 @@ import android.app.Application
 import com.helloandroid.dagger.AppComponent
 import com.helloandroid.dagger.ContextModule
 import com.helloandroid.dagger.DaggerAppComponent
-import com.helloandroid.room.AppDatabase
-import com.helloandroid.room.World
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
-import org.jetbrains.anko.doAsync
 import java.util.*
 import javax.inject.Inject
 
@@ -19,8 +16,6 @@ class App : Application(), HasActivityInjector {
 
     @Inject
     lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Activity>
-    @Inject
-    lateinit var db: AppDatabase
 
     override fun activityInjector(): AndroidInjector<Activity> {
         println("GET ACTIVITY INJECTOR")
@@ -34,11 +29,6 @@ class App : Application(), HasActivityInjector {
             private set
     }
 
-//    val worlds = mutableListOf<World>()
-    val worlds: List<World>
-        get() {
-            return db.worldDao().getAll()
-        }
     val games = mutableListOf<Game>()
     val gameSessions = mutableListOf<GameSession>()
     val characters = mutableListOf<Character>()
@@ -58,16 +48,14 @@ class App : Application(), HasActivityInjector {
             .build()
         appComponent.inject(this)
 
-//        initWorld()
+        initWorld()
     }
 
     fun initWorld() {
         val now = Calendar.getInstance().time
         (1..3).forEach { worldId ->
 //            worlds.add(World(worldId, "$worldId world", now))
-            doAsync {
-                db.worldDao().add(World("$worldId world", now))
-            }
+//            db.worldDao().add(World("$worldId world", now))
             val skillId = 0
             skills.add(Skill(skillId, "First skill", worldId, now))
             skills.add(Skill(1, "Second skill", worldId, now))

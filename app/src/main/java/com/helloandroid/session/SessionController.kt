@@ -8,6 +8,8 @@ import com.helloandroid.*
 import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.list_sessions.GAME_KEY
 import com.helloandroid.list_sessions.ListSessionsDelegate
+import com.helloandroid.room.AppDatabase
+import com.helloandroid.room.World
 import ru.napoleonit.talan.di.ControllerInjector
 import java.lang.ref.WeakReference
 import java.util.*
@@ -25,10 +27,12 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
 
     @Inject
     lateinit var view: SessionContract.View
+    @Inject
+    lateinit var db: AppDatabase
 
-    val world = App.instance.worlds.first { it.id == args.getInt(WORLD_KEY) }
-    val game = App.instance.games.first { it.id == args.getInt(GAME_KEY) && it.worldGroup == world.id }
-    val session = App.instance.gameSessions.first { it.id == args.getInt(SESSION_KEY) && it.gameGroup == game.id && it.worldGroup == world.id }
+    lateinit var world: World
+    lateinit var game: Game
+    lateinit var session: GameSession
     var delegate: WeakReference<ListSessionsDelegate>? = null
 
     val itemsWrapper = SessionItemsWrapper()
@@ -39,14 +43,13 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
         putInt(WORLD_KEY, worldId)
     })
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
-        setHasOptionsMenu(true)
-        return view.createView(container)
-    }
-
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
         ControllerInjector.inject(this)
+
+        world = db.worldDao().getWorldById(args.getInt(WORLD_KEY))
+        game = App.instance.games.first { it.id == args.getInt(GAME_KEY) && it.worldGroup == world.id }
+        session = App.instance.gameSessions.first { it.id == args.getInt(SESSION_KEY) && it.gameGroup == game.id && it.worldGroup == world.id }
 
         val characters = getCharacters()
         fun getCharacter(characterId: Int) = characters.single { it.id == characterId }
@@ -63,6 +66,11 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_THING, getThing(it.thingGroup).name, getCharacter(it.characterGroup).name, it.value, it.characterGroup) })
         itemsWrapper.addAll(App.instance.commentDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_COMMENT, "", "", 0, -1, it.comment) })
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
+        setHasOptionsMenu(true)
+        return view.createView(container)
     }
 
     override fun onAttach(view: View) {

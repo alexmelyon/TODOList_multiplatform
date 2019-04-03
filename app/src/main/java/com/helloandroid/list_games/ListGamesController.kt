@@ -9,6 +9,8 @@ import com.helloandroid.App
 import com.helloandroid.Game
 import com.helloandroid.R
 import com.helloandroid.game_pager.GamePagerController
+import com.helloandroid.room.AppDatabase
+import com.helloandroid.room.World
 import ru.napoleonit.talan.di.ControllerInjector
 import java.util.*
 import javax.inject.Inject
@@ -17,9 +19,14 @@ val WORLD_KEY = "WORLD_KEY"
 
 class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Controller {
 
-    val world = App.instance.worlds.first { it.id == args.getInt(WORLD_KEY) }
+    lateinit var world: World
 
     constructor(worldId: Int) : this(Bundle().apply { putInt(WORLD_KEY, worldId) })
+
+    @Inject
+    lateinit var view: ListGamesContract.View
+    @Inject
+    lateinit var db: AppDatabase
 
     private val gamesSet = TreeSet<Game>(kotlin.Comparator { o1, o2 ->
         val res = o2.time.compareTo(o1.time)
@@ -29,9 +36,6 @@ class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Co
         return@Comparator res
     })
 
-    @Inject
-    lateinit var view: ListGamesContract.View
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         return view.createView(container)
     }
@@ -39,6 +43,7 @@ class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Co
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
         ControllerInjector.inject(this)
+        world = db.worldDao().getWorldById(args.getInt(WORLD_KEY))
 
         gamesSet.addAll(App.instance.games.filterNot { it.archived })
     }

@@ -7,9 +7,12 @@ import android.view.*
 import com.bluelinelabs.conductor.Controller
 import com.helloandroid.App
 import com.helloandroid.Character
+import com.helloandroid.Game
 import com.helloandroid.R
 import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.list_sessions.GAME_KEY
+import com.helloandroid.room.AppDatabase
+import com.helloandroid.room.World
 import ru.napoleonit.talan.di.ControllerInjector
 import java.util.*
 import javax.inject.Inject
@@ -22,9 +25,11 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
 
     @Inject
     lateinit var view: ListCharactersContract.View
+    @Inject
+    lateinit var db: AppDatabase
 
-    val world = App.instance.worlds.first { it.id == args.getInt(WORLD_KEY) }
-    val game = App.instance.games.first { it.id == args.getInt(GAME_KEY) && it.worldGroup == world.id }
+    lateinit var world: World
+    lateinit var game: Game
     private val characterItems = TreeSet(Comparator<CharacterItem> { o1, o2 ->
         return@Comparator o1.name.compareTo(o2.name)
     })
@@ -33,6 +38,14 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
         putInt(WORLD_KEY, worldId)
         putInt(GAME_KEY, gameId)
     })
+
+    override fun onContextAvailable(context: Context) {
+        super.onContextAvailable(context)
+        ControllerInjector.inject(this)
+        world = db.worldDao().getWorldById(args.getInt(WORLD_KEY))
+        game = App.instance.games.first { it.id == args.getInt(GAME_KEY) && it.worldGroup == world.id }
+        updateScreen()
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
         return view.createView(container)
@@ -51,13 +64,6 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    override fun onContextAvailable(context: Context) {
-        super.onContextAvailable(context)
-        ControllerInjector.inject(this)
-
-        updateScreen()
     }
 
     override fun updateCharactersScreen(activity: Activity) {
