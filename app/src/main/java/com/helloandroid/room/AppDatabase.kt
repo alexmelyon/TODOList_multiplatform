@@ -4,8 +4,14 @@ import android.arch.persistence.room.Database
 import android.arch.persistence.room.RoomDatabase
 import android.arch.persistence.room.TypeConverters
 
-@Database(entities = [World::class], version = 1)
+@Database(
+    version = 1,
+    entities = [
+        World::class,
+        Game::class]
+)
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun worldDao(): WorldDAO
+    abstract fun worldDao(): WorldDao
+    abstract fun gameDao(): GameDao
 }

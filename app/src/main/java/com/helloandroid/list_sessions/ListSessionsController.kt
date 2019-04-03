@@ -7,12 +7,12 @@ import android.view.*
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
 import com.helloandroid.App
-import com.helloandroid.Game
 import com.helloandroid.GameSession
 import com.helloandroid.R
 import com.helloandroid.list_characters.ListCharactersDelegate
 import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.room.AppDatabase
+import com.helloandroid.room.Game
 import com.helloandroid.room.World
 import com.helloandroid.session.SessionController
 import ru.napoleonit.talan.di.ControllerInjector
@@ -51,7 +51,7 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
         ControllerInjector.inject(this)
 
         world = db.worldDao().getWorldById(args.getInt(WORLD_KEY))
-        game = App.instance.games.first { it.id == args.getInt(GAME_KEY) && it.worldGroup == world.id }
+        game = db.gameDao().getAll(args.getInt(GAME_KEY), world.id)
         updateScreen()
     }
 

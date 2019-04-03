@@ -64,13 +64,13 @@ class ListWorldsController : Controller(), ListWorldsContract.Controller {
     }
 
     override fun onItemClick(pos: Int) {
-        val worldId = db.worldDao().getAll()[pos].id
-        router.pushController(RouterTransaction.with(WorldPagerController(worldId)))
+        val world = setWorlds.toList()[pos]
+        router.pushController(RouterTransaction.with(WorldPagerController(world.id)))
     }
 
     override fun createWorld(worldName: String) {
         val world = World(worldName, Calendar.getInstance().time)
-        db.worldDao().add(world)
+        db.worldDao().insert(world)
 
         setWorlds.add(world)
         view.addedAt(0, world)

@@ -12,8 +12,6 @@ import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.Router
 import com.bluelinelabs.conductor.RouterTransaction
 import com.bluelinelabs.conductor.support.RouterPagerAdapter
-import com.helloandroid.App
-import com.helloandroid.Game
 import com.helloandroid.MainActivity
 import com.helloandroid.R
 import com.helloandroid.list_characters.ListCharactersController
@@ -21,6 +19,7 @@ import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.list_sessions.GAME_KEY
 import com.helloandroid.list_sessions.ListSessionsController
 import com.helloandroid.room.AppDatabase
+import com.helloandroid.room.Game
 import com.helloandroid.room.World
 import org.jetbrains.anko.design.tabLayout
 import org.jetbrains.anko.linearLayout
@@ -77,7 +76,7 @@ class GamePagerController(args: Bundle) : Controller(args) {
         ControllerInjector.inject(this)
 
         world = db.worldDao().getWorldById(args.getInt(WORLD_KEY))
-        game = App.instance.games.first { it.id == args.getInt(GAME_KEY) && it.worldGroup == world.id }
+        game = db.gameDao().getAll(args.getInt(GAME_KEY), world.id)
         listCharactersController = ListCharactersController(world. id, game.id)
         screenToController = listOf(
             "Characters" to listCharactersController,

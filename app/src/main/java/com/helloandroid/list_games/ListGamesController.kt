@@ -6,10 +6,10 @@ import android.view.*
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
 import com.helloandroid.App
-import com.helloandroid.Game
 import com.helloandroid.R
 import com.helloandroid.game_pager.GamePagerController
 import com.helloandroid.room.AppDatabase
+import com.helloandroid.room.Game
 import com.helloandroid.room.World
 import ru.napoleonit.talan.di.ControllerInjector
 import java.util.*
@@ -45,13 +45,12 @@ class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Co
         ControllerInjector.inject(this)
         world = db.worldDao().getWorldById(args.getInt(WORLD_KEY))
 
-        gamesSet.addAll(App.instance.games.filterNot { it.archived })
+        gamesSet.addAll(db.gameDao().getAll(world.id, archived = false))
     }
 
     override fun onAttach(view: View) {
         super.onAttach(view)
-        val games = App.instance.games.filter { it.worldGroup == world.id }
-            .filterNot { it.archived }
+        val games = db.gameDao().getAll(world.id, archived = false)
             .sortedWith(kotlin.Comparator { o1, o2 ->
                 var res = o2.time.compareTo(o1.time)
                 if(res == 0) {
@@ -87,9 +86,8 @@ class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Co
     }
 
     override fun createGame(gameName: String) {
-        val maxId = App.instance.games.maxBy { it.id }?.id ?: -1
-        val game = Game(maxId + 1, gameName, world.id, Calendar.getInstance().time)
-        App.instance.games.add(game)
+        val game = Game(gameName, world.id, Calendar.getInstance().time)
+        db.gameDao().insert(game)
         view.addedAt(0, gameName)
     }
 
@@ -97,6 +95,7 @@ class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Co
         val game = gamesSet.toList()[pos]
         game.archived = true
 
+        db.gameDao().update(game)
         gamesSet.remove(game)
         view.archivedAt(pos)
     }

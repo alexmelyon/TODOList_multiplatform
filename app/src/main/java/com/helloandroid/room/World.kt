@@ -11,9 +11,7 @@ class World(var name: String, val createTime: Date, var archived: Boolean = fals
 }
 
 @Dao
-interface WorldDAO {
-    @Query("SELECT * FROM world")
-    fun getAll(): List<World>
+interface WorldDao {
 
     @Query("SELECT * FROM world WHERE archived = :archived")
     fun getAll(archived: Boolean): List<World>
@@ -22,7 +20,7 @@ interface WorldDAO {
     fun getWorldById(worldId: Int): World
 
     @Insert
-    fun add(world: World)
+    fun insert(world: World)
 
     @Update
     fun update(world: World)

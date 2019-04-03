@@ -7,11 +7,11 @@ import android.view.*
 import com.bluelinelabs.conductor.Controller
 import com.helloandroid.App
 import com.helloandroid.Character
-import com.helloandroid.Game
 import com.helloandroid.R
 import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.list_sessions.GAME_KEY
 import com.helloandroid.room.AppDatabase
+import com.helloandroid.room.Game
 import com.helloandroid.room.World
 import ru.napoleonit.talan.di.ControllerInjector
 import java.util.*
@@ -43,7 +43,7 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
         super.onContextAvailable(context)
         ControllerInjector.inject(this)
         world = db.worldDao().getWorldById(args.getInt(WORLD_KEY))
-        game = App.instance.games.first { it.id == args.getInt(GAME_KEY) && it.worldGroup == world.id }
+        game = db.gameDao().getAll(args.getInt(GAME_KEY), world.id)
         updateScreen()
     }
 

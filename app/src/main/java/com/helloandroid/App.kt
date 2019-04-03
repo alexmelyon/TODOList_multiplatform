@@ -5,6 +5,7 @@ import android.app.Application
 import com.helloandroid.dagger.AppComponent
 import com.helloandroid.dagger.ContextModule
 import com.helloandroid.dagger.DaggerAppComponent
+import com.helloandroid.room.AppDatabase
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
@@ -16,6 +17,8 @@ class App : Application(), HasActivityInjector {
 
     @Inject
     lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Activity>
+    @Inject
+    lateinit var db: AppDatabase
 
     override fun activityInjector(): AndroidInjector<Activity> {
         println("GET ACTIVITY INJECTOR")
@@ -29,7 +32,6 @@ class App : Application(), HasActivityInjector {
             private set
     }
 
-    val games = mutableListOf<Game>()
     val gameSessions = mutableListOf<GameSession>()
     val characters = mutableListOf<Character>()
     val skills = mutableListOf<Skill>()
@@ -54,8 +56,7 @@ class App : Application(), HasActivityInjector {
     fun initWorld() {
         val now = Calendar.getInstance().time
         (1..3).forEach { worldId ->
-//            worlds.add(World(worldId, "$worldId world", now))
-//            db.worldDao().add(World("$worldId world", now))
+//            db.worldDao().insert(World("$worldId world", now))
             val skillId = 0
             skills.add(Skill(skillId, "First skill", worldId, now))
             skills.add(Skill(1, "Second skill", worldId, now))
@@ -75,7 +76,7 @@ class App : Application(), HasActivityInjector {
             things.add(Thing(1, "Second thing", worldId, now))
             things.add(Thing(2, "Third thing", worldId, now))
             (1..3).forEach { gameId ->
-                games.add(Game(gameId, "$gameId game", worldId, now))
+//                db.gameDao().insert(Game("$gameId game", worldId, now))
                 val characterId = 0
                 characters.add(Character(characterId, "First Character", gameId, worldId))
                 characters.add(Character(1, "Second Character", gameId, worldId))
@@ -96,12 +97,6 @@ class App : Application(), HasActivityInjector {
         }
     }
 }
-
-//class World(val id: Int, var name: String, val createTime: Date, var archived: Boolean = false) {
-//    override fun toString() = name
-//}
-
-class Game(val id: Int, var name: String, val worldGroup: Int, val time: Date, var archived: Boolean = false)
 
 class GameSession(val id: Int, var name: String, val gameGroup: Int, val worldGroup: Int, val startTime: Date, var open: Boolean, var endTime: Date, var archived: Boolean = false) {
     override fun toString() = name
