@@ -112,6 +112,7 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
     }
 
     override fun onAddItemClicked(which: Int) {
+        // TODO Create New skill, New thing, New character
         val characterNames = getCharacters().map { it.name }
         when(which) {
             SESSION_ADD_HP -> view.showAddHpDialog(characterNames)
