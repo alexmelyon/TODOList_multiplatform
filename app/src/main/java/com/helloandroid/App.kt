@@ -32,8 +32,6 @@ class App : Application(), HasActivityInjector {
             private set
     }
 
-    val commentDiffs = mutableListOf<CommentDiff>()
-
     override fun onCreate() {
         super.onCreate()
         instance = this
@@ -103,22 +101,14 @@ class App : Application(), HasActivityInjector {
                         db.thingDiffDao().insert(ThingDiff(3, now, characterId, thingId, sessionId, gameId, worldId))
                         db.thingDiffDao().insert(ThingDiff(4, now, characterId, thingId, sessionId, gameId, worldId))
                     }
-                    commentDiffs += CommentDiff(4, "Comment", now, sessionId, gameId, worldId)
+                    if(db.commentDiffDao().getFull().isEmpty()) {
+                        db.commentDiffDao().insert(CommentDiff("Comment", now, sessionId, gameId, worldId))
+                    }
                 }
             }
         }
     }
 }
-
-class CommentDiff(
-    val id: Long,
-    var comment: String,
-    val time: Date,
-    val sessionGroup: Long,
-    val gameGroup: Long,
-    val worldGroup: Long,
-    var archived: Boolean = false
-)
 // TODO Комментарий по персонажу, Состояния, особенности (плюсы минусы), дополнительные скиллы, заклинания, баффы, дебаффы, ачивки
 // TODO Пресеты по DND, Fallout, SW:KotOR
 // TODO Room

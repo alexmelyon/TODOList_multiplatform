@@ -50,15 +50,13 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
         game = db.gameDao().getAll(args.getLong(GAME_KEY), world.id)
         session = db.gameSessionDao().get(world.id, game.id, args.getLong(SESSION_KEY))
 
-        // FIXME После создания новой сессии, когда двойной заголовок Closed sessions
-        // lateinit property session has not been initialized???
         itemsWrapper.addAll(db.hpDiffDao().getAllBySession(world.id, game.id, session.id, archived = false)
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_HP, "HP", getCharacter(it.characterGroup).name, it.value, it.characterGroup) })
         itemsWrapper.addAll(db.skillDiffDao().getAllBySession(world.id, game.id, session.id, archived = false)
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_SKILL, getSkill(it.skillGroup).name, getCharacter(it.characterGroup).name, it.value, it.characterGroup) })
         itemsWrapper.addAll(db.thingDiffDao().getAllBySession(world.id, game.id, session.id, archived = false)
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_THING, getThing(it.thingGroup).name, getCharacter(it.characterGroup).name, it.value, it.characterGroup) })
-        itemsWrapper.addAll(App.instance.commentDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
+        itemsWrapper.addAll(db.commentDiffDao().getAll(world.id, game.id, session.id, archived = false)
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_COMMENT, "", "", 0, -1, it.comment) })
     }
 
@@ -166,8 +164,9 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
         val item = itemsWrapper.toList()[pos]
         val commentId = item.id
         item.comment = comment
-        val commentDiff = App.instance.commentDiffs.single { it.id == commentId && it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
+        val commentDiff = db.commentDiffDao().get(world.id, game.id, session.id, commentId)
         commentDiff.comment = comment
+        db.commentDiffDao().update(commentDiff)
         // Do not itemChangedAt
     }
 
@@ -208,10 +207,9 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
     }
 
     override fun addCommentDiff() {
-        val comments = App.instance.commentDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
-        val maxId = comments.maxBy { it.id }?.id ?: -1
-        val commentDiff = CommentDiff(maxId + 1, "", Calendar.getInstance().time, session.id, game.id, world.id)
-        App.instance.commentDiffs.add(commentDiff)
+        val commentDiff = CommentDiff("", Calendar.getInstance().time, session.id, game.id, world.id)
+        val id = db.commentDiffDao().insert(commentDiff)
+        commentDiff.id = id
 
         val thing = SessionItem(commentDiff.id, commentDiff.time, SessionItemType.ITEM_COMMENT, "", "", 0, -1, commentDiff.comment)
         itemsWrapper.add(thing)
