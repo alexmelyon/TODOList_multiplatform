@@ -97,6 +97,12 @@ class SessionDiffsAdapter(val context: Context, val editable: Boolean) : Recycle
         }
     }
 
+    fun itemAdded(pos: Int, sessionItem: SessionItem) {
+        items.add(pos, sessionItem)
+        notifyItemInserted(pos)
+        layoutManager?.scrollToPosition(0)
+    }
+
     class IdTextWatcher(val textChanged: (Int, String) -> Unit) : TextWatcher {
         var index: Int = 0
 

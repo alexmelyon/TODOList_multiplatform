@@ -46,7 +46,7 @@ class App : Application(), HasActivityInjector {
 
     fun initWorld() {
         val now = Calendar.getInstance().time
-        (1..1L).forEach { worldId ->
+        (1L..1).forEach { worldId ->
             if (db.worldDao().getFull().isEmpty()) {
                 db.worldDao().insert(World("$worldId world", now))
             }
@@ -82,7 +82,7 @@ class App : Application(), HasActivityInjector {
                     db.characterDao().insert(GameCharacter("Second Character", gameId, worldId))
                     db.characterDao().insert(GameCharacter("Third Character", gameId, worldId))
                 }
-                (1..1L).forEach { sessionId ->
+                (1L..1).forEach { sessionId ->
                     val minusHour = Calendar.getInstance().apply {
                         add(Calendar.HOUR, -sessionId.toInt())
                     }

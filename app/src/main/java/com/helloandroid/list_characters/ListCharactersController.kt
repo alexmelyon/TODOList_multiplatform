@@ -30,6 +30,9 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
     lateinit var world: World
     lateinit var game: Game
     private val characterItems = TreeSet(Comparator<CharacterItem> { o1, o2 ->
+        if(o1.lastUsed != o2.lastUsed) {
+            return@Comparator o1.lastUsed.compareTo(o2.lastUsed)
+        }
         return@Comparator o1.name.compareTo(o2.name)
     })
 
@@ -83,27 +86,35 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
             }
 
             val skills = db.skillDao().getAll(world.id, archived = false)
-            val skillsDiffs = db.skillDiffDao().getAllByCharacter(world.id, game.id, character.id, archived = false)
+            val skillDiffs = db.skillDiffDao().getAllByCharacter(world.id, game.id, character.id, archived = false)
+                .asSequence()
                 .filter { closedSessions.contains(it.sessionGroup) }
                 .fold(listOf<Pair<Long, Int>>()) { total, next ->
                     total + listOf(Pair(next.skillGroup, next.value))
-                }.map { skillTovalue -> skills.single { it.id == skillTovalue.first }.name to skillTovalue.second }
+                }.map { skillTovalue -> skills.single { it.id == skillTovalue.first } to skillTovalue.second }
                 .groupBy { it.first }
                 .map { it.key to it.value.sumBy { it.second } }
                 .filter { it.second != 0}
+                .toList()
+            val skillDiffNames = skillDiffs.map { it.first.name to it.second }
 
             val things = db.thingDao().getAll(world.id, archived = false)
             // TODO Refactor this boilerplate
             val thingDiffs = db.thingDiffDao().getAllByCharacter(world.id, game.id, character.id, archived = false)
+                .asSequence()
                 .filter { closedSessions.contains(it.sessionGroup) }
                 .fold(listOf<Pair<Long, Int>>()) { total, next ->
                     total + listOf(Pair(next.thingGroup, next.value))
-                }.map { thingTovalue -> things.single { it.id == thingTovalue.first }.name to thingTovalue.second }
+                }.map { thingToValue -> things.single { it.id == thingToValue.first } to thingToValue.second }
                 .groupBy { it.first }
                 .map { it.key to it.value.sumBy { it.second } }
                 .filter { it.second != 0}
+                .toList()
+            val thingDiffNames = thingDiffs.map { it.first.name to it.second }
 
-            characterItems.add(CharacterItem(character.id, character.name, hp, skillsDiffs, thingDiffs))
+            val lastUsed = (skillDiffs.map { it.first.lastUsed } + thingDiffs.map { it.first.lastUsed })
+                .min() ?: Calendar.getInstance().time
+            characterItems.add(CharacterItem(character.id, character.name, hp, lastUsed, skillDiffNames, thingDiffNames))
             characterItems.forEachIndexed { index, item ->
                 item.index = index
             }
@@ -120,7 +131,7 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
         val id = db.characterDao().insert(character)
         character.id = id
 
-        val item = CharacterItem(character.id, characterName, 0, listOf(), listOf())
+        val item = CharacterItem(character.id, characterName, 0, Calendar.getInstance().time, listOf(), listOf())
         characterItems.add(item)
         characterItems.forEachIndexed { index, item ->
             item.index = index

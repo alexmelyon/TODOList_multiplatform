@@ -186,6 +186,8 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
     override fun addCharacterSkillDiff(character: Int, skill: Int) {
         val selectedCharacter = getCharacters()[character]
         val selectedSkill = getSkills()[skill]
+        selectedSkill.lastUsed = Calendar.getInstance().time
+        db.skillDao().update(selectedSkill)
         val skillDiff = SkillDiff(0, Calendar.getInstance().time, selectedCharacter.id, selectedSkill.id, session.id, game.id, world.id)
         val id = db.skillDiffDao().insert(skillDiff)
         skillDiff.id = id
@@ -198,6 +200,8 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
     override fun addCharacterThingDiff(character: Int, thing: Int) {
         val selectedCharacter = getCharacters()[character]
         val selectedThing = getThings()[thing]
+        selectedThing.lastUsed = Calendar.getInstance().time
+        db.thingDao().update(selectedThing)
         val thingDiff = ThingDiff(0, Calendar.getInstance().time, selectedCharacter.id, selectedThing.id, session.id, game.id, world.id)
         val id = db.thingDiffDao().insert(thingDiff)
         thingDiff.id = id

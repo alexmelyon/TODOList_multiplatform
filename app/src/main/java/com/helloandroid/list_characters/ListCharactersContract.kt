@@ -1,6 +1,7 @@
 package com.helloandroid.list_characters
 
 import android.view.ViewGroup
+import java.util.*
 
 interface ListCharactersContract {
 
@@ -18,4 +19,4 @@ interface ListCharactersContract {
     }
 }
 
-class CharacterItem(val id: Long, val name: String, val hp: Int, val skills: List<Pair<String, Int>>, val things: List<Pair<String, Int>>, var index: Int = -1)
+class CharacterItem(val id: Long, val name: String, val hp: Int, val lastUsed: Date, val skills: List<Pair<String, Int>>, val things: List<Pair<String, Int>>, var index: Int = -1)

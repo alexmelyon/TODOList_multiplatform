@@ -1,6 +1,7 @@
 package com.helloandroid.room
 
 import android.arch.persistence.room.*
+import java.util.*
 
 @Entity
 class GameCharacter(var name: String, val gameGroup: Long, val worldGroup: Long, var archived: Boolean = false) {

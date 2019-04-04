@@ -51,8 +51,7 @@ class SessionView @Inject constructor(val activity: MainActivity) : _FrameLayout
     }
 
     override fun itemAddedAt(pos: Int, sessionItem: SessionItem) {
-        listAdapter.items.add(pos, sessionItem)
-        listAdapter.notifyItemInserted(pos)
+        listAdapter.itemAdded(pos, sessionItem)
     }
 
     override fun itemRemovedAt(pos: Int) {
