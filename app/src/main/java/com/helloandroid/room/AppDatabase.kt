@@ -12,7 +12,8 @@ import android.arch.persistence.room.TypeConverters
         Skill::class,
         Thing::class,
         GameCharacter::class,
-        GameSession::class]
+        GameSession::class,
+        HealthPointDiff::class]
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -22,4 +23,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun thingDao(): ThingDao
     abstract fun characterDao(): CharacterDao
     abstract fun gameSessionDao(): GameSessionDao
+    abstract fun hpDiffDao(): HpDiffDao
 }

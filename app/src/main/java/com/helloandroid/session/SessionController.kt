@@ -50,7 +50,7 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
         game = db.gameDao().getAll(args.getInt(GAME_KEY), world.id)
         session = db.gameSessionDao().get(world.id, game.id, args.getInt(SESSION_KEY))
 
-        itemsWrapper.addAll(App.instance.hpDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
+        itemsWrapper.addAll(db.hpDiffDao().getAllBySession(world.id, game.id, session.id, archived = false)
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_HP, "HP", getCharacter(it.characterGroup).name, it.value, it.characterGroup) })
         itemsWrapper.addAll(App.instance.skillDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_SKILL, getSkill(it.skillGroup).name, getCharacter(it.characterGroup).name, it.value, it.characterGroup) })
@@ -132,8 +132,9 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
         item.value += value
         val hpId = item.id
         val characterId = item.characterId
-        val hpDiff = App.instance.hpDiffs.single { it.id == hpId && it.sessionGroup == session.id && it.characterGroup == characterId && it.gameGroup == game.id && it.worldGroup == world.id }
+        val hpDiff = db.hpDiffDao().get(world.id, game.id, session.id, characterId, hpId)
         hpDiff.value += value
+        db.hpDiffDao().update(hpDiff)
         this.view.itemChangedAt(pos)
     }
 
@@ -169,10 +170,8 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
     override fun addHpDiff(character: Int) {
         val characters = getCharacters()
         val selectedCharacter = characters[character]
-        val maxId = App.instance.hpDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
-            .maxBy { it.id }?.id ?: -1
-        val hpDiff = HealthPointDiff(maxId + 1, 0, Calendar.getInstance().time, selectedCharacter.id, session.id, game.id, world.id)
-        App.instance.hpDiffs.add(hpDiff)
+        val hpDiff = HealthPointDiff(0, Calendar.getInstance().time, selectedCharacter.id, session.id, game.id, world.id)
+        db.hpDiffDao().insert(hpDiff)
 
         val item = SessionItem(hpDiff.id, hpDiff.time, SessionItemType.ITEM_HP, "HP", selectedCharacter.name, hpDiff.value, selectedCharacter.id, "")
         itemsWrapper.add(item)

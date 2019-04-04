@@ -32,7 +32,6 @@ class App : Application(), HasActivityInjector {
             private set
     }
 
-    val hpDiffs = mutableListOf<HealthPointDiff>()
     val skillDiffs = mutableListOf<SkillDiff>()
     val thingDiffs = mutableListOf<ThingDiff>()
     val commentDiffs = mutableListOf<CommentDiff>()
@@ -51,11 +50,10 @@ class App : Application(), HasActivityInjector {
 
     fun initWorld() {
         val now = Calendar.getInstance().time
-        if (db.worldDao().getFull().isNotEmpty()) {
-            return
-        }
-        (1..3).forEach { worldId ->
-            db.worldDao().insert(World("$worldId world", now))
+        (1..1).forEach { worldId ->
+            if (db.worldDao().getFull().isEmpty()) {
+                db.worldDao().insert(World("$worldId world", now))
+            }
             val skillId = 1
             if (db.skillDao().getFull().isEmpty()) {
                 db.skillDao().insert(Skill("First skill", worldId, now))
@@ -73,32 +71,32 @@ class App : Application(), HasActivityInjector {
                 db.skillDao().insert(Skill("13 skill", worldId, now))
             }
             val thingId = 1
-            if(db.thingDao().getFull().isEmpty()) {
+            if (db.thingDao().getFull().isEmpty()) {
                 db.thingDao().insert(Thing("First thing", worldId, now))
                 db.thingDao().insert(Thing("Second thing", worldId, now))
                 db.thingDao().insert(Thing("Third thing", worldId, now))
             }
-
-            if (db.gameDao().getFull().isNotEmpty()) {
-                return
-            }
-            (1..3).forEach { gameId ->
-                db.gameDao().insert(Game("$gameId game", worldId, now))
+            (1..1).forEach { gameId ->
+                if (db.gameDao().getFull().isEmpty()) {
+                    db.gameDao().insert(Game("$gameId game", worldId, now))
+                }
                 val characterId = 1
-                if(db.characterDao().getFull().isEmpty()) {
+                if (db.characterDao().getFull().isEmpty()) {
                     db.characterDao().insert(GameCharacter("First Character", gameId, worldId))
                     db.characterDao().insert(GameCharacter("Second Character", gameId, worldId))
                     db.characterDao().insert(GameCharacter("Third Character", gameId, worldId))
                 }
-                if(db.gameSessionDao().getFull().isNotEmpty()) {
-                    return
-                }
-                (1..6).forEach { sessionId ->
+                (1..1).forEach { sessionId ->
                     val minusHour = Calendar.getInstance().apply {
                         add(Calendar.HOUR, -sessionId)
                     }
-                    db.gameSessionDao().insert(GameSession("$sessionId session", worldId, gameId, minusHour.time, true, now))
-                    hpDiffs += HealthPointDiff(1, 1, now, characterId, sessionId, gameId, worldId)
+                    if (db.gameSessionDao().getFull().isEmpty()) {
+                        db.gameSessionDao().insert(GameSession("$sessionId session", worldId, gameId, minusHour.time, true, now))
+                    }
+                    if(db.hpDiffDao().getFull().isEmpty()) {
+                        db.hpDiffDao().insert(HealthPointDiff(1, now, characterId, sessionId, gameId, worldId))
+                        db.hpDiffDao().insert(HealthPointDiff(2, now, characterId, sessionId, gameId, worldId))
+                    }
                     skillDiffs += SkillDiff(2, 2, now, characterId, skillId, sessionId, gameId, worldId)
                     skillDiffs += SkillDiff(22, 3, now, characterId, skillId, sessionId, gameId, worldId)
                     thingDiffs += ThingDiff(3, 3, now, characterId, thingId, sessionId, gameId, worldId)
@@ -109,8 +107,6 @@ class App : Application(), HasActivityInjector {
         }
     }
 }
-
-class HealthPointDiff(val id: Int, var value: Int, val time: Date, val characterGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int, var archived: Boolean = false)
 
 class SkillDiff(
     val id: Int,
@@ -136,7 +132,15 @@ class ThingDiff(
     var archived: Boolean = false
 )
 
-class CommentDiff(val id: Int, var comment: String, val time: Date, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int, var archived: Boolean = false)
+class CommentDiff(
+    val id: Int,
+    var comment: String,
+    val time: Date,
+    val sessionGroup: Int,
+    val gameGroup: Int,
+    val worldGroup: Int,
+    var archived: Boolean = false
+)
 // TODO Комментарий по персонажу, Состояния, особенности (плюсы минусы), дополнительные скиллы, заклинания, баффы, дебаффы, ачивки
 // TODO Пресеты по DND, Fallout, SW:KotOR
 // TODO Room

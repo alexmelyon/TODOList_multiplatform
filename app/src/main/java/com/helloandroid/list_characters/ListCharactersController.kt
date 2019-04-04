@@ -78,7 +78,8 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
             .map { it.id }
         characters.forEach { character ->
             val hp = closedSessions.fold(0) { total, next ->
-                App.instance.hpDiffs.filter { it.characterGroup == character.id && closedSessions.contains(it.sessionGroup) && it.gameGroup == game.id && it.worldGroup == world.id }
+                db.hpDiffDao().getAllByCharacter(world.id, game.id, character.id, archived = false)
+                    .filter { closedSessions.contains(it.id) }
                     .sumBy { it.value }
             }
 
