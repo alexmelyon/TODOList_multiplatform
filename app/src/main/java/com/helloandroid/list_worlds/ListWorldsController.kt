@@ -63,8 +63,7 @@ class ListWorldsController : Controller(), ListWorldsContract.Controller {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onItemClick(pos: Int) {
-        val world = setWorlds.toList()[pos]
+    override fun onItemClick(world: World) {
         router.pushController(RouterTransaction.with(WorldPagerController(world.id)))
     }
 

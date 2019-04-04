@@ -1,7 +1,7 @@
 package com.helloandroid.list_sessions
 
 import android.view.ViewGroup
-import com.helloandroid.GameSession
+import com.helloandroid.room.GameSession
 
 interface ListSessionsContract {
     interface View {
@@ -13,7 +13,7 @@ interface ListSessionsContract {
     }
 
     interface Controller {
-        fun onItemClick(pos: Int)
+        fun onItemClick(session: GameSession)
         fun getGameName(): String
         fun createSession(sessionName: String)
         fun archiveSession(pos: Int, session: GameSession)

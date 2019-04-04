@@ -7,6 +7,8 @@ import java.util.*
 class Game(var name: String, val worldGroup: Int, val time: Date, var archived: Boolean = false) {
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0
+
+    override fun toString() = name
 }
 
 @Dao

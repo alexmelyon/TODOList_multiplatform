@@ -6,13 +6,12 @@ import android.os.Bundle
 import android.view.*
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
-import com.helloandroid.App
-import com.helloandroid.GameSession
 import com.helloandroid.R
 import com.helloandroid.list_characters.ListCharactersDelegate
 import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.room.AppDatabase
 import com.helloandroid.room.Game
+import com.helloandroid.room.GameSession
 import com.helloandroid.room.World
 import com.helloandroid.session.SessionController
 import ru.napoleonit.talan.di.ControllerInjector
@@ -80,8 +79,7 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
     }
 
     fun updateScreen() {
-        sessionsList = App.instance.gameSessions.filter { it.worldGroup == world.id && it.gameGroup == game.id }
-            .filterNot { it.archived }
+        sessionsList = db.gameSessionDao().getAll(world.id, game.id, archived = false)
             .sortedWith(Comparator { o1, o2 ->
                 // TODO My own comparator
                 if (o1.open != o2.open) {
@@ -112,18 +110,17 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
     }
 
     override fun getHeader(pos: Int): String {
-        if(pos == 0 && pos != firstClosedSessionIndex ) {
+        if (pos == 0 && pos != firstClosedSessionIndex) {
             return "Open sessions"
-        } else if(pos == firstClosedSessionIndex) {
+        } else if (pos == firstClosedSessionIndex) {
             return "Closed sessions"
         }
         return ""
     }
 
-    override fun onItemClick(pos: Int) {
+    override fun onItemClick(session: GameSession) {
         val router = parentController?.router ?: this.router
-        val sessionId = sessionsList[pos].id
-        router.pushController(RouterTransaction.with(SessionController(sessionId, game.id, world.id).apply {
+        router.pushController(RouterTransaction.with(SessionController(session.id, game.id, world.id).apply {
             delegate = WeakReference(this@ListSessionsController)
         }))
     }
@@ -133,18 +130,16 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
     }
 
     override fun createSession(sessionName: String) {
-        val maxId = App.instance.gameSessions.filter { it.gameGroup == game.id && it.worldGroup == world.id }
-            .maxBy { it.id }?.id ?: -1
         val now = Calendar.getInstance().time
-        val session = GameSession(maxId + 1, sessionName, game.id, world.id, now, open = true, endTime = now)
-        App.instance.gameSessions.add(session)
+        val session = GameSession(sessionName, game.id, world.id, now, open = true, endTime = now)
+        db.gameSessionDao().insert(session)
 
         view.addedAt(0, session)
     }
 
-    override fun archiveSession(pos: Int, item: GameSession) {
-        val session = App.instance.gameSessions.single { it.id == item.id && it.gameGroup == game.id && it.worldGroup == world.id }
+    override fun archiveSession(pos: Int, session: GameSession) {
         session.archived = true
+        db.gameSessionDao().update(session)
 
         view.archivedAt(pos)
     }

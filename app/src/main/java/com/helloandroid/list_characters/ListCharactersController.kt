@@ -73,7 +73,7 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
     fun updateScreen() {
         characterItems.clear()
         val characters = db.characterDao().getAll(world.id, game.id, archived = false)
-        val closedSessions = App.instance.gameSessions.filter { it.gameGroup == game.id && it.worldGroup == world.id }
+        val closedSessions = db.gameSessionDao().getAll(world.id, game.id, archived = false)
             .filterNot { it.open }
             .map { it.id }
         characters.forEach { character ->

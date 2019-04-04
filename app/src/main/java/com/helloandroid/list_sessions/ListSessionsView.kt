@@ -5,9 +5,9 @@ import android.support.v7.app.AlertDialog
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import com.helloandroid.GameSession
 import com.helloandroid.MainActivity
 import com.helloandroid.R
+import com.helloandroid.room.GameSession
 import com.helloandroid.ui.RecyclerStringAdapter
 import org.jetbrains.anko._FrameLayout
 import org.jetbrains.anko.recyclerview.v7.recyclerView
@@ -22,8 +22,8 @@ class ListSessionsView @Inject constructor(val activity: MainActivity) : _FrameL
 
     override fun createView(container: ViewGroup): View {
         activity.supportActionBar!!.title = controller.getGameName()
-        sessionsAdapter = RecyclerStringAdapter(container.context, R.layout.simple_list_item_2_with_header) { pos ->
-            controller.onItemClick(pos)
+        sessionsAdapter = RecyclerStringAdapter(container.context, R.layout.simple_list_item_2_with_header) { pos, session ->
+            controller.onItemClick(session)
         }
         sessionsAdapter.onGetDescriptionValue = { pos ->
             controller.getDescription(pos)

@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import android.widget.EditText
 import com.helloandroid.MainActivity
+import com.helloandroid.room.Game
 import com.helloandroid.ui.RecyclerStringAdapter
 import org.jetbrains.anko._FrameLayout
 import org.jetbrains.anko.linearLayout
@@ -18,16 +19,16 @@ class ListGamesView @Inject constructor(val activity: MainActivity) : _FrameLayo
     lateinit var controller: ListGamesContract.Controller
 
     lateinit var gamesView: RecyclerView
-    lateinit var gamesAdapter: RecyclerStringAdapter<String>
+    lateinit var gamesAdapter: RecyclerStringAdapter<Game>
 
     override fun createView(container: ViewGroup) = container.context.linearLayout {
-        gamesAdapter = RecyclerStringAdapter(container.context) { pos ->
-            controller.onItemClick(pos)
+        gamesAdapter = RecyclerStringAdapter(container.context) { pos, game ->
+            controller.onItemClick(game)
         }
-        gamesAdapter.onItemLongclickListener = { pos, name ->
+        gamesAdapter.onItemLongclickListener = { pos, game ->
             AlertDialog.Builder(activity)
                 .setTitle("Archive game?")
-                .setMessage(name)
+                .setMessage(game.name)
                 .setPositiveButton("OK", DialogInterface.OnClickListener { dialog, which ->
                     controller.archiveGameAt(pos)
                 })
@@ -38,7 +39,7 @@ class ListGamesView @Inject constructor(val activity: MainActivity) : _FrameLayo
         }
     }
 
-    override fun setData(items: MutableList<String>) {
+    override fun setData(items: MutableList<Game>) {
         gamesAdapter.items = items
     }
 
@@ -56,8 +57,8 @@ class ListGamesView @Inject constructor(val activity: MainActivity) : _FrameLayo
             .show()
     }
 
-    override fun addedAt(pos: Int, gameName: String) {
-        gamesAdapter.itemAddedAt(pos, gameName)
+    override fun addedAt(pos: Int, game: Game) {
+        gamesAdapter.itemAddedAt(pos, game)
     }
 
     override fun archivedAt(pos: Int) {

@@ -58,7 +58,7 @@ class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Co
                 }
                 return@Comparator res
             })
-        this.view.setData(games.toList().map { it.name }.toMutableList())
+        this.view.setData(games.toMutableList())
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -76,9 +76,9 @@ class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Co
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onItemClick(pos: Int) {
+    override fun onItemClick(game: Game) {
         val router = parentController?.router ?: router
-        router.pushController(RouterTransaction.with(GamePagerController(world.id, App.instance.gameSessions[pos].id)))
+        router.pushController(RouterTransaction.with(GamePagerController(world.id, game.id)))
     }
 
     override fun getWorldName(): String {
@@ -88,7 +88,7 @@ class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Co
     override fun createGame(gameName: String) {
         val game = Game(gameName, world.id, Calendar.getInstance().time)
         db.gameDao().insert(game)
-        view.addedAt(0, gameName)
+        view.addedAt(0, game)
     }
 
     override fun archiveGameAt(pos: Int) {

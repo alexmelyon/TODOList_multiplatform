@@ -48,7 +48,7 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
 
         world = db.worldDao().getWorldById(args.getInt(WORLD_KEY))
         game = db.gameDao().getAll(args.getInt(GAME_KEY), world.id)
-        session = App.instance.gameSessions.first { it.id == args.getInt(SESSION_KEY) && it.gameGroup == game.id && it.worldGroup == world.id }
+        session = db.gameSessionDao().get(world.id, game.id, args.getInt(SESSION_KEY))
 
         itemsWrapper.addAll(App.instance.hpDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_HP, "HP", getCharacter(it.characterGroup).name, it.value, it.characterGroup) })
@@ -265,6 +265,7 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
     override fun closeSession() {
         session.open = false
         session.endTime = Calendar.getInstance().time
+        db.gameSessionDao().update(session)
         delegate?.get()?.updateListSessionsScreen(activity!!)
 
         router.popCurrentController()

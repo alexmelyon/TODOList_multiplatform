@@ -13,7 +13,7 @@ import android.widget.TextView
 import com.helloandroid.R
 import org.jetbrains.anko.textColor
 
-class RecyclerStringAdapter<T>(val context: Context, @LayoutRes val layoutRes: Int = android.R.layout.simple_list_item_1, val onItemClickListener: (Int) -> Unit = { pos -> }) : RecyclerView.Adapter<RecyclerStringAdapter.ViewHolder>() {
+class RecyclerStringAdapter<T>(val context: Context, @LayoutRes val layoutRes: Int = android.R.layout.simple_list_item_1, val onItemClickListener: (Int, T) -> Unit = { pos, item -> }) : RecyclerView.Adapter<RecyclerStringAdapter.ViewHolder>() {
 
     var layoutManager: RecyclerView.LayoutManager? = null
     var onItemLongclickListener: (Int, T) -> Unit = { pos, item -> }
@@ -50,7 +50,7 @@ class RecyclerStringAdapter<T>(val context: Context, @LayoutRes val layoutRes: I
         val text1 = holder.text1
         text1.text = items[position].toString()
         holder.itemView.setOnClickListener { view ->
-            onItemClickListener(correctPosition)
+            onItemClickListener(correctPosition, items[position])
         }
         holder.itemView.setOnLongClickListener { view ->
             onItemLongclickListener(correctPosition, items[position])

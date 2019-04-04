@@ -6,7 +6,7 @@ import com.helloandroid.room.World
 interface ListWorldsContract {
 
     interface Controller {
-        fun onItemClick(pos: Int)
+        fun onItemClick(world: World)
         fun createWorld(worldName: String)
         fun archiveWorldAt(pos: Int)
     }

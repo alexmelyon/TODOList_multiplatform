@@ -25,8 +25,8 @@ class ListWorldsView @Inject constructor(val activity: MainActivity) : _FrameLay
 
     override fun createView(container: ViewGroup) = container.context.verticalLayout {
         activity.supportActionBar!!.title = container.context.getString(R.string.app_name)
-        worldsAdapter = RecyclerStringAdapter(container.context) { pos ->
-            controller.onItemClick(pos)
+        worldsAdapter = RecyclerStringAdapter(container.context) { pos, world ->
+            controller.onItemClick(world)
         }
         worldsAdapter.onItemLongclickListener = { pos, world ->
             AlertDialog.Builder(activity)
