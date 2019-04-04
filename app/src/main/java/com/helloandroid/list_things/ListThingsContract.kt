@@ -1,7 +1,7 @@
 package com.helloandroid.list_things
 
 import android.view.ViewGroup
-import com.helloandroid.Thing
+import com.helloandroid.room.Thing
 
 interface ListThingsContract {
     interface View {

@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import com.helloandroid.MainActivity
-import com.helloandroid.Thing
+import com.helloandroid.room.Thing
 import com.helloandroid.ui.RecyclerStringAdapter
 import org.jetbrains.anko._FrameLayout
 import org.jetbrains.anko.recyclerview.v7.recyclerView

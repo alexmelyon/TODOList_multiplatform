@@ -8,10 +8,7 @@ import com.helloandroid.*
 import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.list_sessions.GAME_KEY
 import com.helloandroid.list_sessions.ListSessionsDelegate
-import com.helloandroid.room.AppDatabase
-import com.helloandroid.room.Game
-import com.helloandroid.room.Skill
-import com.helloandroid.room.World
+import com.helloandroid.room.*
 import ru.napoleonit.talan.di.ControllerInjector
 import java.lang.ref.WeakReference
 import java.util.*
@@ -227,14 +224,11 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
 
     private fun getSkills(): List<Skill> {
         return db.skillDao().getAll(world.id, archived = false)
-        //App.instance.skills.filter { it.worldGroup == world.id }
-//            .filterNot { it.archived }
-//            .sortedBy { it.name }
+            .sortedBy { it.name }
     }
 
     private fun getThings(): List<Thing> {
-        return App.instance.things.filter { it.worldGroup == world.id }
-            .filterNot { it.archived }
+        return db.thingDao().getAll(world.id, archived = false)
             .sortedBy { it.name }
     }
 

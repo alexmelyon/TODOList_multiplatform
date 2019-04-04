@@ -92,7 +92,7 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
                 .map { it.key to it.value.sumBy { it.second } }
                 .filter { it.second != 0}
 
-            val things = App.instance.things.filter { it.worldGroup == world.id }
+            val things = db.thingDao().getAll(world.id, archived = false)
             // TODO Refactor this boilerplate
             val thingDiffs = App.instance.thingDiffs.filter { it.characterGroup == character.id && closedSessions.contains(it.sessionGroup) && it.gameGroup == game.id && it.worldGroup == world.id }
                 .fold(listOf<Pair<Int, Int>>()) { total, next ->

@@ -67,6 +67,7 @@ class ListSkillsController(args: Bundle) : Controller(args), ListSkillsContract.
 
     override fun archiveSkill(pos: Int, skill: Skill) {
         skill.archived = true
+        db.skillDao().update(skill)
 
         view.archivedAt(pos)
     }

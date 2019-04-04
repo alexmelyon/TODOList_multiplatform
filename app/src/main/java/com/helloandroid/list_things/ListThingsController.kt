@@ -4,11 +4,10 @@ import android.content.Context
 import android.os.Bundle
 import android.view.*
 import com.bluelinelabs.conductor.Controller
-import com.helloandroid.App
 import com.helloandroid.R
-import com.helloandroid.Thing
 import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.room.AppDatabase
+import com.helloandroid.room.Thing
 import com.helloandroid.room.World
 import ru.napoleonit.talan.di.ControllerInjector
 import java.util.*
@@ -40,11 +39,11 @@ class ListThingsController(args: Bundle) : Controller(args), ListThingsContract.
 
     override fun onAttach(view: View) {
         super.onAttach(view)
-        val things = App.instance.things.filter { it.worldGroup == world.id }
+        val things = db.thingDao().getAll(world.id, archived = false)
             .filterNot { it.archived }
             .sortedWith(kotlin.Comparator { o1, o2 ->
                 var res = o2.lastUsed.compareTo(o1.lastUsed)
-                if(res == 0) {
+                if (res == 0) {
                     res = o1.name.compareTo(o2.name)
                 }
                 return@Comparator res
@@ -59,7 +58,7 @@ class ListThingsController(args: Bundle) : Controller(args), ListThingsContract.
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.menu_add_thing -> {
                 view.showAddThingDialog()
                 return true
@@ -70,14 +69,14 @@ class ListThingsController(args: Bundle) : Controller(args), ListThingsContract.
 
     override fun archiveThing(pos: Int, thing: Thing) {
         thing.archived = true
+        db.thingDao().update(thing)
 
         view.archivedAt(pos)
     }
 
     override fun createThing(thingName: String) {
-        val maxId = App.instance.things.maxBy { it.id }?.id ?: -1
-        val thing = Thing(maxId + 1, thingName, world.id, Calendar.getInstance().time)
-        App.instance.things.add(thing)
+        val thing = Thing(thingName, world.id, Calendar.getInstance().time)
+        db.thingDao().insert(thing)
 
         view.addedAt(0, thing)
     }

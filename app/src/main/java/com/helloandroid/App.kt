@@ -5,10 +5,7 @@ import android.app.Application
 import com.helloandroid.dagger.AppComponent
 import com.helloandroid.dagger.ContextModule
 import com.helloandroid.dagger.DaggerAppComponent
-import com.helloandroid.room.AppDatabase
-import com.helloandroid.room.Game
-import com.helloandroid.room.Skill
-import com.helloandroid.room.World
+import com.helloandroid.room.*
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
@@ -37,7 +34,6 @@ class App : Application(), HasActivityInjector {
 
     val gameSessions = mutableListOf<GameSession>()
     val characters = mutableListOf<Character>()
-    val things = mutableListOf<Thing>()
     val hpDiffs = mutableListOf<HealthPointDiff>()
     val skillDiffs = mutableListOf<SkillDiff>()
     val thingDiffs = mutableListOf<ThingDiff>()
@@ -61,11 +57,9 @@ class App : Application(), HasActivityInjector {
             if (db.worldDao().getFull().isEmpty()) {
                 db.worldDao().insert(World("$worldId world", now))
             }
-            var skillId = 1
+            val skillId = 1
             if (db.skillDao().getFull().isEmpty()) {
-                val skill = Skill("First skill", worldId, now)
-                db.skillDao().insert(skill)
-                skillId = skill.id
+                db.skillDao().insert(Skill("First skill", worldId, now))
                 db.skillDao().insert(Skill("Second skill", worldId, now))
                 db.skillDao().insert(Skill("Third skill", worldId, now))
                 db.skillDao().insert(Skill("4 skill", worldId, now))
@@ -79,10 +73,12 @@ class App : Application(), HasActivityInjector {
                 db.skillDao().insert(Skill("12 skill", worldId, now))
                 db.skillDao().insert(Skill("13 skill", worldId, now))
             }
-            val thingId = 0
-            things.add(Thing(thingId, "First thing", worldId, now))
-            things.add(Thing(1, "Second thing", worldId, now))
-            things.add(Thing(2, "Third thing", worldId, now))
+            val thingId = 1
+            if(db.thingDao().getFull().isEmpty()) {
+                db.thingDao().insert(Thing("First thing", worldId, now))
+                db.thingDao().insert(Thing("Second thing", worldId, now))
+                db.thingDao().insert(Thing("Third thing", worldId, now))
+            }
             (1..1).forEach { gameId ->
                 if (db.gameDao().getFull().isEmpty()) {
                     db.gameDao().insert(Game("$gameId game", worldId, now))
@@ -113,10 +109,6 @@ class GameSession(val id: Int, var name: String, val gameGroup: Int, val worldGr
 }
 
 class Character(val id: Int, var name: String, val gameGroup: Int, val worldGroup: Int, var archived: Boolean = false)
-
-class Thing(val id: Int, var name: String, val worldGroup: Int, val lastUsed: Date, var archived: Boolean = false) {
-    override fun toString() = name
-}
 
 class HealthPointDiff(val id: Int, var value: Int, val time: Date, val characterGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int, var archived: Boolean = false)
 
