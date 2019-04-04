@@ -60,7 +60,7 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_COMMENT, "", "", 0, -1, it.comment) })
     }
 
-    fun getCharacter(characterId: Int): Character {
+    fun getCharacter(characterId: Int): GameCharacter {
         val characters = getCharacters()
         return characters.single { it.id == characterId }
     }
@@ -216,9 +216,8 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
         view.itemAddedAt(thing.index, thing)
     }
 
-    private fun getCharacters(): List<Character> {
-        return App.instance.characters.filter { it.gameGroup == game.id && it.worldGroup == world.id }
-            .filterNot { it.archived }
+    private fun getCharacters(): List<GameCharacter> {
+        return db.characterDao().getAll(world.id, game.id, archived = false)
             .sortedBy { it.name }
     }
 

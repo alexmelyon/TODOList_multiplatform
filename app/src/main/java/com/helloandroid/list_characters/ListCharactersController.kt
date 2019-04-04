@@ -6,11 +6,11 @@ import android.os.Bundle
 import android.view.*
 import com.bluelinelabs.conductor.Controller
 import com.helloandroid.App
-import com.helloandroid.Character
 import com.helloandroid.R
 import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.list_sessions.GAME_KEY
 import com.helloandroid.room.AppDatabase
+import com.helloandroid.room.GameCharacter
 import com.helloandroid.room.Game
 import com.helloandroid.room.World
 import ru.napoleonit.talan.di.ControllerInjector
@@ -72,8 +72,7 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
 
     fun updateScreen() {
         characterItems.clear()
-        val characters = App.instance.characters.filter { it.gameGroup == game.id && it.worldGroup == world.id }
-            .filterNot { it.archived }
+        val characters = db.characterDao().getAll(world.id, game.id, archived = false)
         val closedSessions = App.instance.gameSessions.filter { it.gameGroup == game.id && it.worldGroup == world.id }
             .filterNot { it.open }
             .map { it.id }
@@ -115,10 +114,8 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
     }
 
     override fun createCharacter(characterName: String) {
-        val maxId = App.instance.characters.filter { it.gameGroup == game.id && it.worldGroup == world.id }
-            .maxBy { it.id }?.id ?: -1
-        val character = Character(maxId + 1, characterName, game.id, world.id, archived = false)
-        App.instance.characters.add(character)
+        val character = GameCharacter(characterName, game.id, world.id, archived = false)
+        db.characterDao().insert(character)
 
         val item = CharacterItem(character.id, characterName, 0, listOf(), listOf())
         characterItems.add(item)
@@ -129,9 +126,9 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
     }
 
     override fun archiveCharacter(pos: Int, item: CharacterItem) {
-        val character = App.instance.characters.filter { it.gameGroup == game.id && it.worldGroup == world.id }
-            .single { it.id == item.id }
+        val character = db.characterDao().get(world.id, game.id, item.id)
         character.archived = true
+        db.characterDao().update(character)
 
         characterItems.remove(item)
         characterItems.forEachIndexed { index, item ->

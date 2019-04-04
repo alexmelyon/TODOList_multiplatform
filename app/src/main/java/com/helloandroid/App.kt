@@ -33,7 +33,6 @@ class App : Application(), HasActivityInjector {
     }
 
     val gameSessions = mutableListOf<GameSession>()
-    val characters = mutableListOf<Character>()
     val hpDiffs = mutableListOf<HealthPointDiff>()
     val skillDiffs = mutableListOf<SkillDiff>()
     val thingDiffs = mutableListOf<ThingDiff>()
@@ -83,10 +82,12 @@ class App : Application(), HasActivityInjector {
                 if (db.gameDao().getFull().isEmpty()) {
                     db.gameDao().insert(Game("$gameId game", worldId, now))
                 }
-                val characterId = 0
-                characters.add(Character(characterId, "First Character", gameId, worldId))
-                characters.add(Character(1, "Second Character", gameId, worldId))
-                characters.add(Character(2, "Third Character", gameId, worldId))
+                val characterId = 1
+                if(db.characterDao().getFull().isEmpty()) {
+                    db.characterDao().insert(GameCharacter("First Character", gameId, worldId))
+                    db.characterDao().insert(GameCharacter("Second Character", gameId, worldId))
+                    db.characterDao().insert(GameCharacter("Third Character", gameId, worldId))
+                }
                 (1..6).forEach { sessionId ->
                     val minusHour = Calendar.getInstance().apply {
                         add(Calendar.HOUR, -sessionId)
@@ -107,8 +108,6 @@ class App : Application(), HasActivityInjector {
 class GameSession(val id: Int, var name: String, val gameGroup: Int, val worldGroup: Int, val startTime: Date, var open: Boolean, var endTime: Date, var archived: Boolean = false) {
     override fun toString() = name
 }
-
-class Character(val id: Int, var name: String, val gameGroup: Int, val worldGroup: Int, var archived: Boolean = false)
 
 class HealthPointDiff(val id: Int, var value: Int, val time: Date, val characterGroup: Int, val sessionGroup: Int, val gameGroup: Int, val worldGroup: Int, var archived: Boolean = false)
 
