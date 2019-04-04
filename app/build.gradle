@@ -57,7 +57,7 @@ dependencies {
     implementation "android.arch.persistence.room:runtime:$room_version"
     kapt "android.arch.persistence.room:compiler:$room_version"
 
-    // Coroutines
-//    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.2.0-alpha'
+    // Tutorial view
+    implementation 'com.github.msayan:tutorial-view:v1.0.8'
 
 }

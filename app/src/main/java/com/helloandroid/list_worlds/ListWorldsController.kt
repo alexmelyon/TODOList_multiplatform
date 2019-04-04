@@ -1,12 +1,14 @@
 package com.helloandroid.list_worlds
 
 import android.content.Context
+import android.content.Intent
 import android.view.*
 import com.bluelinelabs.conductor.Controller
 import com.bluelinelabs.conductor.RouterTransaction
 import com.helloandroid.R
 import com.helloandroid.room.AppDatabase
 import com.helloandroid.room.World
+import com.helloandroid.tutorial.TutorialActivity
 import com.helloandroid.world_pager.WorldPagerController
 import ru.napoleonit.talan.di.ControllerInjector
 import java.util.*
@@ -56,7 +58,7 @@ class ListWorldsController : Controller(), ListWorldsContract.Controller {
                 return true
             }
             R.id.menu_show_tutorial -> {
-
+                startActivity(Intent(applicationContext, TutorialActivity::class.java))
                 return true
             }
         }
