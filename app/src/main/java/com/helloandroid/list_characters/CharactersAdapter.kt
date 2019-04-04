@@ -69,8 +69,8 @@ class CharactersAdapter(val context: Context, val onLongTapListener: (Int, Chara
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.name.text = items[position].name
         holder.hp.text = "HP " + items[position].hp
-        holder.skills.text = items[position].skills.fold("") { total, next -> "$total\n${next.first} ${next.second}"}
-        holder.things.text = items[position].things.fold("") { total, next -> "$total\n${next.first} ${next.second}"}
+        holder.skills.text = items[position].skills.map { "${it.first}: ${it.second}" }.joinToString("\n")
+        holder.things.text = items[position].things.map { "${it.first}: ${it.second}" }.joinToString("\n")
         holder.itemView.setOnLongClickListener {
             val correctPosition = holder.adapterPosition
             onLongTapListener(correctPosition, items[position])
