@@ -22,8 +22,8 @@ class ListSkillsController(args: Bundle) : Controller(args), ListSkillsContract.
 
     lateinit var world: World
 
-    constructor(worldId: Int) : this(Bundle().apply {
-        putInt(WORLD_KEY, worldId)
+    constructor(worldId: Long) : this(Bundle().apply {
+        putLong(WORLD_KEY, worldId)
     })
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
@@ -33,7 +33,7 @@ class ListSkillsController(args: Bundle) : Controller(args), ListSkillsContract.
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
         ControllerInjector.inject(this)
-        world = db.worldDao().getWorldById(args.getInt(WORLD_KEY))
+        world = db.worldDao().getWorldById(args.getLong(WORLD_KEY))
     }
 
     override fun onAttach(view: View) {
@@ -74,7 +74,8 @@ class ListSkillsController(args: Bundle) : Controller(args), ListSkillsContract.
 
     override fun createSkill(skillName: String) {
         val skill = Skill(skillName, world.id, Calendar.getInstance().time)
-        db.skillDao().insert(skill)
+        val id = db.skillDao().insert(skill)
+        skill.id = id
 
         view.addedAt(0, skill)
     }

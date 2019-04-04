@@ -35,9 +35,9 @@ class GamePagerController(args: Bundle) : Controller(args) {
     private lateinit var world: World
     private lateinit var game: Game
 
-    constructor(worldId: Int, gameId: Int) : this(Bundle().apply {
-        putInt(WORLD_KEY, worldId)
-        putInt(GAME_KEY, gameId)
+    constructor(worldId: Long, gameId: Long) : this(Bundle().apply {
+        putLong(WORLD_KEY, worldId)
+        putLong(GAME_KEY, gameId)
     })
 
     @Inject
@@ -75,8 +75,8 @@ class GamePagerController(args: Bundle) : Controller(args) {
         super.onContextAvailable(context)
         ControllerInjector.inject(this)
 
-        world = db.worldDao().getWorldById(args.getInt(WORLD_KEY))
-        game = db.gameDao().getAll(args.getInt(GAME_KEY), world.id)
+        world = db.worldDao().getWorldById(args.getLong(WORLD_KEY))
+        game = db.gameDao().getAll(args.getLong(GAME_KEY), world.id)
         listCharactersController = ListCharactersController(world. id, game.id)
         screenToController = listOf(
             "Characters" to listCharactersController,

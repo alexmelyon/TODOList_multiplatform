@@ -21,7 +21,7 @@ class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Co
 
     lateinit var world: World
 
-    constructor(worldId: Int) : this(Bundle().apply { putInt(WORLD_KEY, worldId) })
+    constructor(worldId: Long) : this(Bundle().apply { putLong(WORLD_KEY, worldId) })
 
     @Inject
     lateinit var view: ListGamesContract.View
@@ -43,7 +43,7 @@ class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Co
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
         ControllerInjector.inject(this)
-        world = db.worldDao().getWorldById(args.getInt(WORLD_KEY))
+        world = db.worldDao().getWorldById(args.getLong(WORLD_KEY))
 
         gamesSet.addAll(db.gameDao().getAll(world.id, archived = false))
     }
@@ -87,7 +87,8 @@ class ListGamesController(args: Bundle) : Controller(args), ListGamesContract.Co
 
     override fun createGame(gameName: String) {
         val game = Game(gameName, world.id, Calendar.getInstance().time)
-        db.gameDao().insert(game)
+        val id = db.gameDao().insert(game)
+        game.id = id
         view.addedAt(0, game)
     }
 

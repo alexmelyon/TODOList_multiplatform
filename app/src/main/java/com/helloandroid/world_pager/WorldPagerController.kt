@@ -35,8 +35,8 @@ class WorldPagerController(args: Bundle) : Controller(args) {
 
     private lateinit var world: World
 
-    constructor(worldId: Int) : this(Bundle().apply {
-        putInt(WORLD_KEY, worldId)
+    constructor(worldId: Long) : this(Bundle().apply {
+        putLong(WORLD_KEY, worldId)
     })
 
     private lateinit var tabLayout: TabLayout
@@ -68,7 +68,7 @@ class WorldPagerController(args: Bundle) : Controller(args) {
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
         ControllerInjector.inject(this)
-        world = db.worldDao().getWorldById(args.getInt(WORLD_KEY))
+        world = db.worldDao().getWorldById(args.getLong(WORLD_KEY))
         screenToController = listOf(
             "Games" to ListGamesController(world.id),
             "Skills" to ListSkillsController(world.id),

@@ -5,7 +5,6 @@ import android.content.Context
 import android.os.Bundle
 import android.view.*
 import com.bluelinelabs.conductor.Controller
-import com.helloandroid.App
 import com.helloandroid.R
 import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.list_sessions.GAME_KEY
@@ -34,16 +33,16 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
         return@Comparator o1.name.compareTo(o2.name)
     })
 
-    constructor(worldId: Int, gameId: Int) : this(Bundle().apply {
-        putInt(WORLD_KEY, worldId)
-        putInt(GAME_KEY, gameId)
+    constructor(worldId: Long, gameId: Long) : this(Bundle().apply {
+        putLong(WORLD_KEY, worldId)
+        putLong(GAME_KEY, gameId)
     })
 
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
         ControllerInjector.inject(this)
-        world = db.worldDao().getWorldById(args.getInt(WORLD_KEY))
-        game = db.gameDao().getAll(args.getInt(GAME_KEY), world.id)
+        world = db.worldDao().getWorldById(args.getLong(WORLD_KEY))
+        game = db.gameDao().getAll(args.getLong(GAME_KEY), world.id)
         updateScreen()
     }
 
@@ -86,7 +85,7 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
             val skills = db.skillDao().getAll(world.id, archived = false)
             val skillsDiffs = db.skillDiffDao().getAllByCharacter(world.id, game.id, character.id, archived = false)
                 .filter { closedSessions.contains(it.sessionGroup) }
-                .fold(listOf<Pair<Int, Int>>()) { total, next ->
+                .fold(listOf<Pair<Long, Int>>()) { total, next ->
                     total + listOf(Pair(next.skillGroup, next.value))
                 }.map { skillTovalue -> skills.single { it.id == skillTovalue.first }.name to skillTovalue.second }
                 .groupBy { it.first }
@@ -95,8 +94,9 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
 
             val things = db.thingDao().getAll(world.id, archived = false)
             // TODO Refactor this boilerplate
-            val thingDiffs = App.instance.thingDiffs.filter { it.characterGroup == character.id && closedSessions.contains(it.sessionGroup) && it.gameGroup == game.id && it.worldGroup == world.id }
-                .fold(listOf<Pair<Int, Int>>()) { total, next ->
+            val thingDiffs = db.thingDiffDao().getAllByCharacter(world.id, game.id, character.id, archived = false)
+                .filter { closedSessions.contains(it.sessionGroup) }
+                .fold(listOf<Pair<Long, Int>>()) { total, next ->
                     total + listOf(Pair(next.thingGroup, next.value))
                 }.map { thingTovalue -> things.single { it.id == thingTovalue.first }.name to thingTovalue.second }
                 .groupBy { it.first }
@@ -117,7 +117,8 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
 
     override fun createCharacter(characterName: String) {
         val character = GameCharacter(characterName, game.id, world.id, archived = false)
-        db.characterDao().insert(character)
+        val id = db.characterDao().insert(character)
+        character.id = id
 
         val item = CharacterItem(character.id, characterName, 0, listOf(), listOf())
         characterItems.add(item)

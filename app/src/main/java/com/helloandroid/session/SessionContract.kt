@@ -41,4 +41,4 @@ enum class SessionItemType {
     ITEM_COMMENT
 }
 
-class SessionItem(val id: Int, val time: Date, val type: SessionItemType, val title: String, val desc: String, var value: Int, val characterId: Int, var comment: String = "", var index: Int = -1)
+class SessionItem(val id: Long, val time: Date, val type: SessionItemType, val title: String, val desc: String, var value: Int, val characterId: Long, var comment: String = "", var index: Int = -1)

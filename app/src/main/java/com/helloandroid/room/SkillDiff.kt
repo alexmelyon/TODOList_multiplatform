@@ -7,15 +7,15 @@ import java.util.*
 class SkillDiff(
     var value: Int,
     val time: Date,
-    val characterGroup: Int,
-    val skillGroup: Int,
-    val sessionGroup: Int,
-    val gameGroup: Int,
-    val worldGroup: Int,
+    val characterGroup: Long,
+    val skillGroup: Long,
+    val sessionGroup: Long,
+    val gameGroup: Long,
+    val worldGroup: Long,
     var archived: Boolean = false
 ) {
     @PrimaryKey(autoGenerate = true)
-    var id: Int = 0
+    var id: Long = 0
 }
 
 @Dao
@@ -24,16 +24,16 @@ interface SkillDiffDao {
     fun getFull(): List<SkillDiff>
 
     @Query("SELECT * FROM skilldiff WHERE worldGroup = :worldId AND gameGroup = :gameId AND characterGroup = :characterId AND archived = :archived")
-    fun getAllByCharacter(worldId: Int, gameId: Int, characterId: Int, archived: Boolean): List<SkillDiff>
+    fun getAllByCharacter(worldId: Long, gameId: Long, characterId: Long, archived: Boolean): List<SkillDiff>
 
     @Query("SELECT * FROM skilldiff WHERE worldGroup = :worldId AND gameGroup = :gameId AND sessionGroup = :sessionId AND archived = :archived")
-    fun getAllBySession(worldId: Int, gameId: Int, sessionId: Int, archived: Boolean): List<SkillDiff>
+    fun getAllBySession(worldId: Long, gameId: Long, sessionId: Long, archived: Boolean): List<SkillDiff>
 
-    @Query("SELECT * FROM skilldiff WHERE worldGroup = :worldId AND gameGroup = :gameId AND sessionGroup = :sessionId AND characterGroup = :characterId AND skillGroup = :skillId LIMIT 1")
-    fun get(worldId: Int, gameId: Int, sessionId: Int, characterId: Int, skillId: Int): SkillDiff
+    @Query("SELECT * FROM skilldiff WHERE worldGroup = :worldId AND gameGroup = :gameId AND sessionGroup = :sessionId AND characterGroup = :characterId AND id = :id LIMIT 1")
+    fun get(worldId: Long, gameId: Long, sessionId: Long, characterId: Long, id: Long): SkillDiff
 
     @Insert
-    fun insert(skillDiff: SkillDiff)
+    fun insert(skillDiff: SkillDiff): Long
 
     @Update
     fun update(skillDiff: SkillDiff)

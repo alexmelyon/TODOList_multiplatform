@@ -32,7 +32,6 @@ class App : Application(), HasActivityInjector {
             private set
     }
 
-    val thingDiffs = mutableListOf<ThingDiff>()
     val commentDiffs = mutableListOf<CommentDiff>()
 
     override fun onCreate() {
@@ -49,11 +48,11 @@ class App : Application(), HasActivityInjector {
 
     fun initWorld() {
         val now = Calendar.getInstance().time
-        (1..1).forEach { worldId ->
+        (1..1L).forEach { worldId ->
             if (db.worldDao().getFull().isEmpty()) {
                 db.worldDao().insert(World("$worldId world", now))
             }
-            val skillId = 1
+            val skillId = 1L
             if (db.skillDao().getFull().isEmpty()) {
                 db.skillDao().insert(Skill("First skill", worldId, now))
                 db.skillDao().insert(Skill("Second skill", worldId, now))
@@ -69,25 +68,25 @@ class App : Application(), HasActivityInjector {
                 db.skillDao().insert(Skill("12 skill", worldId, now))
                 db.skillDao().insert(Skill("13 skill", worldId, now))
             }
-            val thingId = 1
+            val thingId = 1L
             if (db.thingDao().getFull().isEmpty()) {
                 db.thingDao().insert(Thing("First thing", worldId, now))
                 db.thingDao().insert(Thing("Second thing", worldId, now))
                 db.thingDao().insert(Thing("Third thing", worldId, now))
             }
-            (1..1).forEach { gameId ->
+            (1L..1).forEach { gameId ->
                 if (db.gameDao().getFull().isEmpty()) {
                     db.gameDao().insert(Game("$gameId game", worldId, now))
                 }
-                val characterId = 1
+                val characterId = 1L
                 if (db.characterDao().getFull().isEmpty()) {
                     db.characterDao().insert(GameCharacter("First Character", gameId, worldId))
                     db.characterDao().insert(GameCharacter("Second Character", gameId, worldId))
                     db.characterDao().insert(GameCharacter("Third Character", gameId, worldId))
                 }
-                (1..1).forEach { sessionId ->
+                (1..1L).forEach { sessionId ->
                     val minusHour = Calendar.getInstance().apply {
-                        add(Calendar.HOUR, -sessionId)
+                        add(Calendar.HOUR, -sessionId.toInt())
                     }
                     if (db.gameSessionDao().getFull().isEmpty()) {
                         db.gameSessionDao().insert(GameSession("$sessionId session", worldId, gameId, minusHour.time, true, now))
@@ -100,8 +99,10 @@ class App : Application(), HasActivityInjector {
                         db.skillDiffDao().insert(SkillDiff(2, now, characterId, skillId, sessionId, gameId, worldId))
                         db.skillDiffDao().insert(SkillDiff(3, now, characterId, skillId, sessionId, gameId, worldId))
                     }
-                    thingDiffs += ThingDiff(3, 3, now, characterId, thingId, sessionId, gameId, worldId)
-                    thingDiffs += ThingDiff(33, 4, now, characterId, thingId, sessionId, gameId, worldId)
+                    if(db.thingDiffDao().getFull().isEmpty()) {
+                        db.thingDiffDao().insert(ThingDiff(3, now, characterId, thingId, sessionId, gameId, worldId))
+                        db.thingDiffDao().insert(ThingDiff(4, now, characterId, thingId, sessionId, gameId, worldId))
+                    }
                     commentDiffs += CommentDiff(4, "Comment", now, sessionId, gameId, worldId)
                 }
             }
@@ -109,25 +110,13 @@ class App : Application(), HasActivityInjector {
     }
 }
 
-class ThingDiff(
-    val id: Int,
-    var value: Int,
-    val time: Date,
-    val characterGroup: Int,
-    val thingGroup: Int,
-    val sessionGroup: Int,
-    val gameGroup: Int,
-    val worldGroup: Int,
-    var archived: Boolean = false
-)
-
 class CommentDiff(
-    val id: Int,
+    val id: Long,
     var comment: String,
     val time: Date,
-    val sessionGroup: Int,
-    val gameGroup: Int,
-    val worldGroup: Int,
+    val sessionGroup: Long,
+    val gameGroup: Long,
+    val worldGroup: Long,
     var archived: Boolean = false
 )
 // TODO Комментарий по персонажу, Состояния, особенности (плюсы минусы), дополнительные скиллы, заклинания, баффы, дебаффы, ачивки

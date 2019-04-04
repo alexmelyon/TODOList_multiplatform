@@ -22,8 +22,8 @@ class ListThingsController(args: Bundle) : Controller(args), ListThingsContract.
 
     lateinit var world: World
 
-    constructor(worldId: Int) : this(Bundle().apply {
-        putInt(WORLD_KEY, worldId)
+    constructor(worldId: Long) : this(Bundle().apply {
+        putLong(WORLD_KEY, worldId)
     })
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
@@ -34,7 +34,7 @@ class ListThingsController(args: Bundle) : Controller(args), ListThingsContract.
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
         ControllerInjector.inject(this)
-        world = db.worldDao().getWorldById(args.getInt(WORLD_KEY))
+        world = db.worldDao().getWorldById(args.getLong(WORLD_KEY))
     }
 
     override fun onAttach(view: View) {
@@ -76,7 +76,8 @@ class ListThingsController(args: Bundle) : Controller(args), ListThingsContract.
 
     override fun createThing(thingName: String) {
         val thing = Thing(thingName, world.id, Calendar.getInstance().time)
-        db.thingDao().insert(thing)
+        val id = db.thingDao().insert(thing)
+        thing.id = id
 
         view.addedAt(0, thing)
     }

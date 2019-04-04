@@ -69,7 +69,8 @@ class ListWorldsController : Controller(), ListWorldsContract.Controller {
 
     override fun createWorld(worldName: String) {
         val world = World(worldName, Calendar.getInstance().time)
-        db.worldDao().insert(world)
+        val id = db.worldDao().insert(world)
+        world.id = id
 
         setWorlds.add(world)
         view.addedAt(0, world)

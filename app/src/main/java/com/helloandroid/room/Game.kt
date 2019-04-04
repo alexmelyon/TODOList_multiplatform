@@ -4,9 +4,9 @@ import android.arch.persistence.room.*
 import java.util.*
 
 @Entity
-class Game(var name: String, val worldGroup: Int, val time: Date, var archived: Boolean = false) {
+class Game(var name: String, val worldGroup: Long, val time: Date, var archived: Boolean = false) {
     @PrimaryKey(autoGenerate = true)
-    var id: Int = 0
+    var id: Long = 0
 
     override fun toString() = name
 }
@@ -18,13 +18,13 @@ interface GameDao {
     fun getFull(): List<Game>
 
     @Query("SELECT * FROM game WHERE worldGroup = :worldId AND archived = :archived")
-    fun getAll(worldId: Int, archived: Boolean): List<Game>
+    fun getAll(worldId: Long, archived: Boolean): List<Game>
 
     @Query("SELECT * FROM game WHERE id = :gameId AND worldGroup = :worldId LIMIT 1")
-    fun getAll(gameId: Int, worldId: Int): Game
+    fun getAll(gameId: Long, worldId: Long): Game
 
     @Insert
-    fun insert(game: Game)
+    fun insert(game: Game): Long
 
     @Update
     fun update(game: Game)

@@ -108,7 +108,7 @@ class SessionView @Inject constructor(val activity: MainActivity) : _FrameLayout
     override fun showCloseSessionDialog(name: String) {
         AlertDialog.Builder(activity)
             .setTitle("Close this session?")
-            .setTitle(name)
+            .setMessage(name)
             .setPositiveButton("OK", DialogInterface.OnClickListener { dialog, which ->
                 controller.closeSession()
             })

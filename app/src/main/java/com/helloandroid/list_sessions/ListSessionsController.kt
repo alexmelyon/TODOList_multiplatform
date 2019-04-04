@@ -40,17 +40,17 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
     private lateinit var sessionsList: MutableList<GameSession>
     private var firstClosedSessionIndex = 0
 
-    constructor(worldId: Int, gameId: Int) : this(Bundle().apply {
-        putInt(WORLD_KEY, worldId)
-        putInt(GAME_KEY, gameId)
+    constructor(worldId: Long, gameId: Long) : this(Bundle().apply {
+        putLong(WORLD_KEY, worldId)
+        putLong(GAME_KEY, gameId)
     })
 
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
         ControllerInjector.inject(this)
 
-        world = db.worldDao().getWorldById(args.getInt(WORLD_KEY))
-        game = db.gameDao().getAll(args.getInt(GAME_KEY), world.id)
+        world = db.worldDao().getWorldById(args.getLong(WORLD_KEY))
+        game = db.gameDao().getAll(args.getLong(GAME_KEY), world.id)
         updateScreen()
     }
 
@@ -110,9 +110,10 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
     }
 
     override fun getHeader(pos: Int): String {
-        if (pos == 0 && pos != firstClosedSessionIndex) {
+        if (pos == 0 && sessionsList[0].open) {
             return "Open sessions"
-        } else if (pos == firstClosedSessionIndex) {
+        }
+        if (pos == firstClosedSessionIndex) {
             return "Closed sessions"
         }
         return ""
@@ -132,7 +133,8 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
     override fun createSession(sessionName: String) {
         val now = Calendar.getInstance().time
         val session = GameSession(sessionName, game.id, world.id, now, open = true, endTime = now)
-        db.gameSessionDao().insert(session)
+        val id = db.gameSessionDao().insert(session)
+        session.id = id
 
         view.addedAt(0, session)
     }

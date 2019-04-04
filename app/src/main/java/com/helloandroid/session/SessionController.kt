@@ -36,39 +36,41 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
 
     val itemsWrapper = SessionItemsWrapper()
 
-    constructor(sessionId: Int, gameId: Int, worldId: Int) : this(Bundle().apply {
-        putInt(SESSION_KEY, sessionId)
-        putInt(GAME_KEY, gameId)
-        putInt(WORLD_KEY, worldId)
+    constructor(sessionId: Long, gameId: Long, worldId: Long) : this(Bundle().apply {
+        putLong(SESSION_KEY, sessionId)
+        putLong(GAME_KEY, gameId)
+        putLong(WORLD_KEY, worldId)
     })
 
     override fun onContextAvailable(context: Context) {
         super.onContextAvailable(context)
         ControllerInjector.inject(this)
 
-        world = db.worldDao().getWorldById(args.getInt(WORLD_KEY))
-        game = db.gameDao().getAll(args.getInt(GAME_KEY), world.id)
-        session = db.gameSessionDao().get(world.id, game.id, args.getInt(SESSION_KEY))
+        world = db.worldDao().getWorldById(args.getLong(WORLD_KEY))
+        game = db.gameDao().getAll(args.getLong(GAME_KEY), world.id)
+        session = db.gameSessionDao().get(world.id, game.id, args.getLong(SESSION_KEY))
 
+        // FIXME После создания новой сессии, когда двойной заголовок Closed sessions
+        // lateinit property session has not been initialized???
         itemsWrapper.addAll(db.hpDiffDao().getAllBySession(world.id, game.id, session.id, archived = false)
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_HP, "HP", getCharacter(it.characterGroup).name, it.value, it.characterGroup) })
         itemsWrapper.addAll(db.skillDiffDao().getAllBySession(world.id, game.id, session.id, archived = false)
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_SKILL, getSkill(it.skillGroup).name, getCharacter(it.characterGroup).name, it.value, it.characterGroup) })
-        itemsWrapper.addAll(App.instance.thingDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
+        itemsWrapper.addAll(db.thingDiffDao().getAllBySession(world.id, game.id, session.id, archived = false)
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_THING, getThing(it.thingGroup).name, getCharacter(it.characterGroup).name, it.value, it.characterGroup) })
         itemsWrapper.addAll(App.instance.commentDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_COMMENT, "", "", 0, -1, it.comment) })
     }
 
-    fun getCharacter(characterId: Int): GameCharacter {
+    fun getCharacter(characterId: Long): GameCharacter {
         val characters = getCharacters()
         return characters.single { it.id == characterId }
     }
-    fun getSkill(skillId: Int): Skill {
+    fun getSkill(skillId: Long): Skill {
         val skills = getSkills()
         return skills.single { it.id == skillId }
     }
-    fun getThing(thingId: Int): Thing {
+    fun getThing(thingId: Long): Thing {
         val things = getThings()
         return things.single { it.id == thingId }
     }
@@ -154,8 +156,9 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
         item.value += value
         val thingId = item.id
         val characterId = item.characterId
-        val thingDiff = App.instance.thingDiffs.single { it.id == thingId && it.characterGroup == characterId && it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
+        val thingDiff = db.thingDiffDao().get(world.id, game.id, session.id, characterId, thingId)
         thingDiff.value += value
+        db.thingDiffDao().update(thingDiff)
         this.view.itemChangedAt(pos)
     }
 
@@ -172,7 +175,8 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
         val characters = getCharacters()
         val selectedCharacter = characters[character]
         val hpDiff = HealthPointDiff(0, Calendar.getInstance().time, selectedCharacter.id, session.id, game.id, world.id)
-        db.hpDiffDao().insert(hpDiff)
+        val id = db.hpDiffDao().insert(hpDiff)
+        hpDiff.id = id
 
         val item = SessionItem(hpDiff.id, hpDiff.time, SessionItemType.ITEM_HP, "HP", selectedCharacter.name, hpDiff.value, selectedCharacter.id, "")
         itemsWrapper.add(item)
@@ -183,7 +187,8 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
         val selectedCharacter = getCharacters()[character]
         val selectedSkill = getSkills()[skill]
         val skillDiff = SkillDiff(0, Calendar.getInstance().time, selectedCharacter.id, selectedSkill.id, session.id, game.id, world.id)
-        db.skillDiffDao().insert(skillDiff)
+        val id = db.skillDiffDao().insert(skillDiff)
+        skillDiff.id = id
 
         val item = SessionItem(skillDiff.id, skillDiff.time, SessionItemType.ITEM_SKILL, selectedSkill.name, selectedCharacter.name, skillDiff.value, selectedCharacter.id)
         itemsWrapper.add(item)
@@ -192,11 +197,10 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
 
     override fun addCharacterThingDiff(character: Int, thing: Int) {
         val selectedCharacter = getCharacters()[character]
-        val maxId = App.instance.thingDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
-            .maxBy { it.id }?.id ?: -1
         val selectedThing = getThings()[thing]
-        val thingDiff = ThingDiff(maxId + 1, 0, Calendar.getInstance().time, selectedCharacter.id, selectedThing.id, session.id, game.id, world.id)
-        App.instance.thingDiffs.add(thingDiff)
+        val thingDiff = ThingDiff(0, Calendar.getInstance().time, selectedCharacter.id, selectedThing.id, session.id, game.id, world.id)
+        val id = db.thingDiffDao().insert(thingDiff)
+        thingDiff.id = id
 
         val item = SessionItem(thingDiff.id, thingDiff.time, SessionItemType.ITEM_THING, selectedThing.name, selectedCharacter.name, thingDiff.value, selectedCharacter.id)
         itemsWrapper.add(item)
