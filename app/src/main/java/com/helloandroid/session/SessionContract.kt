@@ -17,6 +17,9 @@ interface SessionContract {
         fun showAddThingDialog(characterNames: List<String>, thingNames: List<String>)
         fun showAddComment()
         fun showCloseSessionDialog(name: String)
+        fun showCreateCharacterDialog()
+        fun showCreateSkillDialog()
+        fun showCreateThingDialog()
     }
     interface Controller {
         fun getTitle(): String
@@ -31,6 +34,9 @@ interface SessionContract {
         fun onAddItemClicked(which: Int)
         fun closeSession()
         fun isSessionOpen(): Boolean
+        fun createCharacter(name: String)
+        fun createSkill(name: String)
+        fun createThing(name: String)
     }
 }
 

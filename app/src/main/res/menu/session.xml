@@ -4,5 +4,8 @@
           android:icon="@drawable/baseline_add_white_24"
           app:showAsAction="ifRoom"
           android:title=""/>
+    <item android:id="@+id/session_create_character" android:title="Create character"/>
+    <item android:id="@+id/session_create_skill" android:title="Create skill"/>
+    <item android:id="@+id/session_create_thing" android:title="Create thing"/>
     <item android:id="@+id/session_close" android:title="Close session"/>
 </menu>

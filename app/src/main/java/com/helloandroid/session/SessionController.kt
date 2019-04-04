@@ -99,6 +99,18 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
                 view.showCloseSessionDialog(session.name)
                 return true
             }
+            R.id.session_create_character -> {
+                view.showCreateCharacterDialog()
+                return true
+            }
+            R.id.session_create_skill -> {
+                view.showCreateSkillDialog()
+                return true
+            }
+            R.id.session_create_thing -> {
+                view.showCreateThingDialog()
+                return true
+            }
         }
         return super.onOptionsItemSelected(item)
     }
@@ -219,6 +231,24 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
         val thing = SessionItem(commentDiff.id, commentDiff.time, SessionItemType.ITEM_COMMENT, "", "", 0, -1, commentDiff.comment)
         itemsWrapper.add(thing)
         view.itemAddedAt(thing.index, thing)
+    }
+
+    override fun createCharacter(name: String) {
+        val character = GameCharacter(name, game.id, world.id, archived = false)
+        val id = db.characterDao().insert(character)
+        character.id = id
+    }
+
+    override fun createSkill(name: String) {
+        val skill = Skill(name, world.id, Calendar.getInstance().time, archived = false)
+        val id = db.skillDao().insert(skill)
+        skill.id = id
+    }
+
+    override fun createThing(name: String) {
+        val thing = Thing(name, world.id, Calendar.getInstance().time, archived = false)
+        val id = db.thingDao().insert(thing)
+        thing.id = id
     }
 
     private fun getCharacters(): List<GameCharacter> {

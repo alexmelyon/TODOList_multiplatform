@@ -4,6 +4,7 @@ import android.content.DialogInterface
 import android.support.v7.app.AlertDialog
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import com.helloandroid.MainActivity
 import org.jetbrains.anko._FrameLayout
 import org.jetbrains.anko.recyclerview.v7.recyclerView
@@ -102,6 +103,48 @@ class SessionView @Inject constructor(val activity: MainActivity) : _FrameLayout
 
     override fun showAddComment() {
         controller.addCommentDiff()
+    }
+
+    override fun showCreateCharacterDialog() {
+        val editText = EditText(activity)
+        AlertDialog.Builder(activity)
+            .setTitle("Character name:")
+            .setView(editText)
+            .setPositiveButton("OK", DialogInterface.OnClickListener { dialog, which ->
+                controller.createCharacter(editText.text.toString())
+            })
+            .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, which ->
+                dialog.dismiss()
+            })
+            .show()
+    }
+
+    override fun showCreateSkillDialog() {
+        val editText = EditText(activity)
+        AlertDialog.Builder(activity)
+            .setTitle("Skill name:")
+            .setView(editText)
+            .setPositiveButton("OK", DialogInterface.OnClickListener { dialog, which ->
+                controller.createSkill(editText.text.toString())
+            })
+            .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, which ->
+                dialog.dismiss()
+            })
+            .show()
+    }
+
+    override fun showCreateThingDialog() {
+        val editText = EditText(activity)
+        AlertDialog.Builder(activity)
+            .setTitle("Thing name:")
+            .setView(editText)
+            .setPositiveButton("OK", DialogInterface.OnClickListener { dialog, which ->
+                controller.createThing(editText.text.toString())
+            })
+            .setNegativeButton("Cancel", DialogInterface.OnClickListener { dialog, which ->
+                dialog.dismiss()
+            })
+            .show()
     }
 
     override fun showCloseSessionDialog(name: String) {
