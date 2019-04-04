@@ -4,11 +4,10 @@ import android.content.Context
 import android.os.Bundle
 import android.view.*
 import com.bluelinelabs.conductor.Controller
-import com.helloandroid.App
 import com.helloandroid.R
-import com.helloandroid.Skill
 import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.room.AppDatabase
+import com.helloandroid.room.Skill
 import com.helloandroid.room.World
 import ru.napoleonit.talan.di.ControllerInjector
 import java.util.*
@@ -39,8 +38,7 @@ class ListSkillsController(args: Bundle) : Controller(args), ListSkillsContract.
 
     override fun onAttach(view: View) {
         super.onAttach(view)
-        val worlds = App.instance.skills.filter { it.worldGroup == world.id }
-            .filterNot { it.archived }
+        val worlds = db.skillDao().getAll(world.id, archived = false)
             .sortedWith(kotlin.Comparator { o1, o2 ->
                 var res = o2.lastUsed.compareTo(o1.lastUsed)
                 if(res == 0) {
@@ -74,9 +72,8 @@ class ListSkillsController(args: Bundle) : Controller(args), ListSkillsContract.
     }
 
     override fun createSkill(skillName: String) {
-        val maxId = App.instance.skills.maxBy { it.id }?.id ?: -1
-        val skill = Skill(maxId + 1, skillName, world.id, Calendar.getInstance().time)
-        App.instance.skills.add(skill)
+        val skill = Skill(skillName, world.id, Calendar.getInstance().time)
+        db.skillDao().insert(skill)
 
         view.addedAt(0, skill)
     }

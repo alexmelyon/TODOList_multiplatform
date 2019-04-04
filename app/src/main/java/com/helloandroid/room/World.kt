@@ -13,6 +13,9 @@ class World(var name: String, val createTime: Date, var archived: Boolean = fals
 @Dao
 interface WorldDao {
 
+    @Query("SELECT * FROM world")
+    fun getFull(): List<World>
+
     @Query("SELECT * FROM world WHERE archived = :archived")
     fun getAll(archived: Boolean): List<World>
 

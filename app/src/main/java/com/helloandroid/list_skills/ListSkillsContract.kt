@@ -1,7 +1,7 @@
 package com.helloandroid.list_skills
 
 import android.view.ViewGroup
-import com.helloandroid.Skill
+import com.helloandroid.room.Skill
 
 interface ListSkillsContract {
 

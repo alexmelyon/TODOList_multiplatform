@@ -10,6 +10,7 @@ import com.helloandroid.list_sessions.GAME_KEY
 import com.helloandroid.list_sessions.ListSessionsDelegate
 import com.helloandroid.room.AppDatabase
 import com.helloandroid.room.Game
+import com.helloandroid.room.Skill
 import com.helloandroid.room.World
 import ru.napoleonit.talan.di.ControllerInjector
 import java.lang.ref.WeakReference
@@ -52,13 +53,6 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
         game = db.gameDao().getAll(args.getInt(GAME_KEY), world.id)
         session = App.instance.gameSessions.first { it.id == args.getInt(SESSION_KEY) && it.gameGroup == game.id && it.worldGroup == world.id }
 
-        val characters = getCharacters()
-        fun getCharacter(characterId: Int) = characters.single { it.id == characterId }
-        val skills = getSkills()
-        fun getSkill(skillId: Int) = skills.single { it.id == skillId }
-        val things = getThings()
-        fun getThing(thingId: Int) = things.single { it.id == thingId }
-
         itemsWrapper.addAll(App.instance.hpDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_HP, "HP", getCharacter(it.characterGroup).name, it.value, it.characterGroup) })
         itemsWrapper.addAll(App.instance.skillDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
@@ -67,6 +61,19 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_THING, getThing(it.thingGroup).name, getCharacter(it.characterGroup).name, it.value, it.characterGroup) })
         itemsWrapper.addAll(App.instance.commentDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_COMMENT, "", "", 0, -1, it.comment) })
+    }
+
+    fun getCharacter(characterId: Int): Character {
+        val characters = getCharacters()
+        return characters.single { it.id == characterId }
+    }
+    fun getSkill(skillId: Int): Skill {
+        val skills = getSkills()
+        return skills.single { it.id == skillId }
+    }
+    fun getThing(thingId: Int): Thing {
+        val things = getThings()
+        return things.single { it.id == thingId }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup): View {
@@ -219,9 +226,10 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
     }
 
     private fun getSkills(): List<Skill> {
-        return App.instance.skills.filter { it.worldGroup == world.id }
-            .filterNot { it.archived }
-            .sortedBy { it.name }
+        return db.skillDao().getAll(world.id, archived = false)
+        //App.instance.skills.filter { it.worldGroup == world.id }
+//            .filterNot { it.archived }
+//            .sortedBy { it.name }
     }
 
     private fun getThings(): List<Thing> {

@@ -83,7 +83,7 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
                     .sumBy { it.value }
             }
 
-            val skills = App.instance.skills.filter { it.worldGroup == world.id }
+            val skills = db.skillDao().getAll(world.id, archived = false)
             val skillsDiffs = App.instance.skillDiffs.filter { it.characterGroup == character.id && closedSessions.contains(it.sessionGroup) && it.gameGroup == game.id && it.worldGroup == world.id }
                 .fold(listOf<Pair<Int, Int>>()) { total, next ->
                     total + listOf(Pair(next.skillGroup, next.value))

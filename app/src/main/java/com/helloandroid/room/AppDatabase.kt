@@ -8,10 +8,12 @@ import android.arch.persistence.room.TypeConverters
     version = 1,
     entities = [
         World::class,
-        Game::class]
+        Game::class,
+        Skill::class]
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun worldDao(): WorldDao
     abstract fun gameDao(): GameDao
+    abstract fun skillDao(): SkillDao
 }

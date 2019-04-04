@@ -6,6 +6,9 @@ import com.helloandroid.dagger.AppComponent
 import com.helloandroid.dagger.ContextModule
 import com.helloandroid.dagger.DaggerAppComponent
 import com.helloandroid.room.AppDatabase
+import com.helloandroid.room.Game
+import com.helloandroid.room.Skill
+import com.helloandroid.room.World
 import dagger.android.AndroidInjector
 import dagger.android.DispatchingAndroidInjector
 import dagger.android.HasActivityInjector
@@ -34,7 +37,6 @@ class App : Application(), HasActivityInjector {
 
     val gameSessions = mutableListOf<GameSession>()
     val characters = mutableListOf<Character>()
-    val skills = mutableListOf<Skill>()
     val things = mutableListOf<Thing>()
     val hpDiffs = mutableListOf<HealthPointDiff>()
     val skillDiffs = mutableListOf<SkillDiff>()
@@ -55,28 +57,36 @@ class App : Application(), HasActivityInjector {
 
     fun initWorld() {
         val now = Calendar.getInstance().time
-        (1..3).forEach { worldId ->
-//            db.worldDao().insert(World("$worldId world", now))
-            val skillId = 0
-            skills.add(Skill(skillId, "First skill", worldId, now))
-            skills.add(Skill(1, "Second skill", worldId, now))
-            skills.add(Skill(2, "Third skill", worldId, now))
-            skills.add(Skill(3, "4 skill", worldId, now))
-            skills.add(Skill(4, "5 skill", worldId, now))
-            skills.add(Skill(5, "6 skill", worldId, now))
-            skills.add(Skill(6, "7 skill", worldId, now))
-            skills.add(Skill(7, "8 skill", worldId, now))
-            skills.add(Skill(8, "9 skill", worldId, now))
-            skills.add(Skill(9, "10 skill", worldId, now))
-            skills.add(Skill(10, "11 skill", worldId, now))
-            skills.add(Skill(11, "12 skill", worldId, now))
-            skills.add(Skill(12, "13 skill", worldId, now))
+        (1..1).forEach { worldId ->
+            if (db.worldDao().getFull().isEmpty()) {
+                db.worldDao().insert(World("$worldId world", now))
+            }
+            var skillId = 1
+            if (db.skillDao().getFull().isEmpty()) {
+                val skill = Skill("First skill", worldId, now)
+                db.skillDao().insert(skill)
+                skillId = skill.id
+                db.skillDao().insert(Skill("Second skill", worldId, now))
+                db.skillDao().insert(Skill("Third skill", worldId, now))
+                db.skillDao().insert(Skill("4 skill", worldId, now))
+                db.skillDao().insert(Skill("5 skill", worldId, now))
+                db.skillDao().insert(Skill("6 skill", worldId, now))
+                db.skillDao().insert(Skill("7 skill", worldId, now))
+                db.skillDao().insert(Skill("8 skill", worldId, now))
+                db.skillDao().insert(Skill("9 skill", worldId, now))
+                db.skillDao().insert(Skill("10 skill", worldId, now))
+                db.skillDao().insert(Skill("11 skill", worldId, now))
+                db.skillDao().insert(Skill("12 skill", worldId, now))
+                db.skillDao().insert(Skill("13 skill", worldId, now))
+            }
             val thingId = 0
             things.add(Thing(thingId, "First thing", worldId, now))
             things.add(Thing(1, "Second thing", worldId, now))
             things.add(Thing(2, "Third thing", worldId, now))
-            (1..3).forEach { gameId ->
-//                db.gameDao().insert(Game("$gameId game", worldId, now))
+            (1..1).forEach { gameId ->
+                if (db.gameDao().getFull().isEmpty()) {
+                    db.gameDao().insert(Game("$gameId game", worldId, now))
+                }
                 val characterId = 0
                 characters.add(Character(characterId, "First Character", gameId, worldId))
                 characters.add(Character(1, "Second Character", gameId, worldId))
@@ -103,10 +113,6 @@ class GameSession(val id: Int, var name: String, val gameGroup: Int, val worldGr
 }
 
 class Character(val id: Int, var name: String, val gameGroup: Int, val worldGroup: Int, var archived: Boolean = false)
-
-class Skill(val id: Int, var name: String, val worldGroup: Int, val lastUsed: Date, var archived: Boolean = false) {
-    override fun toString() = name
-}
 
 class Thing(val id: Int, var name: String, val worldGroup: Int, val lastUsed: Date, var archived: Boolean = false) {
     override fun toString() = name

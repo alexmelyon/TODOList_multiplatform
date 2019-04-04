@@ -12,6 +12,9 @@ class Game(var name: String, val worldGroup: Int, val time: Date, var archived: 
 @Dao
 interface GameDao {
 
+    @Query("SELECT * FROM game")
+    fun getFull(): List<Game>
+
     @Query("SELECT * FROM game WHERE worldGroup = :worldId AND archived = :archived")
     fun getAll(worldId: Int, archived: Boolean): List<Game>
 
