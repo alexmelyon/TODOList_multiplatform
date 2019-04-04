@@ -52,7 +52,7 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
 
         itemsWrapper.addAll(db.hpDiffDao().getAllBySession(world.id, game.id, session.id, archived = false)
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_HP, "HP", getCharacter(it.characterGroup).name, it.value, it.characterGroup) })
-        itemsWrapper.addAll(App.instance.skillDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
+        itemsWrapper.addAll(db.skillDiffDao().getAllBySession(world.id, game.id, session.id, archived = false)
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_SKILL, getSkill(it.skillGroup).name, getCharacter(it.characterGroup).name, it.value, it.characterGroup) })
         itemsWrapper.addAll(App.instance.thingDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
             .map { SessionItem(it.id, it.time, SessionItemType.ITEM_THING, getThing(it.thingGroup).name, getCharacter(it.characterGroup).name, it.value, it.characterGroup) })
@@ -143,8 +143,9 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
         item.value += value
         val skillId = item.id
         val characterId = item.characterId
-        val skillDiff = App.instance.skillDiffs.single { it.id == skillId && it.characterGroup == characterId && it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
+        val skillDiff = db.skillDiffDao().get(world.id, game.id, session.id, characterId, skillId)
         skillDiff.value += value
+        db.skillDiffDao().update(skillDiff)
         this.view.itemChangedAt(pos)
     }
 
@@ -180,11 +181,9 @@ class SessionController(args: Bundle) : Controller(args), SessionContract.Contro
 
     override fun addCharacterSkillDiff(character: Int, skill: Int) {
         val selectedCharacter = getCharacters()[character]
-        val maxId = App.instance.skillDiffs.filter { it.sessionGroup == session.id && it.gameGroup == game.id && it.worldGroup == world.id }
-            .maxBy { it.id }?.id ?: -1
         val selectedSkill = getSkills()[skill]
-        val skillDiff = SkillDiff(maxId + 1, 0, Calendar.getInstance().time, selectedCharacter.id, selectedSkill.id, session.id, game.id, world.id)
-        App.instance.skillDiffs.add(skillDiff)
+        val skillDiff = SkillDiff(0, Calendar.getInstance().time, selectedCharacter.id, selectedSkill.id, session.id, game.id, world.id)
+        db.skillDiffDao().insert(skillDiff)
 
         val item = SessionItem(skillDiff.id, skillDiff.time, SessionItemType.ITEM_SKILL, selectedSkill.name, selectedCharacter.name, skillDiff.value, selectedCharacter.id)
         itemsWrapper.add(item)

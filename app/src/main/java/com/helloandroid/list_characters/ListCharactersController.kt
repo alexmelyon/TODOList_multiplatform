@@ -84,7 +84,8 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
             }
 
             val skills = db.skillDao().getAll(world.id, archived = false)
-            val skillsDiffs = App.instance.skillDiffs.filter { it.characterGroup == character.id && closedSessions.contains(it.sessionGroup) && it.gameGroup == game.id && it.worldGroup == world.id }
+            val skillsDiffs = db.skillDiffDao().getAllByCharacter(world.id, game.id, character.id, archived = false)
+                .filter { closedSessions.contains(it.sessionGroup) }
                 .fold(listOf<Pair<Int, Int>>()) { total, next ->
                     total + listOf(Pair(next.skillGroup, next.value))
                 }.map { skillTovalue -> skills.single { it.id == skillTovalue.first }.name to skillTovalue.second }

@@ -32,7 +32,6 @@ class App : Application(), HasActivityInjector {
             private set
     }
 
-    val skillDiffs = mutableListOf<SkillDiff>()
     val thingDiffs = mutableListOf<ThingDiff>()
     val commentDiffs = mutableListOf<CommentDiff>()
 
@@ -97,8 +96,10 @@ class App : Application(), HasActivityInjector {
                         db.hpDiffDao().insert(HealthPointDiff(1, now, characterId, sessionId, gameId, worldId))
                         db.hpDiffDao().insert(HealthPointDiff(2, now, characterId, sessionId, gameId, worldId))
                     }
-                    skillDiffs += SkillDiff(2, 2, now, characterId, skillId, sessionId, gameId, worldId)
-                    skillDiffs += SkillDiff(22, 3, now, characterId, skillId, sessionId, gameId, worldId)
+                    if(db.skillDiffDao().getFull().isEmpty()) {
+                        db.skillDiffDao().insert(SkillDiff(2, now, characterId, skillId, sessionId, gameId, worldId))
+                        db.skillDiffDao().insert(SkillDiff(3, now, characterId, skillId, sessionId, gameId, worldId))
+                    }
                     thingDiffs += ThingDiff(3, 3, now, characterId, thingId, sessionId, gameId, worldId)
                     thingDiffs += ThingDiff(33, 4, now, characterId, thingId, sessionId, gameId, worldId)
                     commentDiffs += CommentDiff(4, "Comment", now, sessionId, gameId, worldId)
@@ -107,18 +108,6 @@ class App : Application(), HasActivityInjector {
         }
     }
 }
-
-class SkillDiff(
-    val id: Int,
-    var value: Int,
-    val time: Date,
-    val characterGroup: Int,
-    val skillGroup: Int,
-    val sessionGroup: Int,
-    val gameGroup: Int,
-    val worldGroup: Int,
-    var archived: Boolean = false
-)
 
 class ThingDiff(
     val id: Int,
