@@ -75,7 +75,7 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
 
     override fun updateListSessionsScreen(activity: Activity) {
         updateScreen()
-        delegate?.get()?.updateCharactersScreen(activity)
+        delegate?.get()?.updateCharactersScreen()
     }
 
     fun updateScreen() {
@@ -144,5 +144,6 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
         db.gameSessionDao().update(session)
 
         view.archivedAt(pos)
+        delegate?.get()?.updateCharactersScreen()
     }
 }

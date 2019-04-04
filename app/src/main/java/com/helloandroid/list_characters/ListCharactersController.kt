@@ -17,7 +17,7 @@ import java.util.*
 import javax.inject.Inject
 
 interface ListCharactersDelegate {
-    fun updateCharactersScreen(activity: Activity)
+    fun updateCharactersScreen()
 }
 
 class ListCharactersController(args: Bundle) : Controller(args), ListCharactersContract.Controller, ListCharactersDelegate {
@@ -68,7 +68,7 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
         return super.onOptionsItemSelected(item)
     }
 
-    override fun updateCharactersScreen(activity: Activity) {
+    override fun updateCharactersScreen() {
         updateScreen()
     }
 
@@ -118,6 +118,9 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
             characterItems.forEachIndexed { index, item ->
                 item.index = index
             }
+        }
+        if(isAttached) {
+            this.view.setData(characterItems.toMutableList())
         }
     }
 

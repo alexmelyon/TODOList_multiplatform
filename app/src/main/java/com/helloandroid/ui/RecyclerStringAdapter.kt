@@ -50,10 +50,12 @@ class RecyclerStringAdapter<T>(val context: Context, @LayoutRes val layoutRes: I
         val text1 = holder.text1
         text1.text = items[position].toString()
         holder.itemView.setOnClickListener { view ->
-            onItemClickListener(correctPosition, items[position])
+            val correctPosition = holder.adapterPosition
+            onItemClickListener(correctPosition, items[correctPosition])
         }
         holder.itemView.setOnLongClickListener { view ->
-            onItemLongclickListener(correctPosition, items[position])
+            val correctPosition = holder.adapterPosition
+            onItemLongclickListener(correctPosition, items[correctPosition])
             return@setOnLongClickListener true
         }
         if (onGetDescriptionValue != null) {
