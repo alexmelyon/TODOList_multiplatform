@@ -1,6 +1,5 @@
 package com.helloandroid.list_characters
 
-import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import android.view.*
@@ -9,8 +8,8 @@ import com.helloandroid.R
 import com.helloandroid.list_games.WORLD_KEY
 import com.helloandroid.list_sessions.GAME_KEY
 import com.helloandroid.room.AppDatabase
-import com.helloandroid.room.GameCharacter
 import com.helloandroid.room.Game
+import com.helloandroid.room.GameCharacter
 import com.helloandroid.room.World
 import ru.napoleonit.talan.di.ControllerInjector
 import java.util.*
@@ -30,7 +29,7 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
     lateinit var world: World
     lateinit var game: Game
     private val characterItems = TreeSet(Comparator<CharacterItem> { o1, o2 ->
-        if(o1.lastUsed != o2.lastUsed) {
+        if (o1.lastUsed != o2.lastUsed) {
             return@Comparator o1.lastUsed.compareTo(o2.lastUsed)
         }
         return@Comparator o1.name.compareTo(o2.name)
@@ -59,7 +58,7 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.menu_add_character -> {
                 view.showAddCharacterDialog()
                 return true
@@ -79,11 +78,9 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
             .filterNot { it.open }
             .map { it.id }
         characters.forEach { character ->
-            val hp = closedSessions.fold(0) { total, next ->
-                db.hpDiffDao().getAllByCharacter(world.id, game.id, character.id, archived = false)
-                    .filter { closedSessions.contains(it.id) }
-                    .sumBy { it.value }
-            }
+            val hp = db.hpDiffDao().getAllByCharacter(world.id, game.id, character.id, archived = false)
+                .filter { closedSessions.contains(it.sessionGroup) }
+                .sumBy { it.value }
 
             val skills = db.skillDao().getAll(world.id, archived = false)
             val skillDiffs = db.skillDiffDao().getAllByCharacter(world.id, game.id, character.id, archived = false)
@@ -94,7 +91,7 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
                 }.map { skillTovalue -> skills.single { it.id == skillTovalue.first } to skillTovalue.second }
                 .groupBy { it.first }
                 .map { it.key to it.value.sumBy { it.second } }
-                .filter { it.second != 0}
+                .filter { it.second != 0 }
                 .toList()
             val skillDiffNames = skillDiffs.map { it.first.name to it.second }
 
@@ -108,7 +105,7 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
                 }.map { thingToValue -> things.single { it.id == thingToValue.first } to thingToValue.second }
                 .groupBy { it.first }
                 .map { it.key to it.value.sumBy { it.second } }
-                .filter { it.second != 0}
+                .filter { it.second != 0 }
                 .toList()
             val thingDiffNames = thingDiffs.map { it.first.name to it.second }
 
@@ -119,7 +116,7 @@ class ListCharactersController(args: Bundle) : Controller(args), ListCharactersC
                 item.index = index
             }
         }
-        if(isAttached) {
+        if (isAttached) {
             this.view.setData(characterItems.toMutableList())
         }
     }
