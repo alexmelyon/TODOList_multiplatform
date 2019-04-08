@@ -41,7 +41,7 @@ class App : Application(), HasActivityInjector {
             .build()
         appComponent.inject(this)
 
-        initWorld()
+//        initWorld()
     }
 
     fun initWorld() {
