@@ -1,5 +1,6 @@
 package com.helloandroid.tutorial
 
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -13,8 +14,17 @@ import com.hololo.tutorial.library.TutorialActivity
 
 class TutorialActivity : TutorialActivity() {
 
+    val SHARED = "SHARED"
+    val TUTORIAL = "TUTORIAL"
+
     override fun onCreate(savedInstanceState: Bundle?, persistentState: PersistableBundle?) {
         super.onCreate(savedInstanceState, persistentState)
+
+        if (getSharedPreferences(SHARED, Context.MODE_PRIVATE).getBoolean(TUTORIAL, false)) {
+            startActivity(Intent(this, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+            })
+        }
 
         addFragment(
             Step.Builder().setTitle("Create worlds")
@@ -104,6 +114,12 @@ class TutorialActivity : TutorialActivity() {
 
     override fun finishTutorial() {
         super.finishTutorial()
-        startActivity(Intent(this, MainActivity::class.java))
+        getSharedPreferences(SHARED, Context.MODE_PRIVATE).edit().apply {
+            putBoolean(TUTORIAL, true)
+            apply()
+        }
+        startActivity(Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+        })
     }
 }
