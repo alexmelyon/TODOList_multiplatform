@@ -58,7 +58,10 @@ class ListWorldsController : Controller(), ListWorldsContract.Controller {
                 return true
             }
             R.id.menu_show_tutorial -> {
-                startActivity(Intent(applicationContext, TutorialActivity::class.java))
+                startActivity(Intent(applicationContext, TutorialActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                    putExtra(TutorialActivity.FORCED_TUTORIAL, true)
+                })
                 return true
             }
         }

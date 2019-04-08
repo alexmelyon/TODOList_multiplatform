@@ -21,7 +21,6 @@ class App : Application(), HasActivityInjector {
     lateinit var db: AppDatabase
 
     override fun activityInjector(): AndroidInjector<Activity> {
-        println("GET ACTIVITY INJECTOR")
         return dispatchingAndroidInjector
     }
 
