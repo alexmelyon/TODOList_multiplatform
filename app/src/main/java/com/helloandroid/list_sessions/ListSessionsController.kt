@@ -136,7 +136,9 @@ class ListSessionsController(args: Bundle) : Controller(args), ListSessionsContr
         val id = db.gameSessionDao().insert(session)
         session.id = id
 
-        view.addedAt(0, session)
+//        view.addedAt(0, session)
+        updateScreen()
+        view.setData(sessionsList)
     }
 
     override fun archiveSession(pos: Int, session: GameSession) {
